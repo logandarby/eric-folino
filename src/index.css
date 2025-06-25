@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: 'Propaganda';
+  src: url('/fonts/propaganda.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+.font-propaganda {
+  font-family: 'Propaganda', sans-serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Base Styles */
+html, body {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Reset Styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+li, ul, ol, dl {
+  list-style: none;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Propaganda', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+}
