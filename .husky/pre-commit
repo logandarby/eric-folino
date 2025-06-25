@@ -1,0 +1,13 @@
+echo "🎨 Running pretty-quick..."
+npx pretty-quick --staged
+
+echo "🔍 Running ESLint..."
+npm run lint
+
+echo "🔄 Checking for circular dependencies..."
+npm run check-circular
+
+echo "🏗️ Building project..."
+npm run build
+
+echo "✅ All pre-commit checks passed!"
