@@ -66,7 +66,7 @@ function App() {
                 className="link-item flex object-cover justify-center items-center font-propaganda text-white h-full relative"
                 style={{
                   ...item.style,
-                  backgroundImage: `url(/img/${item.image})`,
+                  backgroundImage: `url(${import.meta.env.BASE_URL}img/${item.image})`,
                 }}
               >
                 <div className="link-item-component opacity-0">
