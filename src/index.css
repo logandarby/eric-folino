@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
-@import "tailwindcss";
-
+@import 'tailwindcss';
 
 @font-face {
   font-family: 'Propaganda';
@@ -9,7 +8,6 @@
   font-weight: normal;
   font-style: normal;
 }
-
 
 .font-propaganda {
   font-family: 'Propaganda', sans-serif;
@@ -19,8 +17,13 @@
   font-family: 'Inter', sans-serif;
 }
 
+.font-courier {
+  font-family: 'Courier New', Courier, monospace;
+}
+
 /* Base Styles */
-html, body {
+html,
+body {
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   line-height: 1.5;
@@ -37,12 +40,20 @@ a {
   color: inherit;
 }
 
-li, ul, ol, dl {
+li,
+ul,
+ol,
+dl {
   list-style: none;
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Propaganda', sans-serif;
   font-weight: 700;
   line-height: 1.2;

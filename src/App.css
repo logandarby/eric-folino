@@ -1,31 +1,97 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 .link-item {
-    position: relative;
+  @apply relative bg-no-repeat bg-black;
+}
+
+.link-item:focus {
+  outline: 3px solid #ffffff;
+  outline-offset: -3px;
 }
 
 .link-item-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition-property: top left transform font-size;
-    transition-duration: 0.4s;
-    transition-timing-function: ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition-property: top left transform font-size;
+  transition-duration: 0.4s;
+  transition-timing-function: ease;
 }
 
-.link-item:hover .link-item-label {
-    @apply text-3xl;
+/* Mobile styles - labels start in top-left position */
+@media (max-width: 768px) {
+  .link-item-label {
     top: 10px;
     left: 10px;
     transform: none;
+    font-size: 1.5rem; /* Much smaller labels for mobile */
+  }
+
+  .link-item-component {
+    opacity: 100%;
+  }
+
+  /* Mobile navigation adjustments - vertical layout */
+  .nav-component nav ul {
+    @apply text-sm space-x-0 space-y-2 flex-col;
+  }
+
+  /* Mobile spotlight adjustments */
+  .spotlight_project {
+    @apply mb-4;
+  }
+}
+
+.link-item:hover .link-item-label,
+.link-item:focus .link-item-label,
+.link-item:focus-within .link-item-label {
+  @apply text-3xl;
+  top: 10px;
+  left: 10px;
+  transform: none;
 }
 
 .link-item-component {
-    transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease;
 }
 
-.link-item:hover .link-item-component {
-    opacity: 100%;
+.link-item:hover .link-item-component,
+.link-item:focus .link-item-component,
+.link-item:focus-within .link-item-component {
+  opacity: 100%;
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-5px) rotate(-10deg);
+  }
+}
+
+/* Navigation Component Styles */
+.nav-component {
+  @apply flex justify-center items-center;
+}
+
+.nav-component nav ul {
+  font-family: 'Courier';
+  @apply flex flex-row space-x-8 text-white  md:text-xl text-sm;
+}
+
+.nav-component nav ul li a {
+  text-transform: uppercase;
+  font-weight: bold;
+  animation: float 2d linear 1s infinite alternate;
+  @apply hover:text-gray-300 focus:text-gray-300 transition-colors duration-300 hover:underline focus:underline;
+}
+
+.nav-component nav ul li a:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.contact-component {
+}
