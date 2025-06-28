@@ -8,6 +8,7 @@ interface LinkItem {
   component: JSX.Element;
   style?: React.CSSProperties;
   class?: string;
+  filter?: string;
 }
 
 const BASE_URL = import.meta.env.BASE_URL;
@@ -149,6 +150,7 @@ function App() {
         backgroundPosition: '100% 30%',
         backgroundSize: '940px',
       },
+      filter: 'contrast(1.2) brightness(0.8) grayscale(0.5)',
     },
     {
       label: 'About',
@@ -168,9 +170,10 @@ function App() {
         backgroundSize: '930px',
       },
       class: 'contact-component',
+      filter: 'invert(1) contrast(1.3) brightness(70%)',
     },
     {
-      label: 'More',
+      label: 'Extras',
       image: '4.jpg',
       component: MoreComponent,
       style: {
@@ -182,25 +185,49 @@ function App() {
 
   return (
     <>
-      <main>
+      <main className="overflow-clip">
         <div className="flex flex-col md:flex-row min-h-screen w-screen">
-          <div className="w-full md:w-[60%] flex flex-col md:justify-around">
+          {/* Noise overlay */}
+          {/* <div 
+            className="noise-overlay fixed inset-0 pointer-events-none z-50 mix-blend-difference opacity-20"
+            style={{
+              backgroundImage: `url(${BASE_URL}img/tex/noise-overlay-h.png)`,
+              backgroundRepeat: 'repeat',
+            }}
+          /> */}
+
+          {/* Links section */}
+          <div className="w-full md:w-[60%] flex flex-col md:justify-around relative links-section">
             {LINK_ITEMS.map((item) => (
               <div
                 key={item.label}
                 className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-propaganda text-white h-48 md:h-full relative`}
-                style={{
-                  ...item.style,
-                  backgroundImage: `url(${BASE_URL}img/${item.image})`,
-                }}
                 tabIndex={0}
                 role="button"
                 aria-label={`Navigate to ${item.label} section`}
               >
-                <div className="link-item-component opacity-0">
-                  {item.component}
+                {/* Background image with filter */}
+                <div
+                  className="link-item-background absolute inset-0 bg-no-repeat bg-black brand-filter"
+                  style={
+                    {
+                      ...item.style,
+                      backgroundImage: `url(${BASE_URL}img/${item.image})`,
+                      '--individual-filter': item.filter || 'brightness(100%)',
+                    } as React.CSSProperties
+                  }
+                />
+
+                {/* Darkening overlay */}
+                <div className="link-item-overlay absolute inset-0 bg-black opacity-0 transition-opacity duration-300" />
+
+                {/* Content layer */}
+                <div className="link-item-content relative z-10 w-full h-full flex justify-center items-center text-yellow-50">
+                  <div className="link-item-component opacity-0">
+                    {item.component}
+                  </div>
+                  <div className="link-item-label text-6xl">{item.label}</div>
                 </div>
-                <div className="link-item-label text-8xl">{item.label}</div>
               </div>
             ))}
           </div>
@@ -208,10 +235,10 @@ function App() {
           {/* Spotlight section*/}
           <div className="w-full md:w-[40%] flex flex-col justify-center items-center p-8 relative">
             <div
-              className="absolute inset-0 opacity-75"
+              className="absolute inset-0 opacity-10"
               style={{
-                backgroundImage: `url(${BASE_URL}img/tex/punk.jpg)`,
-                filter: `invert(1)`,
+                backgroundImage: `url(${BASE_URL}img/tex/spotlight-bg.jpg)`,
+                filter: `invert(1) brightness(0.4) sepia(1)`,
               }}
             />
             <div className="flex flex-col justify-center items-center z-10 relative">
@@ -235,6 +262,14 @@ function App() {
               </div>
             </div>
           </div>
+
+          {/* Paper rip separator */}
+          <img
+            className="paper-rip-separator absolute object-cover right-[40%]"
+            src={`${BASE_URL}img/tex/paper-rip-v.png`}
+            role="presentation"
+            loading="eager"
+          ></img>
         </div>
       </main>
     </>
