@@ -2,6 +2,15 @@
 
 .link-item {
   @apply relative;
+  border-bottom: 1px solid var(--color-yellow-50);
+}
+
+.link-item:last-child {
+  border-bottom: none;
+}
+
+.link-item:not(:first-child) .link-item-label {
+  font-weight: normal;
 }
 
 .link-item:focus {
@@ -11,7 +20,7 @@
 
 /* Brand filter class - customize this for your unifying filter */
 .brand-filter {
-  filter: var(--individual-filter, none) grayscale(50%) contrast(120%)
+  filter: var(--individual-filter, none) grayscale(60%) contrast(120%)
     sepia(40%) saturate(120%);
 }
 
@@ -99,7 +108,7 @@
 
 .nav-component nav ul {
   font-family: 'Courier';
-  @apply flex flex-row space-x-8 text-white  md:text-xl text-sm;
+  @apply flex flex-row space-x-8 md:text-xl text-sm;
 }
 
 .nav-component nav ul li a {

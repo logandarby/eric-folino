@@ -26,7 +26,7 @@ function App() {
               rel="noopener noreferrer"
             >
               <i
-                className="fa-brands fa-spotify text-4xl md:text-6xl text-white hover:text-grey-300 hover:animate-pulse transition-colors duration-300"
+                className="fa-brands fa-spotify text-4xl md:text-6xl  hover:text-grey-300 hover:animate-pulse transition-colors duration-300"
                 title="Spotify"
               ></i>
             </a>
@@ -38,7 +38,7 @@ function App() {
               rel="noopener noreferrer"
             >
               <i
-                className="fa-brands fa-apple text-4xl md:text-6xl text-white hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
+                className="fa-brands fa-apple text-4xl md:text-6xl  hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
                 title="Apple Music"
               ></i>
             </a>
@@ -50,7 +50,7 @@ function App() {
               rel="noopener noreferrer"
             >
               <i
-                className="fa-brands fa-tiktok text-4xl md:text-6xl text-white hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
+                className="fa-brands fa-tiktok text-4xl md:text-6xl  hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
                 title="TikTok"
               ></i>
             </a>
@@ -62,7 +62,7 @@ function App() {
               rel="noopener noreferrer"
             >
               <i
-                className="fa-brands fa-youtube text-4xl md:text-6xl text-white hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
+                className="fa-brands fa-youtube text-4xl md:text-6xl  hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
                 title="YouTube"
               ></i>
             </a>
@@ -74,7 +74,7 @@ function App() {
               rel="noopener noreferrer"
             >
               <i
-                className="fa-brands fa-instagram text-4xl md:text-6xl text-white hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
+                className="fa-brands fa-instagram text-4xl md:text-6xl  hover:text-gray-300 hover:animate-pulse transition-colors duration-300"
                 title="Instagram"
               ></i>
             </a>
@@ -201,7 +201,7 @@ function App() {
             {LINK_ITEMS.map((item) => (
               <div
                 key={item.label}
-                className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-propaganda text-white h-48 md:h-full relative`}
+                className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-display text-white h-48 md:h-full relative`}
                 tabIndex={0}
                 role="button"
                 aria-label={`Navigate to ${item.label} section`}
