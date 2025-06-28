@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import './App.css';
 import type { JSX } from 'react';
 
@@ -11,9 +11,27 @@ interface LinkItem {
   filter?: string;
 }
 
+// Mouse position interface
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
 const BASE_URL = import.meta.env.BASE_URL;
 
 function App() {
+  // State for tracking mouse position and hovered item
+  const [mousePos, setMousePos] = useState<MousePosition>({ x: 0, y: 0 });
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+  // Mouse move handler for parallax effect
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setMousePos({ x, y });
+  }, []);
+
   // Listen Component with social media links
   const ListenComponent = (
     <div className="flex justify-center items-center">
@@ -147,18 +165,18 @@ function App() {
       image: '1.jpg',
       component: ListenComponent,
       style: {
-        backgroundPosition: '100% 30%',
-        backgroundSize: '940px',
+        backgroundPosition: 'center',
+        backgroundSize: '100% auto',
       },
-      filter: 'contrast(1.2) brightness(0.8) grayscale(0.5)',
+      filter: 'contrast(1.2) brightness(0.8) grayscale(0.3)',
     },
     {
       label: 'About',
       image: '2.png',
       component: AboutComponent,
       style: {
-        backgroundPosition: '-10% 25%',
-        backgroundSize: '500px',
+        backgroundPosition: '10% 18%',
+        backgroundSize: '45% auto',
       },
     },
     {
@@ -166,8 +184,8 @@ function App() {
       image: '3.jpg',
       component: ContactComponent,
       style: {
-        backgroundPosition: '80% 10%',
-        backgroundSize: '930px',
+        backgroundPosition: '70% 7%',
+        backgroundSize: '90% auto',
       },
       class: 'contact-component',
       filter: 'invert(1) contrast(1.3) brightness(70%)',
@@ -177,8 +195,8 @@ function App() {
       image: '4.jpg',
       component: MoreComponent,
       style: {
-        backgroundPosition: '-300% 48%',
-        backgroundSize: '900px',
+        backgroundPosition: '10% 50%',
+        backgroundSize: '90% auto',
       },
     },
   ];
@@ -201,19 +219,26 @@ function App() {
             {LINK_ITEMS.map((item) => (
               <div
                 key={item.label}
-                className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-display text-white h-48 md:h-full relative`}
+                className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-display text-white h-48 md:h-full relative overflow-hidden`}
                 tabIndex={0}
                 role="button"
                 aria-label={`Navigate to ${item.label} section`}
+                onMouseEnter={() => setHoveredItem(item.label)}
+                onMouseLeave={() => setHoveredItem(null)}
+                onMouseMove={handleMouseMove}
               >
                 {/* Background image with filter */}
                 <div
-                  className="link-item-background absolute inset-0 bg-no-repeat bg-black brand-filter"
+                  className="link-item-background absolute inset-0 bg-no-repeat bg-black brand-filter transition-transform duration-200 ease-out will-change-transform"
                   style={
                     {
                       ...item.style,
                       backgroundImage: `url(${BASE_URL}img/${item.image})`,
                       '--individual-filter': item.filter || 'brightness(100%)',
+                      transform:
+                        hoveredItem === item.label
+                          ? `scale(1.3) translate(${mousePos.x * -10}px, ${mousePos.y * -10}px)`
+                          : 'scale(1.2)',
                     } as React.CSSProperties
                   }
                 />
@@ -251,12 +276,12 @@ function App() {
                   href="https://open.spotify.com/track/2hs3fQeRjCfG8CpPXOnS3I?si=dd1f3863b89e406c"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block"
+                  className="block transition-transform duration-300 hover:scale-105"
                 >
                   <img
                     src={`${BASE_URL}/img/album_covers/fsqs-cover.jpg`}
                     alt="Album Cover for Frail Things"
-                    className="block mx-auto w-64 md:w-96 border-8 border-gray-300 border-double hover:border-gray-400 transition-colors duration-300"
+                    className="block mx-auto w-64 md:w-96 border-8 border-gray-300 border-double hover:border-gray-400 transition-all duration-300 hover:shadow-2xl"
                   />
                 </a>
               </div>
