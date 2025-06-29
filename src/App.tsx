@@ -247,7 +247,7 @@ function App() {
             {LINK_ITEMS.map((item) => (
               <div
                 key={item.label}
-                className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-display text-white h-48 md:h-full relative overflow-hidden`}
+                className={`${item.class ?? ''} link-item flex object-cover justify-center items-center font-display text-white h-42 md:h-full relative overflow-hidden`}
                 tabIndex={0}
                 role="button"
                 aria-label={`Navigate to ${item.label} section`}
