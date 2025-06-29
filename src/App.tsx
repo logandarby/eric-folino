@@ -308,13 +308,13 @@ function App() {
 
               <div className="spotlight_project mb-6">
                 <a
-                  href="https://open.spotify.com/track/2hs3fQeRjCfG8CpPXOnS3I?si=dd1f3863b89e406c"
+                  href="https://open.spotify.com/album/0soacY8sJH7jiRBRiEght1?si=_I8hn5T2RRugMNNLZzB_rA"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block transition-transform duration-300 hover:scale-105"
                 >
                   <img
-                    src={`${BASE_URL}/img/album_covers/fsqs-cover.jpg`}
+                    src={`${BASE_URL}/img/album_covers/latest-release.jpg`}
                     alt="Album Cover for Frail Things"
                     className="block mx-auto w-64 md:w-96 border-8 border-gray-300 border-double hover:border-gray-400 transition-all duration-300 hover:shadow-2xl"
                     loading="eager"

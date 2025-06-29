@@ -42,9 +42,9 @@
   border-bottom: none;
 }
 
-.link-item:not(:first-child) .link-item-label {
+/* .link-item:not(:first-child) .link-item-label {
   font-weight: normal;
-}
+} */
 
 .link-item:focus {
   outline: 3px solid #ffffff;
