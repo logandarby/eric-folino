@@ -201,7 +201,8 @@ function App() {
     `${BASE_URL}img/tex/paper-rip-h.png`,
     `${BASE_URL}img/tex/paper-rip-v.png`,
     `${BASE_URL}img/tex/spotlight-bg.jpg`,
-    `${BASE_URL}/img/album_covers/fsqs-cover.jpg`,
+    `${BASE_URL}img/album_covers/fsqs-cover.jpg`,
+    `${BASE_URL}img/album_covers/latest-release.jpg`,
   ];
 
   // Use our custom hook to preload images
@@ -314,7 +315,7 @@ function App() {
                   className="block transition-transform duration-300 hover:scale-105"
                 >
                   <img
-                    src={`${BASE_URL}/img/album_covers/latest-release.jpg`}
+                    src={`${BASE_URL}img/album_covers/latest-release.jpg`}
                     alt="Album Cover for Frail Things"
                     className="block mx-auto w-64 md:w-96 border-8 border-gray-300 border-double hover:border-gray-400 transition-all duration-300 hover:shadow-2xl"
                     loading="eager"
