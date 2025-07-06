@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://logandarbz.github.io/eric-folino/sitemap.xml 
+Sitemap: https://ericfolino.com/sitemap.xml 
