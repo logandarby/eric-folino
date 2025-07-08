@@ -108,11 +108,11 @@ const HomePage = () => {
         <div className="max-w-md mx-auto space-y-4">
           <form
             method="post"
-            action="https://sendfox.com/form/1wpy8j/1wd0r6"
+            action="https://sendfox.com/form/1wpy8j/1vderz"
             className="sendfox-form"
             id="1vderz"
             data-async="true"
-            data-recaptcha="true"
+            data-recaptcha="false"
           >
             <p>
               <label
@@ -164,7 +164,7 @@ const HomePage = () => {
                 type="submit"
                 className="w-full mt-5 px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
               >
-                Submit
+                join
               </button>
             </p>
           </form>
