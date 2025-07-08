@@ -17,6 +17,13 @@
   text-transform: uppercase;
 }
 
+.font-display-2 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 125;
+  text-transform: lowercase;
+}
+
 .font-h2 {
   font-family: 'Archivo', sans-serif;
   font-weight: bold;
