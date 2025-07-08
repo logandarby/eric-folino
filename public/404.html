@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Eric Folino</title>
+    <script>
+      // Store the current path and redirect to index.html
+      sessionStorage.setItem(
+        'redirectPath',
+        window.location.pathname + window.location.search
+      );
+      window.location.replace('/');
+    </script>
+  </head>
+  <body>
+    <div>Redirecting...</div>
+  </body>
+</html>
