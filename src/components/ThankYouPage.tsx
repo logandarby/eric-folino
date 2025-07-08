@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+
 const ThankYouPage = () => {
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center px-4 backdrop-blur-2xl">
@@ -19,13 +21,30 @@ const ThankYouPage = () => {
 
         {/* Thank you content */}
         <div className="relative z-10 space-y-6">
-          <h1 className="text-3xl lg:text-5xl font-display-2 text-yellow-50 mb-4">
-            thank you
+          <h1 className="text-3xl lg:text-5xl font-display text-yellow-50 mb-4">
+            THANK YOU!
           </h1>
 
           <p className="text-lg lg:text-xl font-courier text-yellow-50 mb-6">
-            we'll be in touch soon.
+            We've received your submission and will be in touch soon.
           </p>
+
+          <div
+            className="w-48 lg:w-64 h-0.5 bg-yellow-50 mx-auto my-6"
+            role="separator"
+            aria-orientation="horizontal"
+          />
+
+          <p className="text-base lg:text-lg font-courier text-yellow-50/80 mb-8">
+            Keep an eye on your inbox for updates from Eric Folino.
+          </p>
+
+          <Link
+            to="/"
+            className="inline-block px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-yellow-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
+          >
+            Back to Home
+          </Link>
         </div>
       </div>
     </div>
