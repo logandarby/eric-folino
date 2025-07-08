@@ -1,5 +1,3 @@
-import './App.css';
-
 // Listen Component with social media links
 const ListenComponent = (
   <div className="flex justify-center items-center">
@@ -70,7 +68,7 @@ const ListenComponent = (
   </div>
 );
 
-function App() {
+const HomePage = () => {
   return (
     <div className="fixed inset-0 bg-black lg:flex items-center justify-center lg:justify-around px-4 lg:px-15 backdrop-blur-2xl flex-col lg:flex-row gap-6 lg:gap-10 overflow-y-scroll lg:overflow-auto">
       <div className="lgp-5 flex-1 min-h-[80%] lg:h-auto text-yellow-50 text-center relative flex flex-col justify-center items-center w-auto lg:max-w-[60%]">
@@ -113,39 +111,39 @@ function App() {
           data-async="true"
           data-recaptcha="true"
         >
-          <div className="flex flex-col">
+          <p>
             <label
               htmlFor="sendfox_form_name"
-              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 text-left"
+              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 block"
             >
-              First Name
+              First Name:{' '}
             </label>
             <input
               type="text"
               id="sendfox_form_name"
-              placeholder="Enter your first name"
+              placeholder="First Name"
               name="first_name"
               required
               className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
             />
-          </div>
-          <div className="flex flex-col">
+          </p>
+          <p>
             <label
               htmlFor="sendfox_form_email"
-              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 text-left"
+              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 block"
             >
-              Email
+              Email:{' '}
             </label>
             <input
               type="email"
               id="sendfox_form_email"
-              placeholder="Enter your email address"
+              placeholder="Email"
               name="email"
               required
               className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
             />
-          </div>
-          {/* <!-- no botz please --> */}
+          </p>
+          {/* no botz please */}
           <div
             style={{ position: 'absolute', left: '-5000px' }}
             aria-hidden="true"
@@ -158,14 +156,14 @@ function App() {
               autoComplete="off"
             />
           </div>
-          <div className="pt-2">
+          <p>
             <button
               type="submit"
               className="w-full px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
             >
               Submit
             </button>
-          </div>
+          </p>
         </form>
         <script
           src="https://cdn.sendfox.com/js/form.js"
@@ -175,6 +173,6 @@ function App() {
       {/* END OF SIGNUP FORM */}
     </div>
   );
-}
+};
 
-export default App;
+export default HomePage;
