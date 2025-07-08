@@ -108,7 +108,7 @@ const HomePage = () => {
         <div className="max-w-md mx-auto space-y-4">
           <form
             method="post"
-            action="https://sendfox.com/form/1wpy8j/1vderz"
+            action="https://sendfox.com/form/1wpy8j/1wd0r6"
             className="sendfox-form"
             id="1vderz"
             data-async="true"
