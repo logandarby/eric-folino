@@ -1,4 +1,5 @@
 import './App.css';
+import { useState } from 'react';
 
 // Listen Component with social media links
 const ListenComponent = (
@@ -71,9 +72,37 @@ const ListenComponent = (
 );
 
 function App() {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Create a hidden iframe to submit the form without page reload
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'submitFrame';
+    document.body.appendChild(iframe);
+
+    // Set the form target to the iframe
+    const form = e.currentTarget;
+    const originalTarget = form.target;
+    form.target = 'submitFrame';
+
+    // Submit the form normally (SendFox will handle it)
+    form.submit();
+
+    // Show thank you message after a short delay
+    setTimeout(() => {
+      setIsSubmitted(true);
+      // Clean up
+      document.body.removeChild(iframe);
+      form.target = originalTarget;
+    }, 1000);
+  };
+
   return (
     <div className="fixed inset-0 bg-black lg:flex items-center justify-center lg:justify-around px-4 lg:px-15 backdrop-blur-2xl flex-col lg:flex-row gap-6 lg:gap-10 overflow-y-scroll lg:overflow-auto">
-      <div className="lgp-5 flex-1 min-h-[80%] lg:h-auto text-yellow-50 text-center relative flex flex-col justify-center items-center">
+      <div className="lgp-5 flex-1 min-h-[80%] lg:h-auto text-yellow-50 text-center relative flex flex-col justify-center items-center w-auto lg:max-w-[60%]">
         <div
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-50 opacity-10 -z-1 w-72 h-72 lg:w-[500px] lg:h-[500px]"
           style={{
@@ -102,75 +131,89 @@ function App() {
       </div>
       {/* SIGNUP FORM */}
       <div className="p-5 flex-1 lg:flex-none flex flex-col justify-center lg:mb-0 mb-20">
-        <h3 className="text-lg lg:text-2xl font-display-2 mb-6 text-yellow-50 text-center">
-          sign up to see what's next
-        </h3>
-        <form
-          method="post"
-          action="https://sendfox.com/form/1wpy8j/1vderz"
-          className="sendfox-form max-w-md mx-auto space-y-4"
-          id="1vderz"
-          data-async="true"
-          data-recaptcha="true"
-        >
-          <div className="flex flex-col">
-            <label
-              htmlFor="sendfox_form_name"
-              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 text-left"
+        {!isSubmitted ? (
+          <>
+            <h3 className="text-lg lg:text-2xl font-display-2 mb-6 text-yellow-50 text-center">
+              sign up to see what's next
+            </h3>
+            <form
+              method="post"
+              action="https://sendfox.com/form/1wpy8j/1vderz"
+              className="sendfox-form max-w-md mx-auto space-y-4"
+              id="1vderz"
+              data-async="true"
+              data-recaptcha="true"
+              onSubmit={handleSubmit}
             >
-              First Name
-            </label>
-            <input
-              type="text"
-              id="sendfox_form_name"
-              placeholder="Enter your first name"
-              name="first_name"
-              required
-              className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
-            />
+              <div className="flex flex-col">
+                <label
+                  htmlFor="sendfox_form_name"
+                  className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 text-left"
+                >
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="sendfox_form_name"
+                  placeholder="Enter your first name"
+                  name="first_name"
+                  required
+                  className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="sendfox_form_email"
+                  className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 text-left"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="sendfox_form_email"
+                  placeholder="Enter your email address"
+                  name="email"
+                  required
+                  className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
+                />
+              </div>
+              {/* <!-- no botz please --> */}
+              <div
+                style={{ position: 'absolute', left: '-5000px' }}
+                aria-hidden="true"
+              >
+                <input
+                  type="text"
+                  name="a_password"
+                  tabIndex={-1}
+                  value=""
+                  autoComplete="off"
+                />
+              </div>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="w-full px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+            <script
+              src="https://cdn.sendfox.com/js/form.js"
+              charSet="utf-8"
+            ></script>
+          </>
+        ) : (
+          <div className="max-w-md mx-auto text-center">
+            <h3 className="text-lg lg:text-2xl font-display-2 mb-6 text-yellow-50">
+              Thank you!
+            </h3>
+            <p className="text-yellow-50 font-courier text-base lg:text-lg">
+              We'll be in touch soon.
+            </p>
           </div>
-          <div className="flex flex-col">
-            <label
-              htmlFor="sendfox_form_email"
-              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 text-left"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="sendfox_form_email"
-              placeholder="Enter your email address"
-              name="email"
-              required
-              className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
-            />
-          </div>
-          {/* <!-- no botz please --> */}
-          <div
-            style={{ position: 'absolute', left: '-5000px' }}
-            aria-hidden="true"
-          >
-            <input
-              type="text"
-              name="a_password"
-              tabIndex={-1}
-              value=""
-              autoComplete="off"
-            />
-          </div>
-          <div className="pt-2">
-            <button
-              type="submit"
-              className="w-full px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-        <script
-          src="https://cdn.sendfox.com/js/form.js"
-          charSet="utf-8"
-        ></script>
+        )}
       </div>
       {/* END OF SIGNUP FORM */}
     </div>
