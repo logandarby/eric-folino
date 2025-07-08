@@ -1,0 +1,4 @@
+.sendfox-form {
+    @apply flex flex-col;
+    gap: 1rem;
+}

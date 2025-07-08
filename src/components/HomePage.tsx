@@ -1,3 +1,5 @@
+import './HomePage.css';
+
 // Listen Component with social media links
 const ListenComponent = (
   <div className="flex justify-center items-center">
@@ -103,72 +105,70 @@ const HomePage = () => {
         <h3 className="text-lg lg:text-2xl font-display-2 mb-6 text-yellow-50 text-center">
           sign up to see what's next
         </h3>
-        <form
-          method="post"
-          action="https://sendfox.com/form/1wpy8j/1vderz"
-          className="sendfox-form max-w-md mx-auto space-y-4"
-          id="1vderz"
-          data-async="true"
-          data-recaptcha="true"
-        >
-          <p>
-            <label
-              htmlFor="sendfox_form_name"
-              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 block"
-            >
-              First Name:{' '}
-            </label>
-            <input
-              type="text"
-              id="sendfox_form_name"
-              placeholder="First Name"
-              name="first_name"
-              required
-              className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
-            />
-          </p>
-          <p>
-            <label
-              htmlFor="sendfox_form_email"
-              className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 block"
-            >
-              Email:{' '}
-            </label>
-            <input
-              type="email"
-              id="sendfox_form_email"
-              placeholder="Email"
-              name="email"
-              required
-              className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
-            />
-          </p>
-          {/* no botz please */}
-          <div
-            style={{ position: 'absolute', left: '-5000px' }}
-            aria-hidden="true"
+        <div className="max-w-md mx-auto space-y-4">
+          <form
+            method="post"
+            action="https://sendfox.com/form/1wpy8j/1vderz"
+            className="sendfox-form"
+            id="1vderz"
+            data-async="true"
+            data-recaptcha="true"
           >
-            <input
-              type="text"
-              name="a_password"
-              tabIndex={-1}
-              value=""
-              autoComplete="off"
-            />
-          </div>
-          <p>
-            <button
-              type="submit"
-              className="w-full px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
+            <p>
+              <label
+                htmlFor="sendfox_form_name"
+                className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 block"
+              >
+                First Name:{' '}
+              </label>
+              <input
+                type="text"
+                id="sendfox_form_name"
+                placeholder="First Name"
+                name="first_name"
+                required
+                className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
+              />
+            </p>
+            <p>
+              <label
+                htmlFor="sendfox_form_email"
+                className="text-yellow-50 text-sm lg:text-base font-courier uppercase mb-2 block"
+              >
+                Email:{' '}
+              </label>
+              <input
+                type="email"
+                id="sendfox_form_email"
+                placeholder="Email"
+                name="email"
+                required
+                className="w-full px-4 py-3 bg-transparent border-2 border-yellow-50 text-yellow-50 placeholder-yellow-50/50 focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-yellow-300/20 focus:bg-yellow-50 focus:text-gray-900 focus:placeholder-gray-500 transition-all duration-300 font-courier"
+              />
+            </p>
+            {/* no botz please */}
+            <div
+              style={{ position: 'absolute', left: '-5000px' }}
+              aria-hidden="true"
             >
-              Submit
-            </button>
-          </p>
-        </form>
-        <script
-          src="https://cdn.sendfox.com/js/form.js"
-          charSet="utf-8"
-        ></script>
+              <input
+                type="text"
+                name="a_password"
+                tabIndex={-1}
+                value=""
+                autoComplete="off"
+              />
+            </div>
+            <p>
+              <button
+                type="submit"
+                className="w-full mt-5 px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
+              >
+                Submit
+              </button>
+            </p>
+          </form>
+        </div>
       </div>
       {/* END OF SIGNUP FORM */}
     </div>
