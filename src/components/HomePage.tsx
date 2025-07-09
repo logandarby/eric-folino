@@ -166,7 +166,7 @@ const HomePage = memo(() => {
             <p>
               <button
                 type="submit"
-                className="w-full mt-5 px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
+                className="w-full mt-5 px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:scale-100 disabled:active:scale-100"
               >
                 join
               </button>

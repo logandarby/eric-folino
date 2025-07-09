@@ -19,6 +19,9 @@ export const useSendFox = () => {
     // Only load once
     if (window.SENDFOX_FORM_LOADED) return;
 
+    // Set flag BEFORE loading script to prevent original script from initializing
+    window.SENDFOX_FORM_LOADED = true;
+
     const script = document.createElement('script');
     script.src = 'https://cdn.sendfox.com/js/form.js';
     script.async = true;
@@ -29,7 +32,7 @@ export const useSendFox = () => {
         const forms = document.getElementsByClassName('sendfox-form');
         let recaptchaLoaded = false;
 
-        // Process each form (copied from deobfuscated script)
+        // Process each form (copied from form.js)
         for (let i = 0; i < forms.length; i++) {
           const form = forms[i] as HTMLFormElement;
 
@@ -82,77 +85,20 @@ export const useSendFox = () => {
 
         // Form submission handler
         const submitForm = function (form: HTMLFormElement) {
-          if (form.dataset.async === 'true') {
-            // Remove previous messages
-            const existingMessage = form.querySelector('.sendfox-message');
-            if (existingMessage) {
-              existingMessage.remove();
-            }
-
-            // Disable submit button
-            const submitButton = form.querySelector(
-              'button'
-            ) as HTMLButtonElement;
-            if (submitButton) {
-              submitButton.disabled = true;
-            }
-
-            // Create AJAX request
-            const xhr = new XMLHttpRequest();
-
-            // Handle response
-            xhr.addEventListener('load', function (event) {
-              const response = JSON.parse(xhr.responseText);
-              const xhr2 = event.currentTarget as XMLHttpRequest;
-
-              if (xhr2?.status === 422) {
-                // Validation error
-                if (Object.prototype.hasOwnProperty.call(response, 'errors')) {
-                  const errorMessage = document.createElement('p');
-                  errorMessage.className = 'sendfox-message error';
-                  errorMessage.innerHTML = response.errors[0];
-                  form.appendChild(errorMessage);
-                }
-              } else if (xhr2?.status === 200) {
-                // Success
-                if (response.redirect_url) {
-                  window.location.href = response.redirect_url;
-                } else {
-                  const successMessage = document.createElement('p');
-                  successMessage.className = 'sendfox-message success';
-                  successMessage.innerHTML =
-                    'Thanks, your signup was successful!';
-                  form.appendChild(successMessage);
-                  form.reset();
-                }
-              }
-
-              if (submitButton) {
-                submitButton.disabled = false;
-              }
-            });
-
-            // Handle error
-            xhr.addEventListener('error', function () {
-              console.error('Error submitting form.');
-              if (submitButton) {
-                submitButton.disabled = false;
-              }
-            });
-
-            // Send request
-            xhr.open('POST', form.action);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.send(new FormData(form));
-          } else {
-            // Standard form submission
-            form.submit();
+          // Disable submit button while loading
+          const submitButton = form.querySelector(
+            'button'
+          ) as HTMLButtonElement;
+          if (submitButton) {
+            submitButton.disabled = true;
           }
+
+          // Standard form submission (page will redirect)
+          form.submit();
         };
       }, 100); // Small delay to ensure DOM is ready
     };
     document.body.appendChild(script);
-    window.SENDFOX_FORM_LOADED = true;
 
     // Optional cleanup: remove script on unmount
     return () => {
