@@ -1,4 +1,6 @@
+import { memo } from 'react';
 import './HomePage.css';
+import { useSendFox } from '../hooks/useSendFox';
 
 // Listen Component with social media links
 const ListenComponent = (
@@ -70,7 +72,9 @@ const ListenComponent = (
   </div>
 );
 
-const HomePage = () => {
+const HomePage = memo(() => {
+  useSendFox();
+
   return (
     <div className="fixed inset-0 bg-black lg:flex items-center justify-center lg:justify-around px-4 lg:px-15 backdrop-blur-2xl flex-col lg:flex-row gap-6 lg:gap-10 overflow-y-scroll lg:overflow-auto">
       <div className="lgp-5 flex-1 min-h-[80%] lg:h-auto text-yellow-50 text-center relative flex flex-col justify-center items-center w-auto lg:max-w-[60%]">
@@ -112,7 +116,7 @@ const HomePage = () => {
             className="sendfox-form"
             id="1vderz"
             data-async="true"
-            data-recaptcha="false"
+            data-recaptcha="true"
           >
             <p>
               <label
@@ -173,6 +177,6 @@ const HomePage = () => {
       {/* END OF SIGNUP FORM */}
     </div>
   );
-};
+});
 
 export default HomePage;
