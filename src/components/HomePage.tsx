@@ -1,4 +1,6 @@
+import { memo } from 'react';
 import './HomePage.css';
+import { useSendFox } from '../hooks/useSendFox';
 
 // Listen Component with social media links
 const ListenComponent = (
@@ -70,7 +72,9 @@ const ListenComponent = (
   </div>
 );
 
-const HomePage = () => {
+const HomePage = memo(() => {
+  useSendFox();
+
   return (
     <div className="fixed inset-0 bg-black lg:flex items-center justify-center lg:justify-around px-4 lg:px-15 backdrop-blur-2xl flex-col lg:flex-row gap-6 lg:gap-10 overflow-y-scroll lg:overflow-auto">
       <div className="lgp-5 flex-1 min-h-[80%] lg:h-auto text-yellow-50 text-center relative flex flex-col justify-center items-center w-auto lg:max-w-[60%]">
@@ -112,7 +116,7 @@ const HomePage = () => {
             className="sendfox-form"
             id="1vderz"
             data-async="true"
-            data-recaptcha="false"
+            data-recaptcha="true"
           >
             <p>
               <label
@@ -162,7 +166,7 @@ const HomePage = () => {
             <p>
               <button
                 type="submit"
-                className="w-full mt-5 px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105"
+                className="w-full mt-5 px-8 py-3 bg-yellow-50 text-black font-courier uppercase font-bold hover:brightness-75 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:hover:scale-100 disabled:active:scale-100"
               >
                 join
               </button>
@@ -173,6 +177,6 @@ const HomePage = () => {
       {/* END OF SIGNUP FORM */}
     </div>
   );
-};
+});
 
 export default HomePage;

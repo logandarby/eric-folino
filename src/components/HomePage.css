@@ -1,4 +1,9 @@
 .sendfox-form {
-    @apply flex flex-col;
-    gap: 1rem;
+  @apply flex flex-col;
+  gap: 1rem;
+}
+
+/* Hide reCAPTCHA badge for invisible reCAPTCHA */
+.grecaptcha-badge {
+  visibility: hidden;
 }
