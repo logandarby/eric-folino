@@ -14,6 +14,35 @@ declare global {
   }
 }
 
+/**
+ * Hook to integrate SendFox forms with invisible reCAPTCHA in React applications.
+ *
+ * Solves the timing issue where SendFox's script initializes before React renders the form.
+ * Automatically loads SendFox script, sets up reCAPTCHA, and handles form submission.
+ *
+ * Usage:
+ * ```tsx
+ * function MyComponent() {
+ *   useSendFox();
+ *
+ *   return (
+ *     <form
+ *       className="sendfox-form"
+ *       action="https://sendfox.com/form/..."
+ *       method="post"
+ *       data-recaptcha="true"
+ *     >
+ *       // your form fields
+ *     </form>
+ *   );
+ * }
+ * ```
+ *
+ * Requirements:
+ * - Form must have className="sendfox-form"
+ * - Form must have data-recaptcha="true" for reCAPTCHA protection
+ * - Form action should point to your SendFox endpoint
+ */
 export const useSendFox = () => {
   useEffect(() => {
     // Only load once

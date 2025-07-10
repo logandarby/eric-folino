@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,100..900&display=swap');
 @import 'tailwindcss';
 
@@ -8,6 +8,10 @@
 
 .font-courier {
   font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
 }
 
 .font-display {
@@ -45,7 +49,7 @@ body {
 
 /* Reset Styles */
 a {
-  text-decoration: none;
+  /* text-decoration: none; */
   color: inherit;
 }
 
