@@ -92,8 +92,14 @@ const HomePage = memo(() => {
           }}
         />
         <h2 className="text-xl lg:text-3xl font-display mb-4 relative z-10 max-w-sm lg:max-w-3xl">
-          ERIC FOLINO WILL BE BACK WITH YOU SHORTLY
+          ERIC FOLINO IS IN BETWEEN SETS, BUT THE SHOW'S NOT OVER
         </h2>
+        <p className="font-syne text-sm">
+          Want us on your stage? Drop us a line at{' '}
+          <a className="underline" href="mailto:info@ericfolino.com">
+            info@ericfolino.com
+          </a>
+        </p>
         <p className="text-lg lg:text-xl font-courier uppercase relative z-10"></p>
         <div
           className="w-48 lg:w-64 h-0.5 bg-yellow-50 mx-auto mt-4 lg:mt-6 relative z-10"
@@ -106,9 +112,15 @@ const HomePage = memo(() => {
       </div>
       {/* SIGNUP FORM */}
       <div className="p-5 flex-1 lg:flex-none flex flex-col justify-center lg:mb-0 mb-20">
-        <h3 className="text-lg lg:text-2xl font-display-2 mb-6 text-yellow-50 text-center">
-          sign up to see what's next
-        </h3>
+        <div className="mb-6">
+          <h3 className="text-lg lg:text-2xl font-display-2 mb-2 text-yellow-50 text-center">
+            get backstage access
+          </h3>
+          <p className="font-syne text-center text-yellow-50 text-sm">
+            Join our mailing list to be the first to know when and where we're
+            performing
+          </p>
+        </div>
         <div className="max-w-md mx-auto space-y-4">
           <form
             method="post"
