@@ -90,8 +90,47 @@ function head({ page }: TemplateContext): string {
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     <script>${layoutScript}</script>
-    <style>:root{--dialog-max-w:${d.maxWidth}px;--dialog-margin:${d.viewportMargin}px;--dim-opacity:${d.dimOpacity};--dim-blur:${d.blurPx}px;--bg-zoom:${siteConfig.background.landscapeZoom};--bg-focus:${siteConfig.background.landscapeFocus};--title-tilt:${siteConfig.titleTiltDeg}deg}</style>
+    <style>:root{--dialog-max-w:${d.maxWidth}px;--dialog-margin:${d.viewportMargin}px;--dim-opacity:${d.dimOpacity};--dim-blur:${d.blurPx}px;--bg-zoom:${siteConfig.background.landscapeZoom};--bg-focus:${siteConfig.background.landscapeFocus};${focusVars(siteConfig.background.landscapeFocus)}--title-tilt:${siteConfig.titleTiltDeg}deg}${textEffectStyles()}</style>
     ${jsonLd}`;
+}
+
+/**
+ * Text effect tuning as CSS variables (used by text-effects.css), plus the
+ * rainbow keyframes, which list the palette backwards so colours travel
+ * forward through the letters like the title's.
+ */
+const FX_ROOM_SLACK_EM = 0.1;
+
+function textEffectStyles(): string {
+  const { wave, float, shake } = siteConfig.animation.textEffects;
+  const { palette } = siteConfig;
+  const interval = siteConfig.animation.titleColorCycleIntervalMs;
+  // Room around dialog text for letters to move into without scrolling:
+  // the largest movement, plus slack for {float}'s sway (rotating a letter
+  // lifts its corners) and sub-pixel rounding. Even a fraction of a pixel
+  // of overflow can make a scrollbar flicker on and off.
+  const room =
+    Math.max(wave.amplitudeEm, float.amplitudeEm, shake.amplitudeEm) +
+    FX_ROOM_SLACK_EM;
+  const vars = cssVars({
+    'wave-period': `${wave.periodMs}ms`,
+    'wave-amp': `${wave.amplitudeEm}em`,
+    'wave-stagger': `${wave.staggerMs}ms`,
+    'float-period': `${float.periodMs}ms`,
+    'float-amp': `${float.amplitudeEm}em`,
+    'float-stagger': `${float.staggerMs}ms`,
+    'shake-interval': `${shake.intervalMs}ms`,
+    'shake-amp': `${shake.amplitudeEm}em`,
+    'rainbow-cycle': `${palette.length * interval}ms`,
+    'fx-room': `${room}em`,
+  });
+  const frames = palette
+    .map((_, k) => {
+      const color = palette[(palette.length - k) % palette.length];
+      return `${((k / palette.length) * 100).toFixed(3)}%{color:${color}}`;
+    })
+    .join('');
+  return `:root{${vars}}@keyframes text-rainbow{${frames}100%{color:${palette[0]}}}`;
 }
 
 // background ----------------------------------------------------------------
@@ -99,18 +138,35 @@ function head({ page }: TemplateContext): string {
 function background({ root }: TemplateContext): string {
   const dir = resolve(root, BG_DIR);
   const files = readdirSync(dir);
+  const dataUri = (name: string) =>
+    `data:image/webp;base64,${readFileSync(resolve(dir, name)).toString('base64')}`;
+  const { portraitQuery } = siteConfig.background;
+
+  // Tiny blurred placeholders show until the real image arrives.
+  return `
+    <style>.background{background-image:url(${dataUri('landscape-placeholder.webp')})}@media ${portraitQuery}{.background{background-image:url(${dataUri('portrait-placeholder.webp')})}}</style>
+    <picture class="background" data-background aria-hidden="true">
+      ${bgSources(files, '').join('\n      ')}
+      <img src="/${BG_DIR}/landscape-fallback.jpg" alt="" fetchpriority="high" decoding="async" />
+    </picture>
+    <picture class="lights-off" data-lights-off aria-hidden="true">
+      ${bgSources(files, 'lightsoff-').join('\n      ')}
+      <img src="/${BG_DIR}/lightsoff-landscape-1280.webp" alt="" fetchpriority="low" decoding="async" />
+    </picture>`;
+}
+
+/** Portrait and landscape <source>s for the images named `${prefix}${crop}-${width}.${ext}`. */
+function bgSources(files: string[], prefix: string): string[] {
+  const { portraitQuery, landscapeZoom } = siteConfig.background;
   const srcset = (crop: string, ext: string) =>
     files
-      .map((f) => new RegExp(`^${crop}-(\\d+)\\.${ext}$`).exec(f))
+      .map((f) => new RegExp(`^${prefix}${crop}-(\\d+)\\.${ext}$`).exec(f))
       .filter((m): m is RegExpExecArray => m !== null)
       .sort((a, b) => Number(a[1]) - Number(b[1]))
       .map((m) => `/${BG_DIR}/${m[0]} ${m[1]}w`)
       .join(', ');
-  const dataUri = (name: string) =>
-    `data:image/webp;base64,${readFileSync(resolve(dir, name)).toString('base64')}`;
-  const { portraitQuery, landscapeZoom } = siteConfig.background;
 
-  const sources = (['portrait', 'landscape'] as const).flatMap((crop) =>
+  return (['portrait', 'landscape'] as const).flatMap((crop) =>
     (['avif', 'webp'] as const).map(
       (ext) =>
         `<source type="image/${ext}" sizes="${crop === 'portrait' ? 100 : Math.ceil(landscapeZoom * 100)}vw" srcset="${srcset(crop, ext)}"${
@@ -118,14 +174,6 @@ function background({ root }: TemplateContext): string {
         } />`
     )
   );
-
-  // Tiny blurred placeholders show until the real image arrives.
-  return `
-    <style>.background{background-image:url(${dataUri('landscape-placeholder.webp')})}@media ${portraitQuery}{.background{background-image:url(${dataUri('portrait-placeholder.webp')})}}</style>
-    <picture class="background" data-background aria-hidden="true">
-      ${sources.join('\n      ')}
-      <img src="/${BG_DIR}/landscape-fallback.jpg" alt="" fetchpriority="high" decoding="async" />
-    </picture>`;
 }
 
 // hero ----------------------------------------------------------------------
@@ -152,6 +200,7 @@ function hero({ root, page }: TemplateContext): string {
         ${nav(page)}
         ${blobs}
       </div>
+      ${page.blobs ? screenHotspot(root) : ''}
     </div>`;
 }
 
@@ -201,9 +250,38 @@ function blobButton(root: string, index: number): string {
     )
   );
   return `
-        <button type="button" class="blob placed" style="${vars};--blob-color:${esc(fill)}" data-blob="${index}" data-dialog-avoid aria-label="${esc(blob.label)}" aria-haspopup="dialog">
+        <button type="button" class="blob placed" style="${vars};--blob-color:${esc(fill)}" data-blob="${index}" data-dialog-avoid="soft" aria-label="${esc(blob.label)}" aria-haspopup="dialog">
           <svg class="blob__svg" viewBox="${esc(viewBox)}" aria-hidden="true" focusable="false"><path d="${esc(roundedPathData(blobShape(d, blobMinPointSpacing).polygon, blobCornerRadius))}" data-shape="${esc(d)}" fill="${esc(fill)}" /></svg>
         </button>`;
+}
+
+/**
+ * An invisible button over the bus stop screen. It sits in a layer framed
+ * exactly like the background photo (see background.css), at the screen's
+ * position in whichever crop is showing.
+ */
+function screenHotspot(root: string): string {
+  const photo = JSON.parse(
+    readFileSync(resolve(root, BG_DIR, 'photo.json'), 'utf8')
+  ) as Record<'landscape' | 'portrait', PhotoCrop>;
+  const vars = ({ aspect, screen }: PhotoCrop) =>
+    `--photo-ar:${aspect};--spot-x:${screen.x}%;--spot-y:${screen.y}%;--spot-w:${screen.width}%;--spot-h:${screen.height}%`;
+  const { portraitQuery } = siteConfig.background;
+  return `
+      <style>.hotspots{${vars(photo.landscape)}}@media ${portraitQuery}{.hotspots{${vars(photo.portrait)}}}</style>
+      <div class="hotspots" data-hotspots>
+        <div class="hotspots__frame">
+          <div class="hotspots__photo">
+            <button type="button" class="hotspot" data-screen aria-label="${esc(siteConfig.screen.label)}" aria-haspopup="dialog"></button>
+          </div>
+        </div>
+      </div>`;
+}
+
+interface PhotoCrop {
+  aspect: number;
+  /** Percentages of the crop. */
+  screen: { x: number; y: number; width: number; height: number };
 }
 
 // helpers -------------------------------------------------------------------
@@ -222,6 +300,15 @@ function placementVars(get: (layout: LayoutName) => TextPlacement): string {
       })
     )
   );
+}
+
+/** "85% 97%" → "--bg-fx:0.85;--bg-fy:0.97", for maths in calc(). */
+function focusVars(focus: string): string {
+  const [x, y] = focus.split(/\s+/).map((v) => parseFloat(v) / 100);
+  if (Number.isNaN(x) || Number.isNaN(y)) {
+    throw new Error(`landscapeFocus must be two percentages, got "${focus}"`);
+  }
+  return `--bg-fx:${x};--bg-fy:${y};`;
 }
 
 const cssVars = (vars: Record<string, string>) =>

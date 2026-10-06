@@ -1,13 +1,14 @@
 import { h } from '../core/component.ts';
 import type { DialogContent } from '../site.config.ts';
-import { Typewriter, typeable } from './typewriter.ts';
+import { TextEngine, type TextEngineOptions } from '../text/text-engine.ts';
+import type { Typewriter } from '../text/typewriter.ts';
 
 export interface DialogViewOptions {
   /** Shows a close button. */
   closable: boolean;
   /** Announces as a modal dialog (page content is made inert while open). */
   modal: boolean;
-  typewriterCharMs: number;
+  text: TextEngineOptions;
 }
 
 let nextId = 0;
@@ -21,11 +22,16 @@ export class DialogView {
   readonly el: HTMLElement;
   readonly closeButton: HTMLButtonElement | null;
   readonly typewriter: Typewriter;
+  private readonly text: TextEngine;
 
   constructor(content: DialogContent, options: DialogViewOptions) {
+    this.text = new TextEngine(options.text);
+    const titleText = this.text.render(content.title);
+    const bodyTexts = content.body.map((block) => this.text.render(block.text));
+
     const titleId = `dialog-title-${++nextId}`;
     const title = h('h2', { class: 'dialog__title', id: titleId }, [
-      typeable(content.title),
+      titleText.fragment,
     ]);
 
     this.closeButton = options.closable
@@ -39,9 +45,9 @@ export class DialogView {
     const body = h(
       'div',
       { class: 'dialog__body' },
-      content.body.map((block) =>
+      content.body.map((block, i) =>
         h('p', { class: `dialog__block dialog__block--${block.kind}` }, [
-          typeable(block.text),
+          bodyTexts[i].fragment,
         ])
       )
     );
@@ -61,6 +67,12 @@ export class DialogView {
       [header, body]
     );
 
-    this.typewriter = new Typewriter(this.el, options.typewriterCharMs);
+    this.typewriter = this.text.typewriter([titleText, ...bodyTexts]);
+  }
+
+  /** Stops typing and any scripted text effects. */
+  dispose(): void {
+    this.typewriter.cancel();
+    this.text.dispose();
   }
 }

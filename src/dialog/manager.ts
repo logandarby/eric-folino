@@ -79,6 +79,10 @@ export class DialogManager {
     });
   }
 
+  get isOpen(): boolean {
+    return this.active !== null;
+  }
+
   isOpenFor(anchor: DialogAnchor): boolean {
     return this.active?.anchor === anchor;
   }
@@ -107,9 +111,14 @@ export class DialogManager {
     const view = new DialogView(options.content, {
       modal,
       closable,
-      typewriterCharMs: prefersReducedMotion()
-        ? 0
-        : siteConfig.animation.typewriterCharMs,
+      text: {
+        charMs: prefersReducedMotion()
+          ? 0
+          : siteConfig.animation.typewriterCharMs,
+        effects: siteConfig.animation.textEffects,
+        palette: siteConfig.palette,
+        rainbowIntervalMs: siteConfig.animation.titleColorCycleIntervalMs,
+      },
     });
     view.el.style.visibility = 'hidden';
     document.body.append(view.el);
@@ -137,7 +146,11 @@ export class DialogManager {
     const t = siteConfig.animation;
     if (modal) this.inertRoots.forEach((root) => (root.inert = true));
     const dimmed = modal
-      ? this.spotlight.show(options.anchor.element, duration(t.spotlightFadeMs))
+      ? this.spotlight.show(
+          options.anchor.element,
+          duration(t.spotlightFadeMs),
+          options.anchor.spotlight
+        )
       : Promise.resolve();
 
     await this.animateConnector(active, 'in', duration(t.connectorDrawMs));
@@ -218,8 +231,13 @@ export class DialogManager {
       gap: siteConfig.dialog.anchorGap,
       edgeInset: EDGE_INSET,
       sides: siteConfig.dialog.sidePreference,
-      avoid,
+      avoid: avoid.hard,
+      softAvoid: avoid.soft,
+      comfort:
+        Math.min(viewport.width, viewport.height) *
+        siteConfig.dialog.edgeComfort,
     });
+    if (active.modal) this.spotlight.reframe();
     view.el.style.left = `${box.x}px`;
     view.el.style.top = `${box.y}px`;
 
@@ -230,7 +248,7 @@ export class DialogManager {
         edgeInset: EDGE_INSET,
         minRun: MIN_RUN,
         clearance: CLEARANCE,
-        obstacles: avoid,
+        obstacles: [...avoid.hard, ...avoid.soft],
       }
     );
     this.connector.setAttribute(
@@ -251,7 +269,7 @@ export class DialogManager {
     if (!active) return;
     this.active = null;
     active.disposer.dispose();
-    active.view.typewriter.cancel();
+    active.view.dispose();
 
     const t = siteConfig.animation;
     await this.animateWindow(active, 'out', duration(t.dialogCloseMs));
@@ -343,10 +361,19 @@ export class DialogManager {
   }
 }
 
-function avoidRects(anchorEl: HTMLElement): Rect[] {
-  return $$(AVOID_SELECTOR)
-    .filter((el) => el !== anchorEl && !el.contains(anchorEl))
-    .map((el) => fromDOMRect(el.getBoundingClientRect()));
+/**
+ * Rects of `[data-dialog-avoid]` elements other than the anchor, split into
+ * hard ones (text) and soft ones (`="soft"`: fine to cover a little).
+ */
+function avoidRects(anchorEl: HTMLElement): { hard: Rect[]; soft: Rect[] } {
+  const hard: Rect[] = [];
+  const soft: Rect[] = [];
+  for (const el of $$(AVOID_SELECTOR)) {
+    if (el === anchorEl || el.contains(anchorEl)) continue;
+    const r = fromDOMRect(el.getBoundingClientRect());
+    (el.dataset.dialogAvoid === 'soft' ? soft : hard).push(r);
+  }
+  return { hard, soft };
 }
 
 const NON_SKIP_KEYS = new Set([

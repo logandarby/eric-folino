@@ -7,6 +7,17 @@
   backdrop-filter: blur(var(--dim-blur));
 }
 
+/* A soft hole around the target; Spotlight sets the --vignette-* vars. */
+.spotlight--vignette {
+  --vignette: radial-gradient(
+    var(--vignette-rx) var(--vignette-ry) at var(--vignette-x) var(--vignette-y),
+    #0000 var(--vignette-clear),
+    #000
+  );
+  -webkit-mask-image: var(--vignette);
+  mask-image: var(--vignette);
+}
+
 /* No frosted glass available: lean on a darker dim instead. */
 @supports not (
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
@@ -93,7 +104,12 @@
   opacity: 0.7;
 }
 
+/* The padding gives moving letters ({wave}, {shake}…) room on every side
+   without counting as overflow (which would add a scrollbar); the margin
+   cancels it out, so the text sits and wraps exactly as without it. */
 .dialog__body {
+  margin: calc(var(--fx-room) * -1);
+  padding: var(--fx-room);
   overflow-y: auto;
   font-family: var(--font-dialog);
   font-weight: 400;

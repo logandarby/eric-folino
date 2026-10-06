@@ -168,6 +168,7 @@
   outline-offset: 10px;
 }
 
+.title.is-spotlit,
 .blob.is-spotlit {
   z-index: var(--z-spotlit);
 }

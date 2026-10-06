@@ -1,0 +1,166 @@
+/*
+ * Dialog text effects ({wave}, {shake}…). The text engine (src/text/) only
+ * adds classes and variables to each letter's span; everything moving here
+ * is a CSS animation. Motion uses `translate`/`rotate`, which the browser
+ * runs on the compositor: no layout, no paint, no JavaScript per frame, and
+ * no reflow, since transforms don't affect layout. Tuning variables
+ * (--wave-period…) and the rainbow keyframes come from site.config.ts via
+ * the head template.
+ *
+ * A letter has two animation slots that combine: one motion (wave, float
+ * or shake; the engine picks the innermost) and one colour (rainbow).
+ */
+.fx {
+  animation: var(--fx-motion, none), var(--fx-color, none);
+}
+
+/* Transforms need a box; spaces never get one (they would collapse). */
+.fx-move {
+  display: inline-block;
+}
+
+/* Wave: each letter bobs, a little behind the one before. */
+.fx-wave {
+  --fx-motion: text-wave calc(var(--wave-period) / 2) ease-in-out
+    calc(var(--fx-i) * var(--wave-stagger) * -1) infinite alternate;
+}
+
+@keyframes text-wave {
+  from {
+    translate: 0 calc(var(--wave-amp) * -1);
+  }
+
+  to {
+    translate: 0 var(--wave-amp);
+  }
+}
+
+/* Float: a slow bob plus a gentle sway on a different period, so the
+   letters drift instead of marching in step. */
+.fx-float {
+  --fx-motion:
+    text-float-bob calc(var(--float-period) / 2) ease-in-out
+      calc(var(--fx-i) * var(--float-stagger) * -1) infinite alternate,
+    text-float-sway calc(var(--float-period) * 0.7) ease-in-out
+      calc(var(--fx-i) * var(--float-stagger) * -0.6) infinite alternate;
+}
+
+@keyframes text-float-bob {
+  from {
+    translate: 0 calc(var(--float-amp) * -1);
+  }
+
+  to {
+    translate: 0 var(--float-amp);
+  }
+}
+
+@keyframes text-float-sway {
+  from {
+    rotate: -5deg;
+  }
+
+  to {
+    rotate: 5deg;
+  }
+}
+
+/* Shake: jumps between fixed offsets (no easing, so it twitches). Each
+   letter gets one of three patterns and a random phase. */
+.fx-shake {
+  --fx-motion: var(--fx-shake) calc(var(--shake-interval) * 4) step-end
+    calc(var(--fx-seed) * var(--shake-interval) * -4) infinite;
+}
+
+@keyframes text-shake-0 {
+  0%,
+  100% {
+    translate: var(--shake-amp) calc(var(--shake-amp) * -1);
+  }
+
+  25% {
+    translate: calc(var(--shake-amp) * -1) calc(var(--shake-amp) * 0.5);
+  }
+
+  50% {
+    translate: calc(var(--shake-amp) * 0.5) var(--shake-amp);
+  }
+
+  75% {
+    translate: calc(var(--shake-amp) * -0.5) calc(var(--shake-amp) * -1);
+  }
+}
+
+@keyframes text-shake-1 {
+  0%,
+  100% {
+    translate: calc(var(--shake-amp) * -1) var(--shake-amp);
+  }
+
+  25% {
+    translate: var(--shake-amp) 0;
+  }
+
+  50% {
+    translate: calc(var(--shake-amp) * -0.5) calc(var(--shake-amp) * -1);
+  }
+
+  75% {
+    translate: calc(var(--shake-amp) * 0.5) calc(var(--shake-amp) * 0.5);
+  }
+}
+
+@keyframes text-shake-2 {
+  0%,
+  100% {
+    translate: 0 var(--shake-amp);
+  }
+
+  25% {
+    translate: var(--shake-amp) calc(var(--shake-amp) * -0.5);
+  }
+
+  50% {
+    translate: calc(var(--shake-amp) * -1) calc(var(--shake-amp) * -0.5);
+  }
+
+  75% {
+    translate: calc(var(--shake-amp) * 0.5) var(--shake-amp);
+  }
+}
+
+/* Rainbow: steps through the palette (keyframes from the head template).
+   Colour changes repaint, but only a few letters every half second. */
+.fx-rainbow {
+  --fx-color: text-rainbow var(--rainbow-cycle) step-end var(--fx-rainbow-delay)
+    infinite;
+  color: var(--fx-rainbow-color);
+}
+
+/* Scramble: ScrambleController sets data-glyph and .is-scrambling. The real
+   letter stays (invisible) so the layout and copy-paste are unchanged; the
+   symbol is drawn over it in the same colour. */
+.fx-scramble {
+  position: relative;
+}
+
+.fx-scramble.is-scrambling {
+  -webkit-text-fill-color: transparent;
+}
+
+.fx-scramble.is-scrambling::after {
+  content: attr(data-glyph);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+  -webkit-text-fill-color: currentcolor;
+}
+
+/* Reduced motion: nothing moves or cycles. Rainbow letters keep their
+   static colours; scramble and typing pacing are switched off in JS. */
+@media (prefers-reduced-motion: reduce) {
+  .fx.fx {
+    animation: none;
+  }
+}

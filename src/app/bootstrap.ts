@@ -2,9 +2,11 @@ import '../styles/main.css';
 
 import { $, $$ } from '../core/component.ts';
 import { prefersReducedMotion } from '../core/motion.ts';
+import { LightFlicker } from '../components/light-flicker.ts';
 import { RainbowText } from '../components/rainbow.ts';
 import { DialogManager } from '../dialog/manager.ts';
 import { siteConfig, type PageConfig } from '../site.config.ts';
+import { installTextDemo } from './text-demo.ts';
 
 export interface Site {
   page: PageConfig;
@@ -25,6 +27,13 @@ export function bootstrap(): Site {
     animate: !prefersReducedMotion(),
   });
 
+  const { flicker } = siteConfig.background;
+  const lightsOff = document.querySelector<HTMLElement>('[data-lights-off]');
+  if (lightsOff && flicker.enabled) {
+    new LightFlicker(lightsOff, flicker);
+  }
+
   const dialogs = new DialogManager([scene, ...$$('[data-background]')]);
+  installTextDemo(dialogs, $('.title', scene));
   return { page, dialogs, scene };
 }
