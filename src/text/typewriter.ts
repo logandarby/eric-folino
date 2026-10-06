@@ -12,13 +12,22 @@ export interface TimedGlyph {
   at: number;
 }
 
+/** A character appearing. */
+export interface Reveal extends TimedGlyph {
+  /**
+   * Shown all at once with the rest (skipped, or reduced motion) rather
+   * than typed in, so per-letter feedback like voice blips should skip it.
+   */
+  instant: boolean;
+}
+
 /**
  * Reveals rendered characters on their schedule (see timeline.ts), so
  * {slow}, {fast} and {pause} come for free. Emits `reveal` for each one as
- * it appears, which is what scramble (and later voice blips) listen to.
+ * it appears, which is what scramble and the voice blips listen to.
  */
 export class Typewriter {
-  readonly events = new Emitter<{ reveal: TimedGlyph }>();
+  readonly events = new Emitter<{ reveal: Reveal }>();
   private shown = 0;
   private stop: Cleanup | null = null;
   private resolve: (() => void) | null = null;
@@ -48,7 +57,7 @@ export class Typewriter {
 
   /** Shows everything immediately. */
   finish(): void {
-    this.revealUntil(Infinity);
+    this.revealUntil(Infinity, true);
   }
 
   /** Stops without revealing the rest. */
@@ -59,11 +68,11 @@ export class Typewriter {
     this.resolve = null;
   }
 
-  private revealUntil(time: number): void {
+  private revealUntil(time: number, instant = false): void {
     while (!this.done && this.glyphs[this.shown].at <= time) {
       const item = this.glyphs[this.shown++];
       item.el.classList.add(SHOWN_CLASS);
-      this.events.emit('reveal', item);
+      this.events.emit('reveal', { ...item, instant });
     }
     if (this.done) this.cancel();
   }

@@ -25,6 +25,82 @@ export interface DialogBlock {
 export interface DialogContent {
   title: string;
   body: DialogBlock[];
+  /** How this dialog's text blips sound as it types; falls back to sound.blip.voice. */
+  voice?: Partial<DialogVoice>;
+}
+
+/** The "talking" blip a dialog makes per typed letter. */
+export interface DialogVoice {
+  /** Base pitch in Hz; for 'noise', the centre of the breathy hiss. */
+  pitch: number;
+  /**
+   * 'square' is chiptune-y, 'triangle' softer, 'sine' softest, 'sawtooth'
+   * buzzy, and 'noise' whispers (pink noise; pitch is where it's centred).
+   */
+  wave: 'square' | 'triangle' | 'sine' | 'sawtooth' | 'noise';
+  /** Fade-in per letter, in ms. Default 3. */
+  attackMs?: number;
+  /** Fade-out per letter, in ms. Default 40. */
+  releaseMs?: number;
+  /** Low-pass filter cutoff in Hz; lower is smoother and darker. Default 2400. Not for 'noise'. */
+  cutoffHz?: number;
+  /**
+   * Stacks several copies of the wave, spread out in pitch, for a thicker,
+   * wavering sound (like the screen's hum). Not for 'noise'.
+   */
+  unison?: {
+    /** How many copies, 2 or more. */
+    voices: number;
+    /** Pitch spread between the lowest and highest copy, in cents. */
+    spreadCents: number;
+  };
+}
+
+interface SoundSettings {
+  /** 0–1, before the channel and master volumes. */
+  volume: number;
+  /** Plays at most once per this many ms; extra plays are dropped. */
+  minGapMs: number;
+}
+
+export interface SoundConfig {
+  /**
+   * On for first-time visitors (unless they prefer reduced motion). Either
+   * way audio can only start after their first click or key press
+   * (browser rule).
+   */
+  enabledByDefault: boolean;
+  /** Master volume, 0–1. */
+  volume: number;
+  /** Volume per channel, 0–1: ui (hover, press, swoosh), voice (blips), ambient (hum). */
+  channels: { ui: number; voice: number; ambient: number };
+  /** Most one-shot sounds playing at once; the oldest is cut off beyond this. */
+  maxVoices: number;
+  /** Audio is suspended after this long with nothing playing, to save power. */
+  idleSuspendMs: number;
+  /** Tick when a button or link is hovered or tabbed to. */
+  hover: SoundSettings & {
+    /** The same element won't tick again within this many ms. */
+    sameTargetGapMs: number;
+  };
+  /** Clunk when a button or link is pressed. */
+  press: SoundSettings;
+  /** Swoosh when a dialog opens / closes. */
+  open: SoundSettings & { durationMs: number };
+  close: SoundSettings & { durationMs: number };
+  /** Per-letter voice blip as dialog text types out. */
+  blip: SoundSettings & {
+    voice: DialogVoice;
+    /** Random pitch change per letter, as a fraction (0.08 = ±8%). */
+    pitchJitter: number;
+  };
+  /** Electric hum while the bus stop screen is hovered or focused. */
+  hum: {
+    volume: number;
+    /** Mains frequency in Hz. */
+    pitch: number;
+    fadeMs: number;
+  };
 }
 
 export interface Placement {
@@ -52,7 +128,7 @@ export interface BlobConfig {
 }
 
 export interface HotspotConfig {
-  /** Accessible name for the (invisible) button. */
+  /** Accessible name for the button. */
   label: string;
   /** Shown when it's clicked. */
   dialog: DialogContent;
@@ -72,7 +148,10 @@ export interface PageConfig {
   /** Used for the <title> tag; `null` means just the site name. */
   title: string | null;
   description: string;
-  /** Show the clickable blobs around the title and the clickable screen. */
+  /**
+   * Show the clickable blobs around the title, the clickable screen and the
+   * "?" button.
+   */
   blobs?: boolean;
   /** Keep the page out of search engines. */
   noindex?: boolean;
@@ -185,8 +264,10 @@ export interface SiteConfig {
     blurPx: number;
     sidePreference: Side[];
   };
+  sound: SoundConfig;
   blobs: BlobConfig[];
   screen: HotspotConfig;
+  help: HotspotConfig;
   textDemo: {
     /** Key that opens the demo (KeyboardEvent.key). */
     key: string;
@@ -195,6 +276,34 @@ export interface SiteConfig {
     dialog: DialogContent;
   };
 }
+
+/*
+ * Voices for dialog text blips. Give a dialog one with `voice: hushVoice`;
+ * dialogs without one use `sound.blip.voice`.
+ */
+
+/** Soft and high: the default. */
+export const softVoice: DialogVoice = { pitch: 620, wave: 'sine' };
+/** Chirpy chiptune square wave. */
+export const sillyVoice: DialogVoice = { pitch: 440, wave: 'square' };
+/** Low and buzzy, like an old machine typing. */
+export const typewriterVoice: DialogVoice = { pitch: 170, wave: 'sawtooth' };
+/**
+ * The bus stop screen: a smooth, droning stack of detuned saws, pitched at
+ * a harmonic of its 60 Hz hum. Letters ease in and linger like the hush
+ * voice, so they blend into one wavering drone, and the filter is low to
+ * keep the saws from buzzing.
+ */
+export const screenVoice: DialogVoice = {
+  pitch: 80,
+  wave: 'sawtooth',
+  attackMs: 30,
+  releaseMs: 130,
+  cutoffHz: 1100,
+  unison: { voices: 3, spreadCents: 24 },
+};
+/** A hushed whisper: soft breaths of pink noise. */
+export const hushVoice: DialogVoice = { pitch: 1400, wave: 'noise' };
 
 export const siteConfig: SiteConfig = {
   siteName: 'Eric Folino',
@@ -234,9 +343,9 @@ export const siteConfig: SiteConfig = {
         body: [
           {
             kind: 'quote',
-            text: '“This page is still being assembled somewhere in the dark.”',
+            text: '“This page is still being assembled by little critters somewhere in the dark.”',
           },
-          { kind: 'narration', text: '*You hear distant footsteps.' },
+          { kind: 'narration', text: '*You hear a voice beckoning you back.' },
         ],
       },
     },
@@ -247,6 +356,7 @@ export const siteConfig: SiteConfig = {
       description: 'Nothing to see here.',
       placeholder: {
         title: 'SECRET',
+        voice: hushVoice,
         body: [
           { kind: 'quote', text: '“Not yet.”' },
           {
@@ -387,6 +497,29 @@ export const siteConfig: SiteConfig = {
     sidePreference: ['left', 'right', 'bottom', 'top'],
   },
 
+  /**
+   * Game-style UI sounds, all synthesized (no audio files). Kept quiet on
+   * purpose; see src/sound/README.md for what each one is made of.
+   */
+  sound: {
+    enabledByDefault: true,
+    volume: 0.4,
+    channels: { ui: 0.7, voice: 0.45, ambient: 0.6 },
+    maxVoices: 8,
+    idleSuspendMs: 30_000,
+    hover: { volume: 0.1, minGapMs: 50, sameTargetGapMs: 150 },
+    press: { volume: 0.3, minGapMs: 80 },
+    open: { volume: 0.5, minGapMs: 120, durationMs: 300 },
+    close: { volume: 0.35, minGapMs: 120, durationMs: 200 },
+    blip: {
+      volume: 0.5,
+      minGapMs: 45,
+      voice: softVoice,
+      pitchJitter: 0.08,
+    },
+    hum: { volume: 0.5, pitch: 60, fadeMs: 180 },
+  },
+
   blobs: [
     {
       svg: 'pink',
@@ -395,6 +528,7 @@ export const siteConfig: SiteConfig = {
       position: { wide: { x: 14, y: 2 }, compact: { x: 6, y: 3 } },
       dialog: {
         title: 'THE INEFFABLE BLOB',
+        voice: softVoice,
         body: [
           {
             kind: 'quote',
@@ -414,6 +548,7 @@ export const siteConfig: SiteConfig = {
       position: { wide: { x: 86.5, y: 7 }, compact: { x: 80, y: 0 } },
       dialog: {
         title: 'THE ATAVISTIC CLOD',
+        voice: hushVoice,
         body: [
           {
             kind: 'quote',
@@ -452,6 +587,7 @@ export const siteConfig: SiteConfig = {
       position: { wide: { x: 73.5, y: 75 }, compact: { x: 68, y: 66 } },
       dialog: {
         title: 'THE SILLY SPLOTCH',
+        voice: sillyVoice,
         body: [
           {
             kind: 'quote',
@@ -475,6 +611,7 @@ export const siteConfig: SiteConfig = {
     label: 'Bus stop screen',
     dialog: {
       title: "THE GHOST'S FINGERPRINT",
+      voice: screenVoice,
       body: [
         {
           kind: 'quote',
@@ -483,6 +620,31 @@ export const siteConfig: SiteConfig = {
         {
           kind: 'narration',
           text: '*You feel dizzy.',
+        },
+      ],
+    },
+  },
+
+  /**
+   * The "?" button in the corner (top left on desktop, bottom left on
+   * mobile), hinting that the page has things to find.
+   */
+  help: {
+    label: 'What is this place?',
+    dialog: {
+      title: '???',
+      body: [
+        {
+          kind: 'quote',
+          text: '“Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.”',
+        },
+        {
+          kind: 'narration',
+          text: '*You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
+        },
+        {
+          kind: 'narration',
+          text: '*If the noises bother you, the speaker beside this button silences them. So does pressing M.',
         },
       ],
     },

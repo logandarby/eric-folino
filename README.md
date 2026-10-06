@@ -57,6 +57,19 @@ text: '*You feel {wave}dizzy{/wave}.{pause} {shake}Run!{/shake}';
 
 How the engine works, and how to add an effect: [`src/text/README.md`](src/text/README.md).
 
+## Sound
+
+Buttons tick on hover and clunk when pressed, dialogs swoosh, their text
+"talks" in blips, and the bus stop screen hums. Everything is synthesized
+(no audio files) and tuned in `sound` in the config. Give a dialog a
+different voice with `voice: sillyVoice` (or `typewriterVoice`, `screenVoice`, `hushVoice`,
+or your own `{ pitch, wave }`); the default is `softVoice`.
+
+Sound is on by default (off for visitors who prefer reduced motion) but, as
+browsers require, starts on the visitor's first click or key press. The
+speaker button in the corner, or <kbd>M</kbd>, mutes it; hovering it shows
+a volume slider. Choices are remembered. Details: [`src/sound/README.md`](src/sound/README.md).
+
 ## How it fits together
 
 - **Pages** are thin HTML shells (`index.html`, `about/index.html`, …) containing directives like `<!-- @hero -->`. The `site-pages` Vite plugin (`build/`) expands these at build time from the config. Every page therefore ships finished, crawlable markup, and scripts only add behaviour on top.
@@ -64,6 +77,7 @@ How the engine works, and how to add an effect: [`src/text/README.md`](src/text/
 - **`src/core`** holds the small shared pieces:
   - the component base class and cleanup helper (`Disposer`)
   - a typed event emitter
+  - `UserPreferences`, the visitor's typed settings saved in `localStorage`
   - one shared animation loop (`ticker`), so blobs and the title stay in sync
   - geometry helpers
   - motion helpers that honour reduced-motion settings
@@ -77,3 +91,4 @@ How the engine works, and how to add an effect: [`src/text/README.md`](src/text/
   Any page can point a dialog at an element with `dialogs.open({ anchor: elementAnchor(el), content })`. Elements marked `data-dialog-avoid` are kept clear. The spotlight can also cut a soft vignette around a spot instead of lifting an element (`elementAnchor(el, 'vignette')`), as the bus stop screen does.
 
 - **`src/text`** is the dialog text engine: the tag parser, typing schedule, effects and typewriter ([details](src/text/README.md)).
+- **`src/sound`** is the sound engine: synthesized patches, a mixer, rate limits and the page bindings ([details](src/sound/README.md)).

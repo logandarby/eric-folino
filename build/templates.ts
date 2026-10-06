@@ -6,6 +6,11 @@
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import {
+  faVolumeHigh,
+  faVolumeXmark,
+  type IconDefinition,
+} from '@fortawesome/free-solid-svg-icons';
 import { letterColor } from '../src/components/letter-color.ts';
 import { blobShape, roundedPathData } from '../src/svg/blob-shape.ts';
 import {
@@ -201,7 +206,9 @@ function hero({ root, page }: TemplateContext): string {
         ${blobs}
       </div>
       ${page.blobs ? screenHotspot(root) : ''}
-    </div>`;
+      ${page.blobs ? helpButton() : ''}
+    </div>
+    ${soundControl(Boolean(page.blobs))}`;
 }
 
 function title(): string {
@@ -222,8 +229,13 @@ function nav(page: PageConfig): string {
   const items = siteConfig.nav
     .map((item) => {
       const target = siteConfig.pages.find((p) => p.path === item.href);
-      const current = item.href === page.path ? ' aria-current="page"' : '';
-      return `<li><a class="nav__link" href="${esc(item.href)}" data-nav="${esc(target?.id ?? '')}" data-dialog-avoid${current}>${esc(item.label)}</a></li>`;
+      // The page you're on is highlighted and has no href, so it can't be
+      // clicked or tabbed to (that would only reload the page).
+      const link =
+        item.href === page.path
+          ? 'aria-current="page"'
+          : `href="${esc(item.href)}"`;
+      return `<li><a class="nav__link" ${link} data-nav="${esc(target?.id ?? '')}" data-dialog-avoid>${esc(item.label)}</a></li>`;
     })
     .join('');
   const vars = placementVars((l) => siteConfig.stage[l].nav);
@@ -272,10 +284,43 @@ function screenHotspot(root: string): string {
       <div class="hotspots" data-hotspots>
         <div class="hotspots__frame">
           <div class="hotspots__photo">
-            <button type="button" class="hotspot" data-screen aria-label="${esc(siteConfig.screen.label)}" aria-haspopup="dialog"></button>
+            <button type="button" class="hotspot" data-screen data-sound="hum" aria-label="${esc(siteConfig.screen.label)}" aria-haspopup="dialog"></button>
           </div>
         </div>
       </div>`;
+}
+
+/** The "?" in the corner that hints there are secrets to click on. */
+function helpButton(): string {
+  return `
+      <button type="button" class="corner corner-button help" data-help data-dialog-avoid aria-label="${esc(siteConfig.help.label)}" aria-haspopup="dialog"><span class="help__mark" aria-hidden="true">?</span></button>`;
+}
+
+/**
+ * The speaker button beside the "?" (or in its place on pages without
+ * one), with a volume slider that slides out on hover or focus. It sits
+ * outside the scene so it still works while a dialog has the page inert.
+ * Starts pressed to match the config default; the script corrects it from
+ * the visitor's saved choice.
+ */
+function soundControl(afterHelp: boolean): string {
+  const pressed = String(siteConfig.sound.enabledByDefault);
+  const slot = afterHelp ? ' sound-control--after-help' : '';
+  return `
+    <div class="corner sound-control${slot}" data-sound-control>
+      <button type="button" class="corner-button sound-toggle" data-sound-toggle data-dialog-avoid aria-label="Sound" aria-pressed="${pressed}" aria-keyshortcuts="M" title="Sound (M)">${icon(faVolumeHigh, 'sound-toggle__on')}${icon(faVolumeXmark, 'sound-toggle__off')}</button>
+      <label class="sound-volume"><span class="sr-only">Volume</span><input type="range" min="0" max="100" step="5" value="100" data-sound-volume /></label>
+      <span class="sr-only" role="status" data-sound-status></span>
+    </div>`;
+}
+
+/** A Font Awesome icon as inline SVG (Font Awesome Free, CC BY 4.0). */
+function icon(
+  { icon: [width, height, , , path] }: IconDefinition,
+  cls: string
+): string {
+  const d = Array.isArray(path) ? path.join(' ') : path;
+  return `<svg class="${cls}" viewBox="0 0 ${width} ${height}" aria-hidden="true" focusable="false"><path fill="currentColor" d="${esc(d)}" /></svg>`;
 }
 
 interface PhotoCrop {

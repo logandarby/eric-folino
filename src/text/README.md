@@ -57,7 +57,8 @@ the config has a bad tag.
   per dialog, and `dispose()` stops its scripted effects.
 - **Observer** (`typewriter.ts`). The typewriter emits `reveal` for each
   character. Scramble listens to it to decode letters as they type in.
-  Future voice blips will hook in here too (see `TODO.md`).
+  The voice blips listen too (see `src/sound/`); `instant` marks letters
+  shown all at once, which shouldn't blip.
 
 ## Performance
 

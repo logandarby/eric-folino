@@ -1,5 +1,6 @@
 import { $$ } from '../core/component.ts';
 import { Disposer } from '../core/disposer.ts';
+import { Emitter } from '../core/emitter.ts';
 import {
   center,
   fromDOMRect,
@@ -39,6 +40,13 @@ export interface OpenOptions {
   closable?: boolean;
 }
 
+export interface DialogEvents extends Record<string, unknown> {
+  /** A dialog starts opening; its typewriter hasn't started yet. */
+  open: { view: DialogView; content: DialogContent };
+  /** The open dialog starts closing. */
+  close: { view: DialogView };
+}
+
 interface ActiveDialog {
   anchor: DialogAnchor;
   view: DialogView;
@@ -57,9 +65,10 @@ interface ActiveDialog {
  * connector line, and keeps it positioned as the viewport changes.
  *
  * Open/close requests are queued, so rapid clicks can't interleave
- * animations.
+ * animations. `events` announces each open and close (sounds hook in there).
  */
 export class DialogManager {
+  readonly events = new Emitter<DialogEvents>();
   private readonly spotlight = new Spotlight();
   private readonly connectorLayer = document.createElementNS(SVG_NS, 'svg');
   private readonly connector = document.createElementNS(SVG_NS, 'polyline');
@@ -143,6 +152,7 @@ export class DialogManager {
     this.layout(active);
     this.bindEvents(active);
 
+    this.events.emit('open', { view, content: options.content });
     const t = siteConfig.animation;
     if (modal) this.inertRoots.forEach((root) => (root.inert = true));
     const dimmed = modal
@@ -270,6 +280,7 @@ export class DialogManager {
     this.active = null;
     active.disposer.dispose();
     active.view.dispose();
+    this.events.emit('close', { view: active.view });
 
     const t = siteConfig.animation;
     await this.animateWindow(active, 'out', duration(t.dialogCloseMs));

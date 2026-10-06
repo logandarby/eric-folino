@@ -111,10 +111,17 @@
     color 0.12s;
 }
 
-.nav__link:hover,
+.nav__link[href]:hover,
 .nav__link:focus-visible {
   background: var(--color-fg);
   color: var(--color-bg);
+}
+
+/* The page you're on stays highlighted, and isn't clickable (no href). */
+.nav__link[aria-current='page'] {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  cursor: default;
 }
 
 :root[data-layout='compact'] .nav ul {
@@ -169,7 +176,8 @@
 }
 
 .title.is-spotlit,
-.blob.is-spotlit {
+.blob.is-spotlit,
+.help.is-spotlit {
   z-index: var(--z-spotlit);
 }
 
@@ -184,4 +192,184 @@
   transform: none;
   filter: drop-shadow(0 0 6px var(--blob-color))
     drop-shadow(0 0 22px var(--blob-color));
+}
+
+/* Corner buttons --------------------------------------------------------- */
+
+/* The "?" and the sound control, pinned side by side to a corner: top left
+   on desktop, bottom left on mobile (where thumbs reach and the title has
+   the top). Each is fixed on its own rather than in a shared container,
+   which would trap the "?" below the spotlight when it's lifted. */
+.corner {
+  --corner-gap: 20px;
+  --corner-slot: 0;
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + var(--corner-gap));
+  left: calc(
+    env(safe-area-inset-left) + var(--corner-gap) + var(--corner-slot) *
+      (var(--tap-target) + 10px)
+  );
+  /* Above the photo hotspots. */
+  z-index: 2;
+}
+
+:root[data-layout='compact'] .corner {
+  --corner-gap: 16px;
+  top: auto;
+  bottom: calc(env(safe-area-inset-bottom) + var(--corner-gap));
+}
+
+.corner-button {
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.corner-button:hover,
+.corner-button:focus-visible,
+.corner-button.is-spotlit {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.help {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Sound ------------------------------------------------------------------ */
+
+/* Stays above the dim layer, so sound can be muted while a dialog is open. */
+.sound-control {
+  z-index: var(--z-spotlit);
+  display: flex;
+}
+
+.sound-control--after-help {
+  --corner-slot: 1;
+}
+
+.sound-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sound-toggle[aria-pressed='true'] .sound-toggle__off,
+.sound-toggle[aria-pressed='false'] .sound-toggle__on {
+  display: none;
+}
+
+/* The volume slider slides out of the speaker on hover or focus. Hidden
+   (not just clipped) when closed, so it's out of the tab order until the
+   speaker is focused. */
+.sound-volume {
+  display: flex;
+  align-items: center;
+  margin-left: calc(var(--border-width) * -1);
+  padding: 0 14px;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  visibility: hidden;
+  clip-path: inset(0 100% 0 0);
+  transition:
+    clip-path 0.18s ease-out,
+    visibility 0s 0.18s;
+}
+
+.sound-control:hover .sound-volume,
+.sound-control:focus-within .sound-volume {
+  visibility: visible;
+  /* Room for the slider's focus outline. */
+  clip-path: inset(-8px);
+  transition-delay: 0s;
+}
+
+.sound-toggle[aria-pressed='false'] + .sound-volume {
+  opacity: 0.5;
+}
+
+.sound-volume input {
+  width: 96px;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+
+.sound-volume input:focus-visible {
+  outline-offset: 2px;
+}
+
+.sound-volume input::-webkit-slider-runnable-track {
+  height: var(--border-width);
+  background: var(--color-fg);
+}
+
+.sound-volume input::-moz-range-track {
+  height: var(--border-width);
+  background: var(--color-fg);
+}
+
+.sound-volume input::-webkit-slider-thumb {
+  width: 10px;
+  height: 18px;
+  margin-top: calc(var(--border-width) / 2 - 9px);
+  border: 0;
+  border-radius: 0;
+  background: var(--color-fg);
+  appearance: none;
+}
+
+.sound-volume input::-moz-range-thumb {
+  width: 10px;
+  height: 18px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-volume {
+    transition: none;
+  }
+}
+
+/* Help mark -------------------------------------------------------------- */
+
+/* The mark idly tilts back and forth, as if wondering. */
+.help__mark {
+  animation: help-ponder 4s ease-in-out infinite;
+}
+
+@keyframes help-ponder {
+  0%,
+  60%,
+  100% {
+    rotate: 0deg;
+  }
+  70% {
+    rotate: -14deg;
+  }
+  85% {
+    rotate: 10deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help__mark {
+    animation: none;
+  }
 }
