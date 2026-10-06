@@ -1,5 +1,5 @@
 import { currentLayout } from './layout.ts';
-import { siteConfig } from '../site.config.ts';
+import { siteConfig } from '../site/site.config.ts';
 
 const reducedMotionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 

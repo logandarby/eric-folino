@@ -141,3 +141,8 @@
 .tw-word {
   white-space: nowrap;
 }
+
+/* A dialog's anchor is lifted above the dim layer (see spotlight.ts). */
+.is-spotlit {
+  z-index: var(--z-spotlit);
+}

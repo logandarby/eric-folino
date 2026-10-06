@@ -1,6 +1,6 @@
 import { elementAnchor } from '../dialog/anchor.ts';
 import type { DialogManager } from '../dialog/manager.ts';
-import { siteConfig } from '../site.config.ts';
+import { siteConfig } from '../site/site.config.ts';
 
 /**
  * Pressing the demo key (backtick by default) opens a dialog showing every

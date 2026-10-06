@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { siteConfig, type DialogContent } from '../site.config.ts';
+import home from '../pages/home/page.config.ts';
+import { pages } from '../pages/pages.ts';
+import { siteConfig } from '../site/site.config.ts';
+import type { DialogContent } from '../site/types.ts';
 import { compile } from './markup/timeline.ts';
 
-describe('dialog text in site.config.ts', () => {
+describe('dialog text in the configs', () => {
   const dialogs: DialogContent[] = [
-    ...siteConfig.blobs.map((b) => b.dialog),
-    siteConfig.screen.dialog,
+    ...home.blobs.map((b) => b.dialog),
+    home.screen.dialog,
+    home.help.dialog,
     siteConfig.textDemo.dialog,
-    ...siteConfig.pages.flatMap((p) => (p.placeholder ? [p.placeholder] : [])),
+    ...pages.flatMap((p) => (p.placeholder ? [p.placeholder] : [])),
   ];
   const texts = dialogs.flatMap((d) => [d.title, ...d.body.map((b) => b.text)]);
   const pacing = {

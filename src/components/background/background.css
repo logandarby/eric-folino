@@ -1,0 +1,140 @@
+/* The placeholder image (set inline by the template) shows while loading. */
+.background {
+  background-color: var(--color-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+/*
+ * The "lights off" overlay has the same framing as the photo, so it lines
+ * up at every size. LightFlicker fades it in and out; opacity animations
+ * run on the compositor, so the flicker costs no layout or paint.
+ */
+.lights-off {
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lights-off {
+    display: none;
+  }
+}
+
+.background,
+.lights-off {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.background img,
+.lights-off img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 35% 50%; /* .hotspots below copies this */
+}
+
+/*
+ * Landscape screens: frame the photo like the Figma design (zoomed past
+ * cover and anchored so the bus stop sits middle-left). --bg-zoom and
+ * --bg-focus come from src/site/site.config.ts. Squarer screens keep a plain cover
+ * so the bus stop isn't cropped away.
+ */
+@media (min-aspect-ratio: 4/3) {
+  .background {
+    background-position: var(--bg-focus);
+  }
+
+  .background img,
+  .lights-off img {
+    object-position: var(--bg-focus);
+    transform: scale(var(--bg-zoom));
+    transform-origin: var(--bg-focus);
+  }
+}
+
+/*
+ * Clickable spots in the photo (the bus stop screen). The layer repeats the
+ * photo's framing by hand: "cover" sizing and object-position worked out in
+ * container units, plus the landscape zoom. A button placed in percentages
+ * of the photo then stays on its spot at every size.
+ *
+ * Keep in sync with the `img` rules above.
+ */
+.hotspots {
+  --fx: 0.35;
+  --fy: 0.5;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  container-type: size;
+  pointer-events: none;
+}
+
+.hotspots__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.hotspots__photo {
+  --photo-w: max(100cqw, 100cqh * var(--photo-ar));
+  --photo-h: max(100cqh, 100cqw / var(--photo-ar));
+  position: absolute;
+  left: calc((100cqw - var(--photo-w)) * var(--fx));
+  top: calc((100cqh - var(--photo-h)) * var(--fy));
+  width: var(--photo-w);
+  height: var(--photo-h);
+}
+
+@media (min-aspect-ratio: 4/3) {
+  .hotspots {
+    --fx: var(--bg-fx);
+    --fy: var(--bg-fy);
+  }
+
+  .hotspots__frame {
+    transform: scale(var(--bg-zoom));
+    transform-origin: var(--bg-focus);
+  }
+}
+
+/* Invisible, but hovering or focusing it shows the dashed outline every
+   focused control gets (base.css), plus a glow. */
+.hotspot {
+  position: absolute;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  width: var(--spot-w);
+  height: var(--spot-h);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hotspot:hover {
+  outline: var(--border-width) dashed var(--color-fg);
+  outline-offset: 4px;
+}
+
+/* Glow. */
+.hotspot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgb(255 235 255 / 0.12);
+  box-shadow: 0 0 1.5rem 0.4rem rgb(240 178 243 / 0.45);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.hotspot:hover::before,
+.hotspot:focus-visible::before {
+  opacity: 1;
+}

@@ -1,0 +1,88 @@
+/*
+ * The hero "stage" is a box with a fixed aspect ratio. Everything inside is
+ * positioned in percentages of it and sized relative to its width, so the
+ * composition scales as one piece. Per-layout values come from
+ * site.config.ts as inline CSS variables (--x-wide, --x-compact, …).
+ *
+ * Nothing between <body> and the blobs may create a stacking context
+ * (transform, opacity, filter, z-index, contain…) or a spotlit blob can't
+ * rise above the dim layer.
+ */
+
+.scene {
+  position: relative;
+  display: grid;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.stage {
+  --stage-w: var(--stage-w-wide);
+  --stage-ar: var(--stage-ar-wide);
+  position: relative;
+  width: var(--stage-w);
+  aspect-ratio: var(--stage-ar);
+  align-self: center;
+  justify-self: start;
+  margin: 0 0 6dvh 49vw;
+}
+
+:root[data-layout='compact'] .stage {
+  --stage-w: var(--stage-w-compact);
+  --stage-ar: var(--stage-ar-compact);
+  align-self: start;
+  justify-self: center;
+  margin: max(7dvh, 24px) 0 0;
+}
+
+.placed {
+  --x: var(--x-wide);
+  --y: var(--y-wide);
+  --w: var(--w-wide);
+  --fs: var(--fs-wide);
+  --tx: var(--tx-wide, 0%);
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+}
+
+:root[data-layout='compact'] .placed {
+  --x: var(--x-compact);
+  --y: var(--y-compact);
+  --w: var(--w-compact);
+  --fs: var(--fs-compact);
+  --tx: var(--tx-compact, 0%);
+}
+
+/* Text placed by its centre or right edge. Blobs never get this: a transform would trap
+   them in their own stacking context and break the spotlight. */
+.title.placed,
+.nav.placed,
+.stage__socials {
+  translate: var(--tx) 0;
+}
+
+/* Text sized from the stage width. */
+.title.placed,
+.nav.placed,
+.stage__socials {
+  font-size: calc(var(--stage-w) * var(--fs) / 100);
+}
+
+/* The social links ride above the title, tilted with it. Sized in em
+   (from the stage width) rather than fixed tap targets, so the row keeps
+   its proportions to the title at every screen size. */
+.stage__socials {
+  flex-wrap: nowrap;
+  gap: 0.2em;
+  width: max-content;
+  rotate: var(--title-tilt);
+}
+
+.stage__socials .socials__link {
+  min-width: 0;
+  min-height: 0;
+  padding: 0.25em;
+}

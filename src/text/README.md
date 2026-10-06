@@ -1,6 +1,6 @@
 # Dialog text engine
 
-Turns dialog text from `src/site.config.ts` into animated, typed-out text.
+Turns dialog text from the configs (`src/site/`, `src/pages/*/page.config.ts`) into animated, typed-out text.
 Writing text? The tag list is in the [main README](../../README.md#dialog-text-effects).
 Press <kbd>`</kbd> on the dev server to see every effect.
 
@@ -107,7 +107,7 @@ the config has a bad tag.
      `--fx-motion` or `--fx-color` so it combines with the other effects;
    - make sure the reduced-motion rule there covers it;
    - put any tuning in `textEffects` in the config, passed to CSS by
-     `textEffectStyles()` in `build/templates.ts`.
+     `textEffectStyles()` in `src/layouts/head.tsx`.
 4. Add a line to the `textDemo` dialog in the config, and a row to the
    table in the main README.
 

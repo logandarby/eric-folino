@@ -1,7 +1,7 @@
 import type { Cleanup } from '../core/disposer.ts';
 import { Emitter } from '../core/emitter.ts';
 import type { UserPreferences } from '../core/preferences.ts';
-import type { SoundConfig } from '../site.config.ts';
+import type { SoundConfig } from '../site/types.ts';
 import { AudioGraph } from './audio-graph.ts';
 import {
   PATCHES,

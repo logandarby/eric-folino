@@ -1,5 +1,5 @@
 import { h } from '../core/component.ts';
-import type { TextEffectsConfig } from '../site.config.ts';
+import type { TextEffectsConfig } from '../site/types.ts';
 import { EFFECT_RENDERERS, type EffectContext } from './effects.ts';
 import {
   compile,

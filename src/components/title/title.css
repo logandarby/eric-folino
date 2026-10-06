@@ -1,0 +1,15 @@
+.title {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.title__box {
+  display: inline-block;
+  padding: 0.16em 0.3em 0.12em;
+  border: max(var(--border-width), 0.06em) solid var(--color-fg);
+  background: var(--color-bg);
+  letter-spacing: 0.03em;
+  transform: rotate(var(--title-tilt));
+}

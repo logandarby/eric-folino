@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { UserPreferences } from '../core/preferences.ts';
-import { siteConfig } from '../site.config.ts';
+import { soundConfig } from '../site/sound.config.ts';
 import type { AudioGraph } from './audio-graph.ts';
 import type { PatchRegistry } from './patches/index.ts';
 import type { OneShotPatch } from './patches/patch.ts';
 import { Throttle, VoicePool, type Voice } from './rate-limit.ts';
 import { SoundEngine, type SoundPreferences } from './sound-engine.ts';
 
-const config = siteConfig.sound;
+const config = soundConfig;
 
 function fakeVoice(endsAt: number) {
   return { endsAt, stop: vi.fn<() => void>() } satisfies Voice;

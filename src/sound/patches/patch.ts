@@ -1,4 +1,4 @@
-import type { DialogVoice, SoundConfig } from '../../site.config.ts';
+import type { DialogVoice, SoundConfig } from '../../site/types.ts';
 import type { AudioGraph, Channel, NoiseColour } from '../audio-graph.ts';
 import type { Voice } from '../rate-limit.ts';
 

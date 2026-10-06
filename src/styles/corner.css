@@ -1,0 +1,56 @@
+/* The "?" and the sound control, pinned side by side to a corner: top left
+   on desktop, bottom left on mobile (where thumbs reach and the title has
+   the top). Each is fixed on its own rather than in a shared container,
+   which would trap the "?" below the spotlight when it's lifted. */
+.corner {
+  --corner-gap: 20px;
+  --corner-slot: 0;
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + var(--corner-gap));
+  left: calc(
+    env(safe-area-inset-left) + var(--corner-gap) + var(--corner-slot) *
+      (var(--tap-target) + 10px)
+  );
+  /* Above the photo hotspots. */
+  z-index: 2;
+}
+
+:root[data-layout='compact'] .corner {
+  --corner-gap: 16px;
+  top: auto;
+  bottom: calc(env(safe-area-inset-bottom) + var(--corner-gap));
+}
+
+.corner-button {
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.corner-button:hover,
+.corner-button:focus-visible,
+.corner-button.is-spotlit {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+/* On long pages the corner buttons scroll away with the top of the page,
+   so they never cover what's being read. */
+.corner--scrolls {
+  position: absolute;
+}
+
+:root[data-layout='compact'] .corner--scrolls {
+  top: calc(env(safe-area-inset-top) + var(--corner-gap));
+  bottom: auto;
+}

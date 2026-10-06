@@ -1,0 +1,33 @@
+.help {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Help mark -------------------------------------------------------------- */
+
+/* The mark idly tilts back and forth, as if wondering. */
+.help__mark {
+  animation: help-ponder 4s ease-in-out infinite;
+}
+
+@keyframes help-ponder {
+  0%,
+  60%,
+  100% {
+    rotate: 0deg;
+  }
+  70% {
+    rotate: -14deg;
+  }
+  85% {
+    rotate: 10deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help__mark {
+    animation: none;
+  }
+}
