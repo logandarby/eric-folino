@@ -3,14 +3,14 @@
 Game-style UI sounds, all synthesized with Web Audio: no audio files to
 download. Settings are in `src/site/sound.config.ts`, voices in `src/site/voices.ts`.
 
-| Sound   | When                                     | Made of                                                        |
-| ------- | ---------------------------------------- | -------------------------------------------------------------- |
-| `hover` | a button or link is hovered or tabbed to | a faint, low-ish sine tick, pitch dipping                      |
-| `press` | a button or link is pressed              | a soft click: a tiny sine pop under a few ms of filtered noise |
-| `open`  | a dialog opens                           | noise through a band-pass filter sweeping up                   |
-| `close` | a dialog closes                          | the same, sweeping down, quieter                               |
-| `blip`  | each letter typed in a dialog            | a very short tone in the dialog's voice, pitch jittered        |
-| `hum`   | while the bus stop screen is hovered     | detuned 60 Hz sawtooth buzz, low-passed, plus fluttering fizz  |
+| Sound   | When                                                       | Made of                                                        |
+| ------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
+| `hover` | a button or link is hovered or tabbed to                   | a faint, low-ish sine tick, pitch dipping                      |
+| `press` | a button or link is pressed                                | a soft click: a tiny sine pop under a few ms of filtered noise |
+| `open`  | a dialog opens                                             | noise through a band-pass filter sweeping up                   |
+| `close` | a dialog closes                                            | the same, sweeping down, quieter                               |
+| `blip`  | each letter typed in a dialog                              | a very short tone in the dialog's voice, pitch jittered        |
+| `hum`   | while the bus stop screen is hovered or its dialog is open | detuned 60 Hz sawtooth buzz, low-passed, plus fluttering fizz  |
 
 ## Pieces and patterns
 
@@ -73,7 +73,7 @@ changes made in another tab apply here too.
   switch (Safari 16.4+).
 - **Nothing relies on sound:** every sound echoes something visible.
 - **WCAG 1.4.2:** the hum is the only sound over 3 seconds; it only plays
-  while you're on the screen, and muting stops it.
+  while you're on the screen or its dialog is open, and muting stops it.
 - **Keyboard and touch:** only focus moved with Tab ticks (not focus
   moved by clicks or dialogs), and Enter / Space click like a press. Touch
   has no hover, so taps only click. The volume slider is hard to reach on
@@ -91,7 +91,7 @@ changes made in another tab apply here too.
 
 - `data-sound="none"` on an element: no hover tick.
 - `data-sound="hum"`: the element plays the hum loop while hovered or
-  focused, instead of the tick.
+  focused, or while a dialog pointing at it is open, instead of the tick.
 - `voice` on a dialog's content changes how it "talks". The config has
   named voices: `softVoice` (the default), `sillyVoice`, `typewriterVoice`,
   `screenVoice` (smooth detuned saws in unison) and `hushVoice` (a whisper, `wave: 'noise'`).

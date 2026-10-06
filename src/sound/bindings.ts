@@ -17,7 +17,8 @@ const SPOKEN = /[\p{L}\p{N}]/u;
  * - a clunk when one is pressed;
  * - a swoosh as dialogs open and close, and voice blips as they type;
  * - a looping sound for elements with `data-sound="<loop>"` (the screen's
- *   hum), held while hovered or focused.
+ *   hum), held while hovered or focused, or while a dialog pointing at
+ *   the element is open.
  *
  * `data-sound="none"` silences an element's hover sound.
  */
@@ -30,18 +31,28 @@ export function bindSounds(sound: SoundEngine, dialogs: DialogManager): void {
     if (document.hidden) sound.suspend();
   });
 
-  bindHover(sound);
+  const hover = bindHover(sound);
   bindPress(sound);
 
-  dialogs.events.on('open', ({ view, content }) => {
+  // A loop keeps going while its element's dialog is open.
+  let looping: HTMLElement | null = null;
+  dialogs.events.on('open', ({ view, content, anchor }) => {
     sound.play('open');
+    if (anchor.element.dataset.sound === 'hum') {
+      looping = anchor.element;
+      hover.enter(looping, 'dialog');
+    }
     view.typewriter.events.on('reveal', ({ glyph, instant }) => {
       if (!instant && SPOKEN.test(glyph.text)) {
         sound.play('blip', { voice: content.voice });
       }
     });
   });
-  dialogs.events.on('close', () => sound.play('close'));
+  dialogs.events.on('close', () => {
+    sound.play('close');
+    if (looping) hover.leave(looping, 'dialog');
+    looping = null;
+  });
 }
 
 function interactive(target: EventTarget | null): HTMLElement | null {
@@ -49,13 +60,18 @@ function interactive(target: EventTarget | null): HTMLElement | null {
   return el instanceof HTMLElement && !el.matches(':disabled') ? el : null;
 }
 
-function bindHover(sound: SoundEngine): void {
+type Holder = 'pointer' | 'focus' | 'dialog';
+
+function bindHover(sound: SoundEngine): {
+  enter: (el: HTMLElement, by: Holder) => void;
+  leave: (el: HTMLElement, by: Holder) => void;
+} {
   let hovered: HTMLElement | null = null;
   let lastTab = -Infinity;
   /** Loops held per element, and what's holding them. */
   const held = new Map<HTMLElement, { stop: Cleanup; by: Set<string> }>();
 
-  const enter = (el: HTMLElement, by: 'pointer' | 'focus') => {
+  const enter = (el: HTMLElement, by: Holder) => {
     const name = el.dataset.sound;
     if (name === 'none') return;
     if (name === 'hum') {
@@ -66,7 +82,7 @@ function bindHover(sound: SoundEngine): void {
       sound.play('hover', { target: el });
     }
   };
-  const leave = (el: HTMLElement, by: 'pointer' | 'focus') => {
+  const leave = (el: HTMLElement, by: Holder) => {
     const loop = held.get(el);
     if (!loop) return;
     loop.by.delete(by);
@@ -111,6 +127,8 @@ function bindHover(sound: SoundEngine): void {
     const el = interactive(e.target);
     if (el) leave(el, 'focus');
   });
+
+  return { enter, leave };
 }
 
 function bindPress(sound: SoundEngine): void {
