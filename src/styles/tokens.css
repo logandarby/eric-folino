@@ -1,0 +1,22 @@
+/*
+ * Visual design tokens. Behaviour and content settings live in
+ * src/site.config.ts; a few of those are also exposed as CSS variables by
+ * the head template (--dialog-max-w, --dialog-margin, --dim-opacity,
+ * --title-tilt).
+ */
+:root {
+  --color-bg: #000;
+  --color-fg: #fff;
+
+  --font-display: 'Golos Text', system-ui, sans-serif;
+  --font-dialog: 'Courier Prime', 'Courier New', monospace;
+
+  --border-width: 2px;
+  --tap-target: 44px;
+
+  /* Stacking order of the dialog system. Page content stays at `auto`. */
+  --z-spotlight: 100;
+  --z-connector: 110;
+  --z-spotlit: 120;
+  --z-dialog: 130;
+}

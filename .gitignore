@@ -1,29 +1,37 @@
-# Notes
+# Dependencies and build output
+node_modules
+dist
+dist-ssr
+coverage
+*.tsbuildinfo
+.vite
+.eslintcache
 
+# Local-only material
 notes/
+new_design_docs/
 
+# Secrets
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+personal_github*
 
 # Logs
 logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# Editors and OS
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
-*.ntvs*
-*.njsproj
-*.sln
 *.sw?
