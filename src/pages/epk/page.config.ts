@@ -4,7 +4,7 @@ import type { PhotoDetails } from '../../components/press-gallery/press-gallery.
 /*
  * About: the EPK (electronic press kit). The bio and interviews are
  * Markdown files in ./content/, so they can be edited without touching
- * code. Still a draft: see `draft` in PageConfig.
+ * code.
  */
 
 export interface AboutPage {
@@ -24,7 +24,6 @@ export default definePage<AboutPage>({
   path: '/epk/',
   title: 'EPK',
   description: 'About Eric Folino.',
-  draft: true,
   placeholder: {
     title: 'EPK',
     body: [
