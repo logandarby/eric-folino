@@ -1,0 +1,35 @@
+/* The placeholder image (set inline by the template) shows while loading. */
+.background {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--color-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+.background img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 35% 50%;
+}
+
+/*
+ * Landscape screens: frame the photo like the Figma design (zoomed past
+ * cover and anchored so the bus stop sits middle-left). --bg-zoom and
+ * --bg-focus come from site.config.ts. Squarer screens keep a plain cover
+ * so the bus stop isn't cropped away.
+ */
+@media (min-aspect-ratio: 4/3) {
+  .background {
+    background-position: var(--bg-focus);
+  }
+
+  .background img {
+    object-position: var(--bg-focus);
+    transform: scale(var(--bg-zoom));
+    transform-origin: var(--bg-focus);
+  }
+}

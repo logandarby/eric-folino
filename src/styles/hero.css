@@ -1,0 +1,186 @@
+/*
+ * The hero "stage" is a box with a fixed aspect ratio. Everything inside is
+ * positioned in percentages of it and sized relative to its width, so the
+ * composition scales as one piece. Per-layout values come from
+ * site.config.ts as inline CSS variables (--x-wide, --x-compact, …).
+ *
+ * Nothing between <body> and the blobs may create a stacking context
+ * (transform, opacity, filter, z-index, contain…) or a spotlit blob can't
+ * rise above the dim layer.
+ */
+
+.scene {
+  position: relative;
+  display: grid;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.stage {
+  --stage-w: var(--stage-w-wide);
+  --stage-ar: var(--stage-ar-wide);
+  position: relative;
+  width: var(--stage-w);
+  aspect-ratio: var(--stage-ar);
+  align-self: center;
+  justify-self: start;
+  margin: 0 0 6dvh 49vw;
+}
+
+:root[data-layout='compact'] .stage {
+  --stage-w: var(--stage-w-compact);
+  --stage-ar: var(--stage-ar-compact);
+  align-self: start;
+  justify-self: center;
+  margin: max(7dvh, 24px) 0 0;
+}
+
+.placed {
+  --x: var(--x-wide);
+  --y: var(--y-wide);
+  --w: var(--w-wide);
+  --fs: var(--fs-wide);
+  --tx: var(--tx-wide, 0%);
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+}
+
+:root[data-layout='compact'] .placed {
+  --x: var(--x-compact);
+  --y: var(--y-compact);
+  --w: var(--w-compact);
+  --fs: var(--fs-compact);
+  --tx: var(--tx-compact, 0%);
+}
+
+/* Text placed by its centre. Blobs never get this: a transform would trap
+   them in their own stacking context and break the spotlight. */
+.title.placed,
+.nav.placed {
+  translate: var(--tx) 0;
+}
+
+/* Title ------------------------------------------------------------------ */
+
+.title {
+  margin: 0;
+  font-size: calc(var(--stage-w) * var(--fs) / 100);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.title__box {
+  display: inline-block;
+  padding: 0.16em 0.3em 0.12em;
+  border: max(var(--border-width), 0.06em) solid var(--color-fg);
+  background: var(--color-bg);
+  letter-spacing: 0.03em;
+  transform: rotate(var(--title-tilt));
+}
+
+/* Nav -------------------------------------------------------------------- */
+
+.nav {
+  font-size: calc(var(--stage-w) * var(--fs) / 100);
+}
+
+.nav ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__link {
+  display: inline-block;
+  padding: 0.1em 0.3em 0.05em;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.nav__link:hover,
+.nav__link:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+:root[data-layout='compact'] .nav ul {
+  gap: 0.15em;
+}
+
+:root[data-layout='compact'] .nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  padding-block: 0;
+}
+
+/* Blobs ------------------------------------------------------------------ */
+
+.blob {
+  width: var(--w);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enlarges the hit area for small blobs on touch screens. */
+.blob::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
+
+.blob__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+@media (hover: hover) {
+  .blob:hover .blob__svg {
+    transform: scale(1.06);
+  }
+}
+
+.blob:active .blob__svg {
+  transform: scale(0.94);
+}
+
+.blob:focus-visible {
+  outline-offset: 10px;
+}
+
+.blob.is-spotlit {
+  z-index: var(--z-spotlit);
+}
+
+/* Highlight the selected blob with a glow in its own colour. */
+.blob__svg {
+  transition:
+    transform 0.15s ease-out,
+    filter 0.3s ease-out;
+}
+
+.blob.is-spotlit .blob__svg {
+  transform: none;
+  filter: drop-shadow(0 0 6px var(--blob-color))
+    drop-shadow(0 0 22px var(--blob-color));
+}
