@@ -26,7 +26,7 @@ The pre-commit hook formats and lints staged files, then runs the type-check, te
 | ------ | ---------- | -------------------------------------------------------------------------------------------- |
 | Home   | `/`        | The bus stop scene: clickable blobs, screen and "?", with the social links above the title   |
 | EPK    | `/epk/`    | The press kit: contact, bio, listening links, press photo downloads and interviews (a draft) |
-| Secret | `/secret/` | secrets    |
+| Secret | `/secret/` | secrets                                                                                      |
 | 404    | any other  | A placeholder dialog pointing back home                                                      |
 
 ## Editing the site
