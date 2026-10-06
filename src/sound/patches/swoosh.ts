@@ -1,4 +1,4 @@
-import type { SoundConfig } from '../../site.config.ts';
+import type { SoundConfig } from '../../site/types.ts';
 import { noise, voice, type OneShotPatch } from './patch.ts';
 
 /**

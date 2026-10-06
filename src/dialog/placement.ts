@@ -9,7 +9,7 @@ import {
   type Rect,
   type Size,
 } from '../core/geometry.ts';
-import type { Side } from '../site.config.ts';
+import type { Side } from '../site/types.ts';
 
 export type PlacementMode = 'floating' | 'docked';
 

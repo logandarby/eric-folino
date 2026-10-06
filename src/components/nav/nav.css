@@ -1,0 +1,46 @@
+.nav ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__link {
+  display: inline-block;
+  padding: 0.1em 0.3em 0.05em;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.nav__link[href]:hover,
+.nav__link:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+/* The page you're on stays highlighted, and isn't clickable (no href). */
+.nav__link[aria-current='page'] {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  cursor: default;
+}
+
+:root[data-layout='compact'] .nav ul {
+  gap: 0.15em;
+}
+
+:root[data-layout='compact'] .nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  padding-block: 0;
+}

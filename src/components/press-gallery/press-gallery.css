@@ -1,0 +1,115 @@
+.press-gallery {
+  display: grid;
+  gap: 24px;
+}
+
+.press-gallery__grid {
+  display: grid;
+  /* Small tiles: two across on phones, about five on wide screens. */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(clamp(130px, 18vw, 200px), 1fr)
+  );
+  gap: 16px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.press-gallery__photo {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.press-gallery__photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: var(--border-width) solid var(--color-fg);
+}
+
+.press-gallery__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--body-size, 0.875rem);
+}
+
+/* Buttons in the nav's style: boxed, inverting on hover. */
+.press-gallery__all,
+.press-gallery__download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: var(--tap-target);
+  padding: 0.2em 0.7em;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.press-gallery__all {
+  justify-self: start;
+  font-size: 1rem;
+}
+
+.press-gallery__all:hover,
+.press-gallery__all:focus-visible,
+.press-gallery__download:hover,
+.press-gallery__download:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.press-gallery__icon {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.press-gallery__meta {
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+/* Each photo's button spans its (narrow) tile. */
+.press-gallery__download {
+  justify-content: center;
+  width: 100%;
+  padding-inline: 0.5em;
+  font-size: 0.8125rem;
+}
+
+/* The label (Golos) and file details (Courier) sit on a shared baseline;
+   centring them as boxes leaves the smaller Courier text riding high.
+   When space is tight, the details drop below the label, in one piece. */
+.press-gallery__all,
+.press-gallery__download {
+  flex-wrap: wrap;
+  align-items: baseline;
+  align-content: center;
+  row-gap: 0;
+}
+
+.press-gallery__all .press-gallery__icon,
+.press-gallery__download .press-gallery__icon {
+  align-self: center;
+}
+
+.press-gallery__meta {
+  white-space: nowrap;
+}

@@ -1,0 +1,51 @@
+/*
+ * Icon links to Eric's profiles. Sized in em, so they follow whatever font
+ * size their container sets (the stage's on the home page).
+ */
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.socials__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  padding: 0.2em 0.3em;
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.socials__icon {
+  width: 1em;
+  height: 1em;
+  margin-inline: auto;
+}
+
+.socials__label {
+  font-weight: 400;
+}
+
+.socials__link:hover,
+.socials__link:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.socials--labelled {
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.socials--labelled .socials__icon {
+  margin-inline: 0;
+}

@@ -1,8 +1,8 @@
 /*
- * Visual design tokens. Behaviour and content settings live in
- * src/site.config.ts; a few of those are also exposed as CSS variables by
- * the head template (--dialog-max-w, --dialog-margin, --dim-opacity,
- * --title-tilt).
+ * Visual design tokens. Behaviour and content settings live in src/site/
+ * and the page configs; a few of those are also exposed as CSS variables
+ * by the head template, src/layouts/head.tsx (--dialog-max-w,
+ * --dialog-margin, --dim-opacity, --title-tilt).
  */
 :root {
   --color-bg: #000;

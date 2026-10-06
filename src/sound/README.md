@@ -1,7 +1,7 @@
 # Sound engine
 
 Game-style UI sounds, all synthesized with Web Audio: no audio files to
-download. Settings are in `sound` in `src/site.config.ts`.
+download. Settings are in `src/site/sound.config.ts`, voices in `src/site/voices.ts`.
 
 | Sound   | When                                     | Made of                                                        |
 | ------- | ---------------------------------------- | -------------------------------------------------------------- |

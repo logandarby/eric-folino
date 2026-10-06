@@ -12,7 +12,13 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ['build/**/*.ts', 'scripts/**/*.mjs', '*.config.{js,ts}'],
+    // Build-time code: the build scripts, and the .tsx templates in src/.
+    files: [
+      'build/**/*.{ts,tsx}',
+      'src/**/*.tsx',
+      'scripts/**/*.mjs',
+      '*.config.{js,ts}',
+    ],
     languageOptions: { globals: globals.node },
   },
   prettier

@@ -1,0 +1,120 @@
+.about__socials {
+  /* In a row rather than a column, to keep the page compact. */
+  flex-direction: row;
+  gap: 4px 20px;
+  font-size: 1rem;
+}
+
+/* The contact address: first and boxed like the other buttons. */
+.about__contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.about__contact {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0 12px;
+  padding: 10px 16px;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.about__contact:hover,
+.about__contact:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.about__contact-icon {
+  grid-row: span 2;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.about__contact-label {
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--body-size);
+}
+
+.about__contact-email {
+  font-size: clamp(1.0625rem, 3vw, 1.25rem);
+  /* Long addresses wrap on narrow phones rather than overflowing. */
+  overflow-wrap: anywhere;
+}
+
+.interview {
+  display: grid;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: var(--border-width) solid var(--color-fg);
+}
+
+.interview__title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.interview__title a {
+  color: inherit;
+}
+
+.interview__meta {
+  margin: 4px 0 0;
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--body-size);
+  opacity: 0.75;
+}
+
+.about__note {
+  max-width: 80ch;
+  margin: 0;
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.55;
+}
+
+/* A quiet line of jump links to the sections below. */
+.about__toc ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--body-size);
+}
+
+.about__toc a {
+  color: inherit;
+  opacity: 0.75;
+  text-underline-offset: 0.2em;
+}
+
+.about__toc a:hover,
+.about__toc a:focus-visible {
+  opacity: 1;
+}
+
+/* Jumping to a section leaves a little room above its heading. */
+.section__heading {
+  scroll-margin-top: 24px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

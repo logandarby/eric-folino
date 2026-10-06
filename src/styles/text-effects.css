@@ -4,8 +4,8 @@
  * is a CSS animation. Motion uses `translate`/`rotate`, which the browser
  * runs on the compositor: no layout, no paint, no JavaScript per frame, and
  * no reflow, since transforms don't affect layout. Tuning variables
- * (--wave-period…) and the rainbow keyframes come from site.config.ts via
- * the head template.
+ * (--wave-period…) and the rainbow keyframes come from src/site/site.config.ts via
+ * the head template (src/layouts/head.tsx).
  *
  * A letter has two animation slots that combine: one motion (wave, float
  * or shake; the engine picks the innermost) and one colour (rainbow).

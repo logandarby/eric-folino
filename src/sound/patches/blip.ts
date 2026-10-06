@@ -1,4 +1,4 @@
-import type { DialogVoice } from '../../site.config.ts';
+import type { DialogVoice } from '../../site/types.ts';
 import {
   jitter,
   noise,

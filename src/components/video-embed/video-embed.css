@@ -1,0 +1,49 @@
+.video-embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: var(--border-width) solid var(--color-fg);
+  background: #111;
+}
+
+.video-embed__poster,
+.video-embed__player {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-embed__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+
+.video-embed__poster:hover img,
+.video-embed__poster:focus-visible img {
+  opacity: 1;
+}
+
+.video-embed__play {
+  position: absolute;
+  inset: auto auto 16px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.3em 0.6em;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+.video-embed__poster:hover .video-embed__play,
+.video-embed__poster:focus-visible .video-embed__play {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.video-embed__icon {
+  width: 0.8em;
+  height: 0.8em;
+}

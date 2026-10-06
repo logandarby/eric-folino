@@ -1,0 +1,50 @@
+.blob {
+  width: var(--w);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enlarges the hit area for small blobs on touch screens. */
+.blob::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
+
+.blob__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+@media (hover: hover) {
+  .blob:hover .blob__svg {
+    transform: scale(1.06);
+  }
+}
+
+.blob:active .blob__svg {
+  transform: scale(0.94);
+}
+
+.blob:focus-visible {
+  outline-offset: 10px;
+}
+
+/* Highlight the selected blob with a glow in its own colour. */
+.blob__svg {
+  transition:
+    transform 0.15s ease-out,
+    filter 0.3s ease-out;
+}
+
+.blob.is-spotlit .blob__svg {
+  transform: none;
+  filter: drop-shadow(0 0 6px var(--blob-color))
+    drop-shadow(0 0 22px var(--blob-color));
+}

@@ -12,6 +12,8 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "useDefineForClassFields": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "#jsx",
 
     "strict": true,
     "noUnusedLocals": true,

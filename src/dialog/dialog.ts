@@ -1,5 +1,5 @@
 import { h } from '../core/component.ts';
-import type { DialogContent } from '../site.config.ts';
+import type { DialogContent } from '../site/types.ts';
 import { TextEngine, type TextEngineOptions } from '../text/text-engine.ts';
 import type { Typewriter } from '../text/typewriter.ts';
 

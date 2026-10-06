@@ -1,7 +1,7 @@
 import type { Cleanup } from '../core/disposer.ts';
 import { prefersReducedMotion } from '../core/motion.ts';
 import { ticker } from '../core/ticker.ts';
-import type { TextEffectsConfig } from '../site.config.ts';
+import type { TextEffectsConfig } from '../site/types.ts';
 
 const ACTIVE_CLASS = 'is-scrambling';
 

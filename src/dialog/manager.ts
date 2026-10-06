@@ -11,7 +11,8 @@ import {
 } from '../core/geometry.ts';
 import { currentLayout, onLayoutChange } from '../core/layout.ts';
 import { animate, duration, prefersReducedMotion } from '../core/motion.ts';
-import { siteConfig, type DialogContent } from '../site.config.ts';
+import { siteConfig } from '../site/site.config.ts';
+import type { DialogContent } from '../site/types.ts';
 import type { DialogAnchor } from './anchor.ts';
 import { routeConnector } from './connector.ts';
 import { DialogView } from './dialog.ts';

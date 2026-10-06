@@ -1,0 +1,108 @@
+/*
+ * A scrolling page: header, then a single readable column. Content styles
+ * (.prose for Markdown, .section for headed blocks) are shared here so
+ * every document page looks related.
+ */
+
+.document {
+  --document-gutter: clamp(16px, 5vw, 64px);
+  /* Size of body text (bio, interviews, captions). */
+  --body-size: 0.875rem;
+  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top) + 96px) var(--document-gutter)
+    calc(env(safe-area-inset-bottom) + 96px);
+}
+
+.document__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px 48px;
+  max-width: 1100px;
+  margin: 0 auto 72px;
+}
+
+.document__title {
+  font-size: clamp(2rem, 6vw, 4rem);
+}
+
+.document .nav {
+  font-size: 1.25rem;
+}
+
+.document .nav ul {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.document__main {
+  display: grid;
+  gap: 56px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Sections ---------------------------------------------------------------- */
+
+.section {
+  display: grid;
+  gap: 16px;
+}
+
+/* Headings are labels in the nav's style: inverted boxes. */
+.section__heading {
+  justify-self: start;
+  margin: 0;
+  padding: 0.1em 0.3em 0.05em;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  letter-spacing: 0.02em;
+}
+
+/* Markdown --------------------------------------------------------------- */
+
+.prose {
+  /* Smaller text fits more per line, so allow a few more characters. */
+  max-width: 80ch;
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.55;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.prose a:hover {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  text-decoration: none;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: 1em;
+  border-left: var(--border-width) solid var(--color-fg);
+  font-style: italic;
+}
+
+/* Images keep their proportions while filling the column. The width and
+   height attributes (from build/images.ts) reserve their space early. */
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
