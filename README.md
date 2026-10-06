@@ -22,12 +22,12 @@ The pre-commit hook formats and lints staged files, then runs the type-check, te
 
 ## The pages
 
-| Page   | Path       | What it is                                                                                   |
-| ------ | ---------- | -------------------------------------------------------------------------------------------- |
-| Home   | `/`        | The bus stop scene: clickable blobs, screen and "?", with the social links above the title   |
-| EPK    | `/epk/`    | The press kit: contact, bio, listening links, press photo downloads and interviews (a draft) |
-| Secret | `/secret/` | secrets                                                                                      |
-| 404    | any other  | A placeholder dialog pointing back home                                                      |
+| Page   | Path       | What it is                                                                                 |
+| ------ | ---------- | ------------------------------------------------------------------------------------------ |
+| Home   | `/`        | The bus stop scene: clickable blobs, screen and "?", with the social links above the title |
+| EPK    | `/epk/`    | The press kit: contact, bio, listening links, press photo downloads and interviews         |
+| Secret | `/secret/` | secrets                                                                                    |
+| 404    | any other  | A placeholder dialog pointing back home                                                    |
 
 ## Editing the site
 
@@ -72,7 +72,7 @@ Each page is a folder in `src/pages/`:
 
 A page without `page.tsx` (like the 404) is a **placeholder**: the bus stop with a dialog from its `placeholder` setting.
 
-**Drafts.** A page with `draft: true` is built in full only on the dev server and with `SHOW_DRAFTS=1`. Everywhere else, including the live site, it shows its placeholder instead, and its files (like the press downloads) are left out. The EPK and Secret pages are drafts for now; remove `draft` from a page's config to publish it.
+**Drafts.** A page with `draft: true` is built in full only on the dev server and with `SHOW_DRAFTS=1`. Everywhere else, including the live site, it shows its placeholder instead, and its files (like the press downloads) are left out. To publish a draft, remove `draft` from its config.
 
 **Adding a page:**
 

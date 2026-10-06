@@ -4,7 +4,7 @@ import { hushVoice } from '../../site/voices.ts';
 
 /*
  * Secret: the experimental page. For now, just a watching eye. Artworks
- * for later live in ./pieces/. Still a draft: see `draft` in PageConfig.
+ * for later live in ./pieces/.
  */
 
 const notYet: DialogContent = {
@@ -24,7 +24,6 @@ export default definePage<{ eye: HotspotConfig }>({
   path: '/secret/',
   title: 'Secret',
   description: 'Nothing to see here.',
-  draft: true,
   placeholder: notYet,
 
   /** The eye in the middle of the page. */
