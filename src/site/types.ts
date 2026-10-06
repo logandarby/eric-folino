@@ -87,7 +87,7 @@ export interface SoundConfig {
     /** Random pitch change per letter, as a fraction (0.08 = ±8%). */
     pitchJitter: number;
   };
-  /** Electric hum while the bus stop screen is hovered or focused. */
+  /** Electric hum while the bus stop screen is hovered or focused, or its dialog is open. */
   hum: {
     volume: number;
     /** Mains frequency in Hz. */

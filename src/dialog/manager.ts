@@ -43,7 +43,7 @@ export interface OpenOptions {
 
 export interface DialogEvents extends Record<string, unknown> {
   /** A dialog starts opening; its typewriter hasn't started yet. */
-  open: { view: DialogView; content: DialogContent };
+  open: { view: DialogView; content: DialogContent; anchor: DialogAnchor };
   /** The open dialog starts closing. */
   close: { view: DialogView };
 }
@@ -153,7 +153,11 @@ export class DialogManager {
     this.layout(active);
     this.bindEvents(active);
 
-    this.events.emit('open', { view, content: options.content });
+    this.events.emit('open', {
+      view,
+      content: options.content,
+      anchor: options.anchor,
+    });
     const t = siteConfig.animation;
     if (modal) this.inertRoots.forEach((root) => (root.inert = true));
     const dimmed = modal
