@@ -1,0 +1,39 @@
+{
+  "hash": "c98de1552c7f38df00343b544548c14ded287bf93d1567d14aed862d972010a2",
+  "themes": [
+    {
+      "theme": "desolation",
+      "line": 1
+    },
+    {
+      "theme": "solitude",
+      "line": 8
+    },
+    {
+      "theme": "isolation",
+      "line": 2
+    }
+  ],
+  "words": [
+    {
+      "word": "night",
+      "suggests": "solitude"
+    },
+    {
+      "word": "empty",
+      "suggests": "desolation"
+    },
+    {
+      "word": "muffled",
+      "suggests": "isolation"
+    },
+    {
+      "word": "glows",
+      "suggests": "solitude"
+    },
+    {
+      "word": "hum",
+      "suggests": "isolation"
+    }
+  ]
+}

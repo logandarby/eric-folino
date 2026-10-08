@@ -15,6 +15,8 @@ A static site built with Vite and plain TypeScript (no UI framework), deployed t
 | `npm run format`              | Prettier                                               |
 | `npm run images`              | Regenerate background variants from `assets-src/`      |
 | `npm run eyes`                | Re-cut the iris page's eyes from `assets-src/eyes/`    |
+| `npm run tv:collage`          | Remake the TV's photos from `assets-src/tv-collage/`   |
+| `npm run poems`               | Re-link the poems after adding or changing one         |
 | `npm run check-circular`      | Fail on circular imports                               |
 
 Requires Node 20.19+ (CI uses 22).
@@ -23,13 +25,14 @@ The pre-commit hook formats and lints staged files, then runs the type-check, te
 
 ## The pages
 
-| Page  | Path      | What it is                                                                                |
-| ----- | --------- | ----------------------------------------------------------------------------------------- |
-| Home  | `/`       | The bus stop scene: clickable blobs and screen, with the social links above the title     |
-| EPK   | `/epk/`   | The press kit: contact, bio, listening links, press photo downloads and interviews        |
-| Enter | `/enter/` | An old TV playing static that asks if you'd like to enter. The nav's "Secret" leads here  |
-| Iris  | `/iris/`  | Four eyes that follow the pointer, over "MORE EYES ARE GOOD". Not linked yet, and noindex |
-| 404   | any other | A placeholder dialog pointing back home                                                   |
+| Page  | Path      | What it is                                                                                                |
+| ----- | --------- | --------------------------------------------------------------------------------------------------------- |
+| Home  | `/`       | The bus stop scene: clickable blobs and screen, with the social links above the title                     |
+| EPK   | `/epk/`   | The press kit: contact, bio, listening links, press photo downloads and interviews                        |
+| Enter | `/enter/` | An old TV playing the band through static that asks if you'd like to enter. The nav's "Secret" leads here |
+| Iris  | `/iris/`  | Four eyes that follow the pointer, over "MORE EYES ARE GOOD". Not linked yet, and noindex                 |
+| Poems | `/poems/` | A wiki of poems, each on its own page, linked by their words. Draft, unstyled                             |
+| 404   | any other | A placeholder dialog pointing back home                                                                   |
 
 ## Editing the site
 
@@ -64,8 +67,10 @@ Sections with nothing in them are left out, and the line of links at the top of 
 - **`src/styles/base.css`**: the dashed outline that marks anything usable. Every button gets it on hover, and anything focusable gets it on keyboard focus, so new pages have it for free; set `--outline-offset` on an element to move it.
 - **`src/assets/blobs/*.svg`**: blob shapes (one `<path>` each; the colour comes from its `fill`).
 - **`assets-src/web-background.png`**: the full-size background. Run `npm run images` after changing it.
-- **`assets-src/strange-tv.png`**: the enter page's TV photo, with a transparent hole where the screen plays. Run `npm run tv` after changing it; it finds the hole and makes a whole-photo crop and a tall phone crop. Where the TV is (for its button), the "enter?" text, the static's brightness and the CRT look are in `src/pages/enter/page.config.ts`; the background colour and tile are at the top of `enter.css`.
+- **`assets-src/strange-tv.png`**: the enter page's TV photo, with a transparent hole where the screen plays. Run `npm run tv` after changing it; it finds the hole and makes a whole-photo crop and a tall phone crop. Where the TV is (for its button), the "enter?" text, the picture's brightness, how the static fades and the CRT look are in `src/pages/enter/page.config.ts`; the background colour and tile are at the top of `enter.css`.
+- **`assets-src/tv-collage/`**: the photos the TV cuts between, like a video, behind the static (`photoSeconds` in `src/pages/enter/page.config.ts` sets how long each shows). Run `npm run tv:collage` after adding or changing one; it crops them to the screen's shape and puts them in one image, in a shuffled order (change `SEED` in `scripts/build-tv-collage.mjs` for another).
 - **`assets-src/eyes/`**: the iris page's eyes, as three same-size layers (`base`, `iris`, `skin`) holding all four eyes. Run `npm run eyes` after changing them; where each eye sits, and how much the irises are shrunk (`IRIS_SCALE`), are set in `scripts/slice-eyes.mjs`. Their placement, iris reach, dialogs, backdrop text and dither (palette and pixelation) are in `src/pages/iris/page.config.ts`.
+- **`src/pages/poems/content/*.md`**: the poems, one per file: the title on the first line, then a blank line, then the poem as it should read (Prettier leaves them alone). Run `npm run poems` after adding or changing one. A local language model (Qwen2.5 7B through `node-llama-cpp`, about 4.7 GB, downloaded on first run) writes each new or changed poem a card in `src/pages/poems/cards/`: a few themes, each with the line it comes from, and a few of the poem's words with what each suggests. Cards are committed, so building the site never needs the model, and they're never shown on the site; edit one by hand to change what a poem is about, or rewrite it with `npm run poems -- <slug>`. A word links to another poem when it, or what it suggests, is close in meaning to that poem's title or one of its themes, and clicking it opens a dialog with that poem's title, the line it lands on and a button to go there. The settings are at the top of `scripts/build-poems.mjs`. `/poems/graph/` draws the poems as a graph (d3-force, pulled together as hard as each link scores); poems the visitor hasn't opened yet (remembered in localStorage) are locked: grey, blurred and untitled. On the dev server, backtick shows every link and its score.
 
 ## How pages are built
 

@@ -1,0 +1,39 @@
+{
+  "hash": "a3d8528f02e878fc0ea559154e86d7e0451cbbd2342edbdbfd785e70a2c34ba3",
+  "themes": [
+    {
+      "theme": "solitude",
+      "line": 2
+    },
+    {
+      "theme": "illusion",
+      "line": 5
+    },
+    {
+      "theme": "discovery",
+      "line": 8
+    }
+  ],
+  "words": [
+    {
+      "word": "unobserved",
+      "suggests": "loneliness"
+    },
+    {
+      "word": "lying",
+      "suggests": "deception"
+    },
+    {
+      "word": "tall",
+      "suggests": "unattainable"
+    },
+    {
+      "word": "cracks",
+      "suggests": "secrets"
+    },
+    {
+      "word": "mountain",
+      "suggests": "challenge"
+    }
+  ]
+}

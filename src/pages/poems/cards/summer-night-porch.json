@@ -1,0 +1,39 @@
+{
+  "hash": "31b24441920656cf22a13db78588f1e892b8232d36e76a4228002b9097429b56",
+  "themes": [
+    {
+      "theme": "departure",
+      "line": 2
+    },
+    {
+      "theme": "solitude",
+      "line": 4
+    },
+    {
+      "theme": "nostalgia",
+      "line": 5
+    }
+  ],
+  "words": [
+    {
+      "word": "fist",
+      "suggests": "aggression"
+    },
+    {
+      "word": "bled",
+      "suggests": "pain"
+    },
+    {
+      "word": "cane",
+      "suggests": "loneliness"
+    },
+    {
+      "word": "throne",
+      "suggests": "solitude"
+    },
+    {
+      "word": "jab",
+      "suggests": "pain"
+    }
+  ]
+}

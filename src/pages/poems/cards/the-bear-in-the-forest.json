@@ -1,0 +1,39 @@
+{
+  "hash": "d03b0188f3e8fb3a468cab920118f0b495f8a795c95e1c8a50f56811e13e25d3",
+  "themes": [
+    {
+      "theme": "nightmare",
+      "line": 35
+    },
+    {
+      "theme": "foreboding",
+      "line": 16
+    },
+    {
+      "theme": "repetition",
+      "line": 11
+    }
+  ],
+  "words": [
+    {
+      "word": "jolts",
+      "suggests": "sudden fear"
+    },
+    {
+      "word": "sweat",
+      "suggests": "dread"
+    },
+    {
+      "word": "blade",
+      "suggests": "threat"
+    },
+    {
+      "word": "obsidian",
+      "suggests": "darkness"
+    },
+    {
+      "word": "stillness",
+      "suggests": "tension"
+    }
+  ]
+}

@@ -1,33 +1,54 @@
 import { h } from '../../core/component.ts';
 import { ShaderCanvas } from '../../gl/shader-canvas.ts';
+import collage from './collage.json';
+import collageUrl from './collage.webp';
 import type { TvConfig } from './page.config.ts';
 import fragment from './tv.frag?raw';
 
-/** Seconds between the static's changes in brightness. */
+/** Seconds between the picture's changes in brightness. */
 const DRIFT_S = 1.6;
 
 /**
  * Plays the TV's screen: a shader on a canvas behind the photo's hole
- * (tv.frag). Without WebGL the screen stays dark.
- *
- * Only the static plays for now. A video would be one more texture in
- * the shader.
+ * (tv.frag), cutting between photos of the band with static fading in
+ * and out over them. Without WebGL, or if the photos won't load, the
+ * screen stays dark.
  */
 export function playTv(tv: HTMLElement, config: TvConfig): void {
   const screen = tv.querySelector<HTMLElement>('[data-tv-screen]');
   if (!screen) return;
+  const photos = new Image();
+  photos.src = collageUrl;
+  photos.decode().then(
+    () => start(screen, photos, config),
+    () => undefined
+  );
+}
 
+function start(
+  screen: HTMLElement,
+  photos: HTMLImageElement,
+  config: TvConfig
+): void {
   const { crt } = config;
   const canvas = h('canvas', { 'aria-hidden': 'true' });
   const shader = ShaderCanvas.create(canvas, {
     fragment,
+    textures: { u_collage: photos },
     maxFps: 30,
     stillTime: 4.2,
     beforeDraw: (time) => {
-      shader?.set('u_level', brightness(time, config.signal));
+      shader?.set('u_level', drift(time, DRIFT_S, config.signal));
+      shader?.set('u_noise', staticAmount(time, config.static));
+      // In order, round and round (the order is shuffled when it's made).
+      shader?.set(
+        'u_frame',
+        Math.floor(time / config.photoSeconds) % collage.count
+      );
     },
   });
   if (!shader) return;
+  shader.set('u_frames', collage.columns, collage.rows);
   shader.set('u_tint', ...rgb(config.tint));
   shader.set('u_curvature', crt.curvature);
   shader.set('u_scanlines', crt.scanlines);
@@ -36,21 +57,36 @@ export function playTv(tv: HTMLElement, config: TvConfig): void {
   shader.set('u_vignette', crt.vignette);
   shader.set('u_flicker', crt.flicker);
   screen.append(canvas);
-  tv.dataset.gl = '';
+  screen.closest<HTMLElement>('[data-tv]')?.setAttribute('data-gl', '');
 }
 
 /**
- * How bright the static is at `time` (seconds): wandering smoothly between
- * `min` and `max`, slowly enough that it never flashes.
+ * A value at `time` (seconds) wandering smoothly between `min` and `max`,
+ * to a new random one every `seconds`, slowly enough that it never flashes.
+ * `shape` bends the randomness: above 1, it mostly stays near `min`.
  */
-function brightness(time: number, { min, max }: TvConfig['signal']): number {
-  const t = time / DRIFT_S;
+function drift(
+  time: number,
+  seconds: number,
+  { min, max }: { min: number; max: number },
+  shape = 1,
+  seed = 0
+): number {
+  const t = time / seconds;
   const i = Math.floor(t);
   const f = t - i;
   const ease = f * f * (3 - 2 * f);
-  const a = random(i);
-  const b = random(i + 1);
+  const a = random(i + seed) ** shape;
+  const b = random(i + 1 + seed) ** shape;
   return min + (max - min) * (a + (b - a) * ease);
+}
+
+/**
+ * How much static covers the photo at `time`: mostly a little, now and
+ * then fading up to hide it and back.
+ */
+function staticAmount(time: number, config: TvConfig['static']): number {
+  return drift(time, config.seconds, config, config.shape, 1000);
 }
 
 /** A repeatable random number, 0–1, for an integer. */

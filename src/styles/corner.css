@@ -17,6 +17,10 @@
 
 :root[data-layout='compact'] .corner {
   --corner-gap: 16px;
+}
+
+:root[data-layout='compact'] .corner,
+.corner--bottom {
   top: auto;
   bottom: calc(env(safe-area-inset-bottom) + var(--corner-gap));
 }

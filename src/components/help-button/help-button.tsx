@@ -9,15 +9,22 @@ import { siteConfig } from '../../site/site.config.ts';
  */
 export function HelpButton({
   scrolls = false,
+  bottom = false,
 }: {
   /** Scroll away with the page instead of staying put (for long pages). */
   scrolls?: boolean;
+  /** In the bottom corner on desktop too, not just on mobile. */
+  bottom?: boolean;
 }) {
   stylesheet(import.meta.url, './help-button.css');
   return (
     <button
       type="button"
-      class={['corner corner-button help', scrolls && 'corner--scrolls']
+      class={[
+        'corner corner-button help',
+        scrolls && 'corner--scrolls',
+        bottom && 'corner--bottom',
+      ]
         .filter(Boolean)
         .join(' ')}
       data-help

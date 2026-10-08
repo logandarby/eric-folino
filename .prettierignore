@@ -12,3 +12,5 @@ assets-src/
 src/assets/
 new_design_docs/
 notes/
+# Poems are written as they are, line for line.
+src/pages/poems/content/

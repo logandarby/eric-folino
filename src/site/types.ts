@@ -160,6 +160,11 @@ export interface StageLayout {
 
 export interface PageConfig {
   id: string;
+  /**
+   * The folder in src/pages/ whose page.tsx renders it, when that isn't
+   * its `id`: for pages made from one template, like each poem.
+   */
+  view?: string;
   path: string;
   /** Used for the <title> tag; `null` means just the site name. */
   title: string | null;

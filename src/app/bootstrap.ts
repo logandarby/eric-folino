@@ -21,6 +21,8 @@ export interface Site {
 export interface BootstrapOptions {
   /** What the "?" in the corner says on this page (default: siteConfig.help). */
   help?: DialogContent;
+  /** The text demo's key (see text-demo.ts); off for pages that use it. Default true. */
+  textDemo?: boolean;
 }
 
 /**
@@ -29,6 +31,7 @@ export interface BootstrapOptions {
  */
 export function bootstrap({
   help = siteConfig.help.dialog,
+  textDemo = true,
 }: BootstrapOptions = {}): Site {
   const title = document.querySelector<HTMLElement>('[data-rainbow]');
   if (title) {
@@ -47,11 +50,13 @@ export function bootstrap({
 
   // Layouts mark what a modal dialog makes inert with [data-page-root].
   const dialogs = new DialogManager($$('[data-page-root]'));
-  installTextDemo(
-    dialogs,
-    document.querySelector<HTMLElement>('[data-text-demo-anchor]') ??
-      document.body
-  );
+  if (textDemo) {
+    installTextDemo(
+      dialogs,
+      document.querySelector<HTMLElement>('[data-text-demo-anchor]') ??
+        document.body
+    );
+  }
 
   const preferences = new UserPreferences<SoundPreferences>({
     // Reduced motion is the closest thing to a "less stimulation, please"

@@ -1,0 +1,79 @@
+/* The graph fills the window; dragging and the wheel move around in it. */
+.poem-graph {
+  --poem-node: #9b5cff;
+  --poem-locked: #555;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.poem-graph.is-panning {
+  cursor: grabbing;
+}
+
+.poem-graph svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.poem-graph-link {
+  stroke: var(--color-fg);
+}
+
+.poem-graph-node {
+  fill: var(--poem-node);
+  cursor: pointer;
+}
+
+/* SVG links don't take the usual outline well, so a read poem gets a
+   dashed ring instead. */
+.poem-graph a {
+  outline: none;
+}
+
+.poem-graph-ring {
+  fill: none;
+  stroke: var(--color-fg);
+  stroke-width: var(--border-width);
+  stroke-dasharray: 4 3;
+  visibility: hidden;
+}
+
+.poem-graph a:focus-visible .poem-graph-ring {
+  visibility: visible;
+}
+
+@media (hover: hover) {
+  .poem-graph a:hover .poem-graph-ring {
+    visibility: visible;
+  }
+}
+
+/* Not read yet: dim, blurred, and going nowhere. */
+.poem-graph-node.is-locked {
+  fill: var(--poem-locked);
+  filter: url(#poem-graph-blur);
+  cursor: grab;
+}
+
+.poem-graph-back {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 16px;
+}
+
+/* The dev-only table of links (backtick shows it). */
+.poem-graph-debug {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 1;
+  max-height: 50dvh;
+  overflow: auto;
+  background: var(--color-bg);
+  border-top: var(--border-width) solid var(--color-fg);
+}

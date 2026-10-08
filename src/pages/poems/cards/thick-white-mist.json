@@ -1,0 +1,31 @@
+{
+  "hash": "1a8ea0449ee9c2b2b6f75ef393cc7b1b678467686af92e23b856c9fe2e6bad5e",
+  "themes": [
+    {
+      "theme": "loss",
+      "line": 4
+    },
+    {
+      "theme": "growth",
+      "line": 16
+    },
+    {
+      "theme": "revelation",
+      "line": 22
+    }
+  ],
+  "words": [
+    {
+      "word": "mist",
+      "suggests": "obfuscation"
+    },
+    {
+      "word": "grow",
+      "suggests": "emerge"
+    },
+    {
+      "word": "fruit",
+      "suggests": "fulfillment"
+    }
+  ]
+}

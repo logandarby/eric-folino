@@ -1,0 +1,26 @@
+/* Shared by the poems' pages: the list, each poem and the graph. */
+
+/* Dialogs here are mostly a title, so they're only as wide as it (and their
+   other contents), up to the usual width. Docked ones on mobile stay as
+   they are. */
+.dialog:not([data-mode='docked']) {
+  width: fit-content;
+  max-width: min(var(--dialog-max-w), 100vw - 2 * var(--dialog-margin));
+}
+
+/* Nothing below the title: no gap for it. */
+.dialog__header:has(+ .dialog__body:empty:last-child) {
+  margin-bottom: 0;
+}
+
+.dialog__body:empty {
+  display: none;
+}
+
+/* Links get the dashed outline on hover that buttons do (see base.css). */
+@media (hover: hover) {
+  a:hover {
+    outline: var(--border-width) dashed var(--color-fg);
+    outline-offset: var(--outline-offset, 4px);
+  }
+}

@@ -1,0 +1,12 @@
+/* Positioned, so a link can rise above the dim while its dialog is open. */
+.poem-link {
+  position: relative;
+  /* Its hover outline hugs the word, not the lines around it. */
+  --outline-offset: 2px;
+}
+
+/* Lines keep their spacing as written, like a tab at the start. */
+.poem-line {
+  white-space: pre-wrap;
+  tab-size: 4;
+}

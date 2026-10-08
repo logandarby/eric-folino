@@ -1,0 +1,39 @@
+{
+  "hash": "047138c98173ee1a72516422b000824daeae2c2cdd86366ca5f1e1ee7485c39d",
+  "themes": [
+    {
+      "theme": "accidents",
+      "line": 1
+    },
+    {
+      "theme": "imagination",
+      "line": 3
+    },
+    {
+      "theme": "irony",
+      "line": 4
+    }
+  ],
+  "words": [
+    {
+      "word": "burnt",
+      "suggests": "mistake"
+    },
+    {
+      "word": "look",
+      "suggests": "perspective"
+    },
+    {
+      "word": "waffles",
+      "suggests": "unusual view"
+    },
+    {
+      "word": "manhole",
+      "suggests": "unexpected"
+    },
+    {
+      "word": "covers",
+      "suggests": "hidden truth"
+    }
+  ]
+}

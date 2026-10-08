@@ -12,14 +12,21 @@ import { Icon } from '../icon/icon.tsx';
  */
 export function SoundControl({
   scrolls = false,
+  bottom = false,
 }: {
   /** Scroll away with the page instead of staying put (for long pages). */
   scrolls?: boolean;
+  /** In the bottom corner on desktop too, not just on mobile. */
+  bottom?: boolean;
 }) {
   stylesheet(import.meta.url, './sound-control.css');
   return (
     <div
-      class={['corner sound-control', scrolls && 'corner--scrolls']
+      class={[
+        'corner sound-control',
+        scrolls && 'corner--scrolls',
+        bottom && 'corner--bottom',
+      ]
         .filter(Boolean)
         .join(' ')}
       data-sound-control

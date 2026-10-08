@@ -3,7 +3,7 @@ import type { HotspotConfig } from '../../site/types.ts';
 import { screenVoice } from '../../site/voices.ts';
 
 /*
- * Enter: an old TV in an empty room, playing static, that asks if you'd
+ * Enter: an old TV in an empty room, playing the band through static, that asks if you'd
  * like to come in. The nav's "Secret" leads here.
  */
 
@@ -23,8 +23,19 @@ export interface TvConfig extends HotspotConfig {
     /** Font size, as a share of the TV's width. */
     size: number;
   };
-  /** How bright the static is, 0–1. It drifts slowly between the two. */
+  /** How bright the picture is, 0–1. It drifts slowly between the two. */
   signal: { min: number; max: number };
+  /**
+   * How long each photo shows, in seconds, before the TV cuts to the next
+   * (assets-src/tv-collage/, put together by `npm run tv:collage`).
+   */
+  photoSeconds: number;
+  /**
+   * How much static covers the photos, 0–1. It fades between the two at random, to a
+   * new amount every `seconds`; `shape` above 1 keeps it nearer `min`
+   * more of the time.
+   */
+  static: { min: number; max: number; seconds: number; shape: number };
   /** The static's colour at full brightness, "#rrggbb". */
   tint: string;
   /** The CRT look over the picture (tv.frag), after daenavan's crt-threejs. */
@@ -71,6 +82,8 @@ export default definePage<{ tv: TvConfig }>({
     body: { x: 1538, y: 888, width: 726, height: 724 },
     cta: { text: 'enter?', size: 0.13 },
     signal: { min: 0.72, max: 0.95 },
+    photoSeconds: 0.5,
+    static: { min: 0.15, max: 0.9, seconds: 1.2, shape: 2 },
     tint: '#d4b4ff',
     crt: {
       curvature: 0.18,

@@ -1,0 +1,31 @@
+{
+  "hash": "1b40ec336a7a7974d82da8878abeb2cb1b4726b629e5b80c9dbc08bcca57b620",
+  "themes": [
+    {
+      "theme": "forgetting",
+      "line": 3
+    },
+    {
+      "theme": "sight",
+      "line": 4
+    },
+    {
+      "theme": "guidance",
+      "line": 6
+    }
+  ],
+  "words": [
+    {
+      "word": "tattooed",
+      "suggests": "identity"
+    },
+    {
+      "word": "graveyard",
+      "suggests": "death"
+    },
+    {
+      "word": "golden",
+      "suggests": "hope"
+    }
+  ]
+}

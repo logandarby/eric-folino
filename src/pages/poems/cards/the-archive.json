@@ -1,0 +1,35 @@
+{
+  "hash": "26f8e99f5ec2c43a779522ab6cce2678a515945bd06d0815e9916d0f035828a2",
+  "themes": [
+    {
+      "theme": "preserving",
+      "line": 3
+    },
+    {
+      "theme": "separation",
+      "line": 1
+    },
+    {
+      "theme": "guilt",
+      "line": 2
+    }
+  ],
+  "words": [
+    {
+      "word": "fossilize",
+      "suggests": "permanently preserving"
+    },
+    {
+      "word": "guiltiest",
+      "suggests": "regret"
+    },
+    {
+      "word": "amber",
+      "suggests": "preservation, memory"
+    },
+    {
+      "word": "drawer",
+      "suggests": "separation, storage"
+    }
+  ]
+}

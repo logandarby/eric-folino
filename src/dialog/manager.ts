@@ -66,7 +66,7 @@ interface ActiveDialog {
  * connector line, and keeps it positioned as the viewport changes.
  *
  * Open/close requests are queued, so rapid clicks can't interleave
- * animations. `events` announces each open and close (sounds hook in there).
+ * animations; only the latest waiting request runs. `events` announces each open and close (sounds hook in there).
  */
 export class DialogManager {
   readonly events = new Emitter<DialogEvents>();
@@ -75,6 +75,8 @@ export class DialogManager {
   private readonly connector = document.createElementNS(SVG_NS, 'polyline');
   private active: ActiveDialog | null = null;
   private queue: Promise<void> = Promise.resolve();
+  /** Counts requests, so a waiting one can tell it's been overtaken. */
+  private requests = 0;
   private layoutFrame = 0;
 
   /** @param inertRoots page regions disabled while a modal dialog is open. */
@@ -110,8 +112,25 @@ export class DialogManager {
     return this.isOpenFor(options.anchor) ? this.close() : this.open(options);
   }
 
+  /**
+   * Re-places the open dialog, for an anchor that moved on its own (one
+   * that's animated, say). Scrolling and resizing already do this.
+   */
+  reposition(): void {
+    if (this.active) this.scheduleLayout();
+  }
+
+  /**
+   * Runs `task` after whatever is animating now. A request that's still
+   * waiting when a newer one arrives is dropped, since the newer one decides
+   * what ends up open: tabbing quickly through many anchors shows the last
+   * one's dialog, not each in turn.
+   */
   private enqueue(task: () => Promise<void>): Promise<void> {
-    const run = this.queue.then(task);
+    const request = ++this.requests;
+    const run = this.queue.then(() =>
+      request === this.requests ? task() : undefined
+    );
     this.queue = run.catch((err: unknown) => console.error(err));
     return run;
   }
