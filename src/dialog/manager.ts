@@ -105,6 +105,11 @@ export class DialogManager {
     return this.enqueue(() => this.doClose());
   }
 
+  /** Opens the dialog, or closes it if it's already open for this anchor. */
+  toggle(options: OpenOptions): Promise<void> {
+    return this.isOpenFor(options.anchor) ? this.close() : this.open(options);
+  }
+
   private enqueue(task: () => Promise<void>): Promise<void> {
     const run = this.queue.then(task);
     this.queue = run.catch((err: unknown) => console.error(err));
@@ -169,12 +174,23 @@ export class DialogManager {
       : Promise.resolve();
 
     await this.animateConnector(active, 'in', duration(t.connectorDrawMs));
+    // Instant text is all there before the window opens, so opening
+    // uncovers it.
+    if (options.content.instant) view.typewriter.finish();
     view.el.style.visibility = '';
     await this.animateWindow(active, 'in', duration(t.dialogOpenMs));
     await dimmed;
 
-    if (modal) (view.closeButton ?? view.el).focus({ preventScroll: true });
-    void view.typewriter.play();
+    if (view.typewriter.done) {
+      if (modal) {
+        (view.firstAction ?? view.closeButton ?? view.el).focus({
+          preventScroll: true,
+        });
+      }
+    } else {
+      if (modal) (view.closeButton ?? view.el).focus({ preventScroll: true });
+      void view.typewriter.play();
+    }
   }
 
   private bindEvents(active: ActiveDialog): void {
@@ -193,8 +209,8 @@ export class DialogManager {
     disposer.add(() => observer.disconnect());
     disposer.add(() => cancelAnimationFrame(this.layoutFrame));
 
-    if (view.closeButton) {
-      disposer.listen(view.closeButton, 'click', () => void this.close());
+    for (const button of [view.closeButton, ...view.closingActions]) {
+      if (button) disposer.listen(button, 'click', () => void this.close());
     }
     disposer.listen(view.el, 'click', () => view.typewriter.finish());
 

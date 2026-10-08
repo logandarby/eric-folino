@@ -1,0 +1,129 @@
+/*
+ * Px437 Cordata PPC-400, from VileR's Ultimate Oldschool PC Font Pack
+ * (int10h.org), licensed CC BY-SA 4.0.
+ */
+@font-face {
+  font-family: 'Cordata';
+  src: url('../../assets/fonts/Px437_Cordata_PPC-400.woff2') format('woff2');
+  font-display: block;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* Cream with a tinge of purple, and ink to match, under a tiled Bayer
+   dither (a 16px tile, shown at 18px).
+   Dialogs stay as they are everywhere else. */
+body {
+  --color-bg: #f2ebed;
+  --color-fg: #2a2230;
+  background: url('../../assets/textures/bayerdark.png') 0 0 / 18px 18px repeat
+    var(--color-bg);
+  image-rendering: pixelated;
+}
+
+/* Only the tile is pixelated. */
+body > * {
+  image-rendering: auto;
+}
+
+.dialog,
+.connector-layer {
+  --color-bg: #000;
+  --color-fg: #fff;
+}
+
+.enter {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+}
+
+/*
+ * The photo's box, which everything on it is placed in (the page's
+ * template sets --ar and the --screen-*, --spot-* places for each crop).
+ * Landscape: the whole photo, as big as fits inside a margin. Portrait:
+ * the template makes it cover the screen instead.
+ */
+.tv {
+  --pad: clamp(16px, 4vmin, 48px);
+  --w: min(100cqw - 2 * var(--pad), (100cqh - 2 * var(--pad)) * var(--ar));
+  --h: calc(var(--w) / var(--ar));
+  position: absolute;
+  left: calc((100cqw - var(--w)) / 2);
+  top: calc((100cqh - var(--h)) / 2);
+  width: var(--w);
+  height: var(--h);
+  container-type: size;
+  /* Shows while the photo loads. */
+  background: var(--placeholder) center / cover;
+}
+
+.tv__photo,
+.tv__photo img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Behind the photo, seen through its hole. Dark until the shader draws. */
+.tv__screen {
+  position: absolute;
+  left: var(--screen-x);
+  top: var(--screen-y);
+  width: var(--screen-w);
+  height: var(--screen-h);
+  overflow: hidden;
+  container-type: size;
+  background: #14171c;
+}
+
+.tv__screen canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* "enter?", centred above the TV. Its size follows the TV's width (the
+   template sets --tv-share, the TV's share of the crop's width). */
+.tv__cta {
+  position: absolute;
+  left: calc(var(--spot-x) + var(--spot-w) / 2);
+  bottom: calc(100% - var(--spot-y) + var(--tv-share) * 6cqw);
+  translate: -50% 0;
+  margin: 0;
+  font-size: calc(var(--tv-share) * var(--cta-size) * 100cqw);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.tv__cta-button {
+  padding: 0.15em 0.3em;
+  border: 0;
+  background: none;
+  color: #f5f8ff;
+  font-family: 'Cordata', monospace;
+  font-size: inherit;
+  white-space: nowrap;
+  text-shadow:
+    0 0 0.35em color-mix(in srgb, var(--glow-color) 90%, transparent),
+    0.06em 0.06em 0 rgb(20 24 40 / 0.6);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Over the photo, so their outlines are light like the home screen's.
+   The photo has the screen's glow already, so the TV adds none on hover. */
+.tv .tv__cta-button,
+.tv .hotspot {
+  --color-fg: #fff;
+  --glow-color: #b48cff;
+}
+
+.tv .hotspot::before {
+  content: none;
+}

@@ -1,5 +1,27 @@
 @import '@fontsource/coral-pixels/latin-400.css';
 
+/* A Bayer dither, faded by a wash of the background colour over it. */
+body {
+  /* --color-bg: #080808;
+  --tile-opacity: 0.2;
+  background:
+    linear-gradient(
+      color-mix(
+        in srgb,
+        var(--color-bg) calc(100% - var(--tile-opacity) * 100%),
+        transparent
+      )
+    ),
+    url('../../assets/textures/bayerdark.png') 0 0 / 20px 20px repeat
+      var(--color-bg);
+  image-rendering: pixelated; */
+}
+
+/* Only the tile is pixelated. */
+body > * {
+  image-rendering: auto;
+}
+
 .iris {
   /*
    * The backdrop text. Coral Pixels is a colour font (its own orange and
@@ -16,7 +38,6 @@
   flex-direction: column;
   justify-content: center;
   min-height: 100dvh;
-  background: #000;
 }
 
 .iris__eyes {

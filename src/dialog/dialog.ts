@@ -1,5 +1,5 @@
 import { h } from '../core/component.ts';
-import type { DialogContent } from '../site/types.ts';
+import type { DialogAction, DialogContent } from '../site/types.ts';
 import { TextEngine, type TextEngineOptions } from '../text/text-engine.ts';
 import type { Typewriter } from '../text/typewriter.ts';
 
@@ -14,13 +14,16 @@ export interface DialogViewOptions {
 let nextId = 0;
 
 /**
- * The dialog window's DOM: a title bar with an optional close button and a
- * body of typed text blocks. Positioning and animation are handled by
- * DialogManager; this class only builds and exposes the parts.
+ * The dialog window's DOM: a title bar with an optional close button, a
+ * body of typed text blocks and optional action buttons along the bottom.
+ * Positioning and animation are handled by DialogManager; this class only
+ * builds and exposes the parts.
  */
 export class DialogView {
   readonly el: HTMLElement;
   readonly closeButton: HTMLButtonElement | null;
+  /** The action buttons that close the dialog (the ones without a link). */
+  readonly closingActions: HTMLButtonElement[] = [];
   readonly typewriter: Typewriter;
   private readonly text: TextEngine;
 
@@ -55,6 +58,12 @@ export class DialogView {
     const header = h('header', { class: 'dialog__header' }, [title]);
     if (this.closeButton) header.append(this.closeButton);
 
+    const parts: HTMLElement[] = [header, body];
+    if (content.actions?.length) {
+      const actions = content.actions.map((action) => this.action(action));
+      parts.push(h('footer', { class: 'dialog__actions' }, actions));
+    }
+
     this.el = h(
       'section',
       {
@@ -64,10 +73,38 @@ export class DialogView {
         tabindex: '-1',
         ...(options.modal ? { 'aria-modal': 'true' } : {}),
       },
-      [header, body]
+      parts
     );
 
     this.typewriter = this.text.typewriter([titleText, ...bodyTexts]);
+    // The actions keep their space while hidden, so the window doesn't
+    // grow when they appear.
+    this.typewriter.events.on('done', () => {
+      this.el.classList.add('is-typed');
+      // Focus waiting on the close button moves to the first action.
+      const first = this.firstAction;
+      const active = document.activeElement;
+      if (first && (active === this.el || active === this.closeButton)) {
+        first.focus({ preventScroll: true });
+      }
+    });
+  }
+
+  get firstAction(): HTMLElement | null {
+    return this.el.querySelector<HTMLElement>('.dialog__action');
+  }
+
+  private action({ label, href }: DialogAction): HTMLElement {
+    if (href !== undefined) {
+      return h('a', { class: 'button dialog__action', href }, [label]);
+    }
+    const button = h(
+      'button',
+      { class: 'button dialog__action', type: 'button' },
+      [label]
+    );
+    this.closingActions.push(button);
+    return button;
   }
 
   /** Stops typing and any scripted text effects. */

@@ -30,7 +30,7 @@ export const siteConfig: SiteConfig = {
   nav: [
     { label: 'HOME', href: '/' },
     { label: 'EPK', href: '/epk/' },
-    { label: 'SECRET', href: '/secret/' },
+    { label: 'SECRET', href: '/enter/' },
   ],
 
   layout: {

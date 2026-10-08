@@ -28,12 +28,7 @@ interface StageProps {
  * title, the nav and anything the page places there. Used by the home
  * page and by placeholder pages.
  */
-export function StageLayout({
-  page,
-  socials,
-  children,
-  scene,
-}: StageProps) {
+export function StageLayout({ page, socials, children, scene }: StageProps) {
   stylesheet(import.meta.url, './stage.css');
   const { stage } = siteConfig;
   const stageVars = perLayout((l) => ({

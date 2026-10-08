@@ -18,6 +18,7 @@
     "check-circular": "madge --circular --extensions ts,tsx src/ build/",
     "images": "node scripts/build-images.mjs",
     "eyes": "node scripts/slice-eyes.mjs",
+    "tv": "node scripts/build-tv.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

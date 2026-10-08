@@ -23,10 +23,10 @@ interface Eye {
 const eyes: Eye[] = $$('[data-eye]').map((el) => {
   const config = page.eyes[Number(el.dataset.eye)];
   const anchor = elementAnchor(el);
-  el.addEventListener('click', () => {
-    if (dialogs.isOpenFor(anchor)) void dialogs.close();
-    else void dialogs.open({ anchor, content: config.dialog });
-  });
+  el.addEventListener(
+    'click',
+    () => void dialogs.toggle({ anchor, content: config.dialog })
+  );
   return { el, reach: config.reach, shader: null, look: { x: 0, y: 0 } };
 });
 

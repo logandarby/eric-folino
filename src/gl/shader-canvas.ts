@@ -36,6 +36,11 @@ export interface ShaderOptions {
   maxSize?: [number, number];
   /** Time shown when motion is reduced, in seconds. Default 0. */
   stillTime?: number;
+  /**
+   * Called before every draw with the shader's time (seconds), to `set()`
+   * uniforms that change from frame to frame.
+   */
+  beforeDraw?: (time: number) => void;
 }
 
 const VERTEX = `attribute vec2 a_position;
@@ -205,6 +210,7 @@ export class ShaderCanvas {
   private draw(): void {
     const { gl, program, uniforms } = this;
     if (!program) return;
+    this.options.beforeDraw?.(this.time);
     gl.uniform1f(uniforms.time, this.time);
     gl.uniform2f(uniforms.resolution, this.canvas.width, this.canvas.height);
     gl.uniform2f(uniforms.pointer, this.pointer[0], this.pointer[1]);

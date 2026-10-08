@@ -23,13 +23,13 @@ The pre-commit hook formats and lints staged files, then runs the type-check, te
 
 ## The pages
 
-| Page   | Path       | What it is                                                                                |
-| ------ | ---------- | ----------------------------------------------------------------------------------------- |
-| Home   | `/`        | The bus stop scene: clickable blobs and screen, with the social links above the title     |
-| EPK    | `/epk/`    | The press kit: contact, bio, listening links, press photo downloads and interviews        |
-| Secret | `/secret/` | secrets                                                                                   |
-| Iris   | `/iris/`   | Four eyes that follow the pointer, over "MORE EYES ARE GOOD". Not linked yet, and noindex |
-| 404    | any other  | A placeholder dialog pointing back home                                                   |
+| Page  | Path      | What it is                                                                                |
+| ----- | --------- | ----------------------------------------------------------------------------------------- |
+| Home  | `/`       | The bus stop scene: clickable blobs and screen, with the social links above the title     |
+| EPK   | `/epk/`   | The press kit: contact, bio, listening links, press photo downloads and interviews        |
+| Enter | `/enter/` | An old TV playing static that asks if you'd like to enter. The nav's "Secret" leads here  |
+| Iris  | `/iris/`  | Four eyes that follow the pointer, over "MORE EYES ARE GOOD". Not linked yet, and noindex |
+| 404   | any other | A placeholder dialog pointing back home                                                   |
 
 ## Editing the site
 
@@ -58,10 +58,13 @@ Sections with nothing in them are left out, and the line of links at the top of 
 
 - **Dialog text** can use effect tags; see [Dialog text effects](#dialog-text-effects).
 - **`src/styles/tokens.css`**: colours, fonts and z-index order.
+- **Dialog buttons**: give a dialog `actions: [{ label: 'yes', href: '/' }]` for buttons along its bottom, which appear once the text has typed out. One without `href` just closes the dialog.
+- **Instant dialogs**: `instant: true` on a dialog shows its text all at once, uncovered by the window as it opens. Use it for UI and menus; dialogs where something speaks type their text out.
 - **The "?" button's dialog**: `help` in `src/site/site.config.ts`. Every layout puts the "?" in the corner beside the sound button; a page can say something else with `bootstrap({ help: … })` in its `main.ts`.
 - **`src/styles/base.css`**: the dashed outline that marks anything usable. Every button gets it on hover, and anything focusable gets it on keyboard focus, so new pages have it for free; set `--outline-offset` on an element to move it.
 - **`src/assets/blobs/*.svg`**: blob shapes (one `<path>` each; the colour comes from its `fill`).
 - **`assets-src/web-background.png`**: the full-size background. Run `npm run images` after changing it.
+- **`assets-src/strange-tv.png`**: the enter page's TV photo, with a transparent hole where the screen plays. Run `npm run tv` after changing it; it finds the hole and makes a whole-photo crop and a tall phone crop. Where the TV is (for its button), the "enter?" text, the static's brightness and the CRT look are in `src/pages/enter/page.config.ts`; the background colour and tile are at the top of `enter.css`.
 - **`assets-src/eyes/`**: the iris page's eyes, as three same-size layers (`base`, `iris`, `skin`) holding all four eyes. Run `npm run eyes` after changing them; where each eye sits, and how much the irises are shrunk (`IRIS_SCALE`), are set in `scripts/slice-eyes.mjs`. Their placement, iris reach, dialogs, backdrop text and dither (palette and pixelation) are in `src/pages/iris/page.config.ts`.
 
 ## How pages are built
@@ -90,13 +93,15 @@ A page without `page.tsx` (like the 404) is a **placeholder**: the bus stop with
 
 - `StageLayout`: the bus stop scene, with the title and nav placed on a "stage" (home and placeholders).
 - `DocumentLayout`: a normal scrolling page for reading (the EPK).
-- `VoidLayout`: nothing at all, for pages that make their own rules (the secret page).
+- `VoidLayout`: nothing at all, for pages that make their own rules (the iris and enter pages).
 
 **Components** (`src/components/<name>/`) keep everything about one thing together. `name.tsx` renders its markup at build time (and links its `name.css`), and `name.ts` brings it to life in the browser. **`.tsx` files only ever run at build time; `.ts` files in `src/` run in the browser.**
 
 **Islands** are components whose script loads only when needed. A page lists them in its `main.ts` with `hydrateIslands({ name: () => import(…) })`, and each `<div data-island="name">` fetches its code as it nears the screen. The video embed works this way, so its code never slows down a page that doesn't show it.
 
-**Shader art** for the secret page goes in `src/pages/secret/pieces/<name>/`: a `.frag` shader plus a small island that runs it with `ShaderCanvas` (`src/gl/`). That takes care of resizing, pausing off-screen, a still frame under reduced motion and lost WebGL contexts. It can also read images (`textures`), draw only when asked (`animate: false`) and draw at a capped resolution for chunky pixels (`maxSize`), as the iris page's eyes do. `src/gl/dither.ts` adds Dithermark-style ordered dithering to a palette to any shader. On the dev server it also warns if the picture flashes more than three times a second, which can trigger seizures. One piece, `static-bloom`, is ready to use but not currently on the page.
+**Invisible buttons over a picture**, like the bus stop screen or the enter page's TV, are the `Hotspot` component (`src/components/hotspot/`): place it with `--spot-x`, `--spot-y`, `--spot-w` and `--spot-h`, and `bindHotspot(dialogs, name, content)` in `main.ts` opens its dialog with a vignette spotlight around it.
+
+**Shaders** run with `ShaderCanvas` (`src/gl/`), as on the iris and enter pages. That takes care of resizing, pausing off-screen, a still frame under reduced motion and lost WebGL contexts. It can also read images (`textures`), draw only when asked (`animate: false`) and draw at a capped resolution for chunky pixels (`maxSize`), as the iris page's eyes do. `src/gl/dither.ts` adds Dithermark-style ordered dithering to a palette to any shader. On the dev server it also warns if the picture flashes more than three times a second, which can trigger seizures.
 
 ## Dialog text effects
 
@@ -134,6 +139,11 @@ Buttons tick on hover and clunk when pressed, dialogs swoosh, their text "talks"
 
 Sound is on by default (off for visitors who prefer reduced motion) but, as browsers require, starts on the visitor's first click or key press. The speaker button in the corner, or <kbd>M</kbd>, mutes it; hovering it shows a volume slider. Choices are remembered. Details: [`src/sound/README.md`](src/sound/README.md).
 
+## Credits
+
+- **Px437 Cordata PPC-400** (the enter page's "enter?") is from [The Ultimate Oldschool PC Font Pack](https://int10h.org/oldschool-pc-fonts/) by VileR, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- The enter page's CRT look is adapted from daenavan's [crt-threejs](https://daenavan.github.io/crt-threejs/).
+
 ## How it fits together
 
 - **`build/`** turns the pages into HTML:
@@ -160,8 +170,8 @@ Sound is on by default (off for visitors who prefer reduced motion) but, as brow
   - `spotlight.ts` provides the frosted dim layer that lifts the target above it.
   - `manager.ts` sequences the animations and handles focus, Esc, resizing and inert page content.
 
-  Any page can point a dialog at an element with `dialogs.open({ anchor: elementAnchor(el), content })`. Elements marked `data-dialog-avoid` are kept clear. The spotlight can also cut a soft vignette around a spot instead of lifting an element (`elementAnchor(el, 'vignette')`), as the bus stop screen does.
+  Any page can point a dialog at an element with `dialogs.open({ anchor: elementAnchor(el), content })`. Elements marked `data-dialog-avoid` are kept clear. The spotlight can also cut a soft vignette around a spot instead of lifting an element (`elementAnchor(el, 'vignette')`), as the bus stop screen and the enter page's TV do.
 
 - **`src/text`** is the dialog text engine: the tag parser, typing schedule, effects and typewriter ([details](src/text/README.md)).
 - **`src/sound`** is the sound engine: synthesized patches, a mixer, rate limits and the page bindings ([details](src/sound/README.md)).
-- **`src/gl`** runs WebGL shaders for the secret page's art (see [Shader art](#how-pages-are-built)).
+- **`src/gl`** runs WebGL shaders, like the iris page's eyes and the enter page's TV (see [Shaders](#how-pages-are-built)).

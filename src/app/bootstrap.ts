@@ -68,10 +68,10 @@ export function bootstrap({
   const helpButton = document.querySelector<HTMLElement>('[data-help]');
   if (helpButton) {
     const anchor = elementAnchor(helpButton);
-    helpButton.addEventListener('click', () => {
-      if (dialogs.isOpenFor(anchor)) void dialogs.close();
-      else void dialogs.open({ anchor, content: help });
-    });
+    helpButton.addEventListener(
+      'click',
+      () => void dialogs.toggle({ anchor, content: help })
+    );
   }
 
   return { dialogs, sound };

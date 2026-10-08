@@ -28,6 +28,7 @@ export interface EyeConfig extends HotspotConfig {
 const eyeDialog = (title: string, text: string): DialogContent => ({
   title,
   voice: hushVoice,
+  instant: true,
   body: [{ kind: 'narration', text }],
 });
 

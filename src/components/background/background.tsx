@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { stylesheet } from '../../../build/jsx/assets.ts';
 import { raw } from '../../../build/jsx/jsx-runtime.ts';
 import { siteConfig } from '../../site/site.config.ts';
+import { Hotspot } from '../hotspot/hotspot.tsx';
 
 const BG_DIR = new URL('../../assets/bg/', import.meta.url);
 /** Where the images are served from (Vite hashes and bundles them). */
@@ -84,7 +85,7 @@ interface PhotoCrop {
 }
 
 /**
- * An invisible button over the bus stop screen. It sits in a layer framed
+ * An invisible button (a Hotspot) over the bus stop screen. It sits in a layer framed
  * exactly like the background photo (see background.css), at the screen's
  * position in whichever crop is showing (from photo.json, made by
  * `npm run images`).
@@ -106,14 +107,7 @@ export function ScreenHotspot({ label }: { label: string }) {
       <div class="hotspots" data-hotspots>
         <div class="hotspots__frame">
           <div class="hotspots__photo">
-            <button
-              type="button"
-              class="hotspot"
-              data-screen
-              data-sound="hum"
-              aria-label={label}
-              aria-haspopup="dialog"
-            ></button>
+            <Hotspot name="screen" label={label} sound="hum" />
           </div>
         </div>
       </div>

@@ -15,9 +15,24 @@ export interface DialogBlock {
   text: string;
 }
 
+/** A button along the bottom of a dialog. */
+export interface DialogAction {
+  label: string;
+  /** Where it goes. Without one, it just closes the dialog. */
+  href?: string;
+}
+
 export interface DialogContent {
   title: string;
   body: DialogBlock[];
+  /** Buttons along the bottom, shown once the text has typed out. */
+  actions?: DialogAction[];
+  /**
+   * Show the text all at once, uncovered by the window as it opens,
+   * instead of typing it out. Text effects still play; pacing tags and
+   * voice blips are skipped.
+   */
+  instant?: boolean;
   /** How this dialog's text blips sound as it types; falls back to sound.blip.voice. */
   voice?: Partial<DialogVoice>;
 }

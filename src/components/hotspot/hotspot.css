@@ -1,0 +1,33 @@
+/* Invisible, but hovering or focusing it shows the dashed outline every
+   button gets (base.css), plus a glow. */
+.hotspot {
+  --hotspot-tint: rgb(255 235 255 / 0.12);
+  --hotspot-glow: rgb(240 178 243 / 0.45);
+  position: absolute;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  width: var(--spot-w);
+  height: var(--spot-h);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Glow. */
+.hotspot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--hotspot-tint);
+  box-shadow: 0 0 1.5rem 0.4rem var(--hotspot-glow);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.hotspot:hover::before,
+.hotspot:focus-visible::before {
+  opacity: 1;
+}
