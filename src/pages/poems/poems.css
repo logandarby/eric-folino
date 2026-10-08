@@ -1,4 +1,4 @@
-/* Shared by the poems' pages: the list, each poem and the graph. */
+/* Shared by the poems' pages: the welcome, each poem and the web. */
 
 /* Dialogs here are mostly a title, so they're only as wide as it (and their
    other contents), up to the usual width. Docked ones on mobile stay as
@@ -23,4 +23,67 @@
     outline: var(--border-width) dashed var(--color-fg);
     outline-offset: var(--outline-offset, 4px);
   }
+}
+
+/* The poems are set in Cordata, left aligned in a block in the middle of
+   the page, as wide as its longest line. Cordata is drawn for 16px, so
+   sizes stay at whole multiples of that. */
+.poem,
+.poems,
+.poems-back {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.poems-back {
+  display: flex;
+  gap: 24px;
+  margin: 0;
+  padding: 16px;
+}
+
+.poem,
+.poems {
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 32px 16px 96px;
+}
+
+.poem h1,
+.poems h1 {
+  margin: 0 0 32px;
+  font-size: 32px;
+  /* Cordata has no bold of its own; the browser thickens it. */
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.poems p {
+  max-width: 32rem;
+}
+
+/* "Begin", in the outlined box the site's buttons have. */
+.poems-button {
+  display: inline-block;
+  padding: 8px 24px;
+  border: var(--border-width) solid var(--color-fg);
+  color: var(--color-fg);
+  text-decoration: none;
+}
+
+.poems-button:hover,
+.poems-button:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.poems-begin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 32px 0;
 }

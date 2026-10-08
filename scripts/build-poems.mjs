@@ -72,7 +72,7 @@ const MAX_LINKS_IN = 20;
 /** A poem's closeness to another is the sum of its best this-many matches. */
 const MATCHES_PER_SCORE = 3;
 /** Shell folders the script must leave alone (pages of their own). */
-const RESERVED = new Set(['graph']);
+const RESERVED = new Set(['web']);
 
 /** Words never worth a link, whatever the card says. */
 const WEAK = new Set(

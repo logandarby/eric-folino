@@ -1,5 +1,5 @@
 /*
- * Which poems this visitor has read, kept in localStorage so the graph can
+ * Which poems this visitor has read, kept in localStorage so the web can
  * show the rest as locked. Storage can be missing or throw (private
  * windows, blocked site data); then nothing is remembered.
  */

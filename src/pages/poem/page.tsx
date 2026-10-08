@@ -1,7 +1,9 @@
 import { stylesheet } from '../../../build/jsx/assets.ts';
 import type { Child } from '../../../build/jsx/jsx-runtime.ts';
 import { VoidLayout } from '../../layouts/void.tsx';
+import { PoemsNav } from '../poems/poems-nav.tsx';
 import type { PageConfig } from '../../site/types.ts';
+import { borders, poemConfig } from './poem.config.ts';
 import {
   findPoem,
   graph,
@@ -26,33 +28,51 @@ export default function PoemPage(page: PageConfig & { slug?: string }) {
 
   return (
     <VoidLayout corner="bottom">
-      <p>
-        <a href="/poems/">Poems</a>
-      </p>
-      <h1 id={lineId(0)} data-poem={poem.slug}>
-        {line(0)}
-      </h1>
-      {stanzas(poem.lines).map((stanza) =>
-        // An empty stanza is an extra blank line, a longer pause.
-        stanza.length === 0 ? (
-          <p aria-hidden="true">
-            <br />
-          </p>
-        ) : (
-          <p>
-            {stanza.map((i) => (
-              <>
-                <span id={lineId(i)} class="poem-line">
-                  {line(i)}
-                </span>
-                <br />
-              </>
-            ))}
-          </p>
-        )
-      )}
+      <PoemsNav />
+      <article {...frame()}>
+        <h1 id={lineId(0)} data-poem={poem.slug}>
+          {line(0)}
+        </h1>
+        {stanzas(poem.lines).map((stanza) =>
+          // An empty stanza is an extra blank line, a longer pause.
+          stanza.length === 0 ? (
+            <p aria-hidden="true">
+              <br />
+            </p>
+          ) : (
+            <p>
+              {stanza.map((i) => (
+                <>
+                  <span id={lineId(i)} class="poem-line">
+                    {line(i)}
+                  </span>
+                  <br />
+                </>
+              ))}
+            </p>
+          )
+        )}
+      </article>
     </VoidLayout>
   );
+}
+
+/**
+ * The poem's class and style for its frame (see poem.config.ts and
+ * poem.css): which border, and its size and grey.
+ */
+function frame(): { class: string; style?: Record<string, string | number> } {
+  const { name, shade, scale } = poemConfig.border;
+  if (!name) return { class: 'poem' };
+  const { slice, luminance } = borders[name];
+  return {
+    class: `poem poem--framed poem--${name}`,
+    style: {
+      '--frame-slice': slice,
+      '--frame-width': `${slice * scale}px`,
+      '--frame-brightness': (shade * 255) / luminance,
+    },
+  };
 }
 
 /**

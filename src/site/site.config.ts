@@ -31,6 +31,7 @@ export const siteConfig: SiteConfig = {
     { label: 'HOME', href: '/' },
     { label: 'EPK', href: '/epk/' },
     { label: 'SECRET', href: '/enter/' },
+    { label: 'WEB OF POEMS', href: '/poems/' },
   ],
 
   layout: {

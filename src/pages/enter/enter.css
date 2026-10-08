@@ -1,13 +1,3 @@
-/*
- * Px437 Cordata PPC-400, from VileR's Ultimate Oldschool PC Font Pack
- * (int10h.org), licensed CC BY-SA 4.0.
- */
-@font-face {
-  font-family: 'Cordata';
-  src: url('../../assets/fonts/Px437_Cordata_PPC-400.woff2') format('woff2');
-  font-display: block;
-}
-
 :root {
   color-scheme: light;
 }
@@ -106,7 +96,7 @@ body > * {
   border: 0;
   background: none;
   color: #f5f8ff;
-  font-family: 'Cordata', monospace;
+  font-family: var(--font-pixel);
   font-size: inherit;
   white-space: nowrap;
   text-shadow:

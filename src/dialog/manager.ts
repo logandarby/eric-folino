@@ -233,12 +233,16 @@ export class DialogManager {
     }
     disposer.listen(view.el, 'click', () => view.typewriter.finish());
 
-    if (!active.modal) return;
+    // Esc closes any dialog that can be closed, modal or not.
     disposer.listen(document, 'keydown', (e) => {
       if (e.key === 'Escape' && active.closable) {
         e.preventDefault();
         void this.close();
-      } else if (!view.typewriter.done && !isModifierOrNav(e.key)) {
+      } else if (
+        active.modal &&
+        !view.typewriter.done &&
+        !isModifierOrNav(e.key)
+      ) {
         // First key press skips the typing; it shouldn't also activate
         // whatever is focused.
         e.preventDefault();

@@ -27,9 +27,18 @@ import {
 import { readPoems } from '../poems/read.ts';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const NODE_RADIUS = 16;
-/** How far out the hover ring is from a poem's circle. */
-const RING_GAP = 5;
+/**
+ * Each poem is a pixel-art star, drawn on this grid (see star()) with each
+ * of its pixels `PIXEL` screen pixels wide.
+ */
+const STAR_GRID = 11;
+const PIXEL = 3;
+/** How wide a poem's star is. */
+const NODE_SIZE = STAR_GRID * PIXEL;
+/** Room kept clear around each poem's star. */
+const COLLIDE_GAP = 32;
+/** How far out the hover outline is from a poem's star. */
+const RING_GAP = 4;
 /** How long a link is at rest. */
 const LINK_LENGTH = 200;
 /** How hard poems push each other away (negative: apart). */
@@ -40,15 +49,24 @@ const SHOWN_REPEL = 3;
 const STIR = 0.3;
 /** How hard everything is pulled to the middle, so loose poems stay near. */
 const GATHER = 0.04;
-/** The widest a link is drawn, for a score of 1. */
-const LINK_WIDTH = 3;
 /** How far in and out the wheel zooms. */
 const ZOOM_RANGE: [number, number] = [0.25, 4];
 /** How visible a link is, by how many of its ends are read. */
-const LINK_OPACITY = [0.12, 0.35, 0.8];
+const LINK_OPACITY = [0.06, 0.18, 0.35];
+/** How visible the specks flowing along it are, the same way. */
+const FLOW_OPACITY = [0, 0.6, 1];
+/**
+ * Specks fire along a link like a synapse: one quick streak, then quiet.
+ * Each link waits its own while (at random, between these, in px of
+ * travel, so it's the same as time at the one speed), so they fire at
+ * different moments.
+ */
+const FIRE_GAP = { min: 20000, max: 60000 };
+/** How fast a speck crosses, in px a second. */
+const FIRE_SPEED = 900;
 /** What a locked poem's dialog says in place of its title. */
 const LOCKED_TITLE = '???';
-/** The dialog's button that goes to the poem (on touch, where tap is hover). */
+/** The dialog's button that goes to the poem. */
 const FOLLOW_LABEL = 'read';
 /** Shows the table of links, on the dev server only. */
 const DEBUG_KEY = '`';
@@ -66,6 +84,8 @@ interface Edge extends SimulationLinkDatum<PoemNode> {
   target: PoemNode;
   link: PoemLink;
   el: SVGLineElement;
+  /** The specks flowing along it, from `source` to `target` (see graph.css). */
+  flow: SVGLineElement;
 }
 
 // The text demo has the same key as the table of links.
@@ -75,40 +95,68 @@ if (container) drawGraph(container);
 if (import.meta.env.DEV) installDebugTable();
 
 /**
- * Each poem a circle, each link a line pulling its two poems together as
- * hard as the link is close in meaning. Poems not read yet are locked: dim,
- * blurred and nameless. Hovering a poem shows its title; dragging one moves
- * it, dragging elsewhere moves around, and the wheel zooms.
+ * Each poem a pixel star, each link a faint glowing line pulling its two
+ * poems together as hard as the link is close in meaning. Poems not read
+ * yet are locked: grey and nameless. Clicking a poem shows its title, with
+ * a button to read it; dragging one moves it, dragging elsewhere moves
+ * around, and the wheel (or a pinch) zooms.
  */
 function drawGraph(container: HTMLElement): void {
   const read = readPoems();
   const svg = svgEl('svg', { 'aria-hidden': 'true' });
   const world = svgEl('g');
-  svg.append(blurFilter(), world);
+  const links = svgEl('g', { class: 'poem-graph-links' });
+  const flows = svgEl('g', { class: 'poem-graph-flows' });
+  const stars = svgEl('g');
+  world.append(links, flows, stars);
+  svg.append(starSymbol(), world);
   container.append(svg);
 
+  const half = NODE_SIZE / 2;
   const nodes: PoemNode[] = graph.poems.map((poem) => {
     const isRead = read.has(poem.slug);
-    const circle = svgEl('circle', {
-      r: String(NODE_RADIUS),
-      class: isRead ? 'poem-graph-node' : 'poem-graph-node is-locked',
-    });
     // A read poem is a link to it; a locked one goes nowhere.
     const el = isRead
       ? svgEl('a', { href: poemPath(poem.slug), 'aria-label': poem.lines[0] })
       : svgEl('g');
-    el.append(circle);
-    // The dashed ring a read poem gets on hover and focus, like the outline
-    // of everything else you can use (see graph.css).
+    el.setAttribute(
+      'class',
+      isRead ? 'poem-graph-node' : 'poem-graph-node is-locked'
+    );
+    // The star has gaps between its rays; this square catches the pointer
+    // in them.
+    const hit = svgEl('rect', {
+      class: 'poem-graph-hit',
+      x: String(-half),
+      y: String(-half),
+      width: String(NODE_SIZE),
+      height: String(NODE_SIZE),
+    });
+    el.append(
+      hit,
+      svgEl('use', {
+        href: '#poem-graph-star',
+        class: 'poem-graph-star',
+        x: String(-half),
+        y: String(-half),
+        width: String(NODE_SIZE),
+        height: String(NODE_SIZE),
+      })
+    );
+    // The dashed outline a read poem gets on hover and focus, like
+    // everything else you can use (see graph.css).
     if (isRead) {
       el.append(
-        svgEl('circle', {
-          r: String(NODE_RADIUS + RING_GAP),
+        svgEl('rect', {
           class: 'poem-graph-ring',
+          x: String(-half - RING_GAP),
+          y: String(-half - RING_GAP),
+          width: String(NODE_SIZE + 2 * RING_GAP),
+          height: String(NODE_SIZE + 2 * RING_GAP),
         })
       );
     }
-    const rect = () => fromDOMRect(circle.getBoundingClientRect());
+    const rect = () => fromDOMRect(hit.getBoundingClientRect());
     return {
       slug: poem.slug,
       title: poem.lines[0],
@@ -138,12 +186,20 @@ function drawGraph(container: HTMLElement): void {
       link,
       el: svgEl('line', {
         class: 'poem-graph-link',
-        'stroke-width': String(link.score * LINK_WIDTH),
         'stroke-opacity': String(LINK_OPACITY[ends]),
+      }),
+      // Only links to a poem that's been read flow, so locked parts stay
+      // still. Each starts at its own point, so they don't pulse together.
+      flow: svgEl('line', {
+        class: 'poem-graph-flow',
+        'stroke-opacity': String(FLOW_OPACITY[ends]),
+        style: firing(),
       }),
     };
   });
-  world.append(...edges.map((e) => e.el), ...nodes.map((n) => n.el));
+  links.append(...edges.map((e) => e.el));
+  flows.append(...edges.map((e) => e.flow));
+  stars.append(...nodes.map((n) => n.el));
 
   // The poem whose title is showing pushes the others back, to make room.
   let shown: PoemNode | null = null;
@@ -158,7 +214,7 @@ function drawGraph(container: HTMLElement): void {
         .strength((e) => e.link.score)
     )
     .force('repel', repel)
-    .force('collide', forceCollide(NODE_RADIUS * 3))
+    .force('collide', forceCollide<PoemNode>(half + COLLIDE_GAP))
     .force('x', forceX(0).strength(GATHER))
     .force('y', forceY(0).strength(GATHER))
     .on('tick', draw);
@@ -168,11 +224,13 @@ function drawGraph(container: HTMLElement): void {
   if (still) simulation.stop().tick(300);
 
   function draw() {
-    for (const { el, source, target } of edges) {
-      el.setAttribute('x1', String(source.x));
-      el.setAttribute('y1', String(source.y));
-      el.setAttribute('x2', String(target.x));
-      el.setAttribute('y2', String(target.y));
+    for (const { el, flow, source, target } of edges) {
+      for (const line of [el, flow]) {
+        line.setAttribute('x1', String(source.x));
+        line.setAttribute('y1', String(source.y));
+        line.setAttribute('x2', String(target.x));
+        line.setAttribute('y2', String(target.y));
+      }
     }
     for (const { el, x, y } of nodes) {
       el.setAttribute('transform', `translate(${x},${y})`);
@@ -205,12 +263,14 @@ function drawGraph(container: HTMLElement): void {
   // doesn't also count as a click.
   const dragger = drag<SVGElement, PoemNode>()
     .on('start', (e: { subject: PoemNode }) => {
-      void hide();
       if (!still) simulation.alphaTarget(0.3).restart();
       e.subject.fx = e.subject.x;
       e.subject.fy = e.subject.y;
     })
     .on('drag', (e: { subject: PoemNode; x: number; y: number }) => {
+      // Only once it moves: a press that doesn't is a click, which opens
+      // and closes the dialog itself.
+      void hide();
       e.subject.fx = e.subject.x = e.x;
       e.subject.fy = e.subject.y = e.y;
       if (still) draw();
@@ -223,16 +283,15 @@ function drawGraph(container: HTMLElement): void {
     .data(nodes)
     .call(dragger);
 
-  // Hover (or focus) shows a poem's title. On touch there's no hover, so a
-  // tap shows it instead, with a button to go there.
-  let touch = false;
-  const show = (node: PoemNode, follow = false) => {
+  // Clicking (or tapping) a poem shows its title, with a button to go and
+  // read it; clicking it again, or off the poems, puts it away. The same
+  // with a mouse as on touch, which has no hover.
+  const show = (node: PoemNode) => {
     setShown(node);
     return dialogs.open({
       anchor: node.anchor,
-      content: titleDialog(node, follow),
+      content: titleDialog(node),
       modal: false,
-      closable: follow,
     });
   };
   const hide = (node = shown) => {
@@ -256,55 +315,109 @@ function drawGraph(container: HTMLElement): void {
     if (!still) simulation.alpha(Math.max(simulation.alpha(), STIR)).restart();
   }
   container.addEventListener('pointerdown', (e) => {
-    touch = e.pointerType !== 'mouse';
-    // A tap off the poems puts the title away.
-    if (touch && !(e.target as Element).closest('.poem-graph-node')) {
-      void hide();
-    }
+    if (!(e.target as Element).closest('.poem-graph-node')) void hide();
+  });
+  // Its close button and Esc, too. Only for `shown`'s own dialog, not when
+  // another poem's replaces it.
+  let shownView: unknown = null;
+  dialogs.events.on('open', ({ view, anchor }) => {
+    shownView = anchor === shown?.anchor ? view : null;
+  });
+  dialogs.events.on('close', ({ view }) => {
+    if (shown && view === shownView) setShown(null);
   });
   for (const node of nodes) {
-    node.el.addEventListener('pointerenter', (e) => {
-      if (e.pointerType === 'mouse') void show(node);
-    });
-    node.el.addEventListener('pointerleave', (e) => {
-      if (e.pointerType === 'mouse') void hide(node);
-    });
-    // Only read poems take focus (they're links). Chrome makes any SVG
-    // element with focus listeners focusable, so locked ones get none.
-    if (node.read) {
-      node.el.addEventListener('focus', () => void show(node));
-      node.el.addEventListener('blur', () => void hide(node));
-    }
     node.el.addEventListener('click', (e) => {
-      if (!touch || shown === node) return;
+      // Modified clicks (a new tab, say) still go straight to the poem.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
-      void show(node, node.read);
+      void (shown === node ? hide() : show(node));
     });
   }
 }
 
-function titleDialog(node: PoemNode, follow: boolean): DialogContent {
+/**
+ * A link's firing, as the style for its specks (see graph.css): how far
+ * apart they are, how long the cycle takes at `FIRE_SPEED`, and where in it
+ * the link starts.
+ */
+function firing(): string {
+  const gap = FIRE_GAP.min + Math.random() * (FIRE_GAP.max - FIRE_GAP.min);
+  const seconds = gap / FIRE_SPEED;
+  return [
+    `--flow-gap: ${Math.round(gap)}px`,
+    `animation-duration: ${seconds.toFixed(2)}s`,
+    `animation-delay: ${(-Math.random() * seconds).toFixed(2)}s`,
+  ].join(';');
+}
+
+/** A poem's title and a button to read it; a locked one has neither. */
+function titleDialog(node: PoemNode): DialogContent {
   return {
     title: node.read ? node.title.replaceAll('{', '{{') : LOCKED_TITLE,
     instant: true,
     body: [],
-    actions: follow ? [{ label: FOLLOW_LABEL, href: poemPath(node.slug) }] : [],
+    actions: node.read
+      ? [{ label: FOLLOW_LABEL, href: poemPath(node.slug) }]
+      : [],
   };
 }
 
-/** What blurs a locked poem (see graph.css). */
-function blurFilter(): SVGElement {
-  const blur = svgEl('feGaussianBlur', { stdDeviation: '2.5' });
-  const filter = svgEl('filter', {
-    id: 'poem-graph-blur',
-    x: '-100%',
-    y: '-100%',
-    width: '300%',
-    height: '300%',
+/**
+ * The star every poem is drawn with: eight rays round a dot, in pixels on
+ * a `STAR_GRID` square. Each poem shows it with <use>, so its colour comes
+ * from the poem's `fill` (see graph.css).
+ */
+function starSymbol(): SVGElement {
+  const c = Math.floor(STAR_GRID / 2);
+  const pixels = new Set<string>();
+  const add = (x: number, y: number) => pixels.add(`${x},${y}`);
+  // The dot: a small plus.
+  add(c, c);
+  for (const [dx, dy] of [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ])
+    add(c + dx, c + dy);
+  // The rays: straight ones after a pixel's gap, diagonal ones from the
+  // dot's corners, about as long.
+  for (let k = 3; k <= c; k++) {
+    for (const [dx, dy] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ]) {
+      add(c + dx * k, c + dy * k);
+    }
+  }
+  for (let k = 2; k <= c - 1; k++) {
+    for (const [dx, dy] of [
+      [1, 1],
+      [1, -1],
+      [-1, 1],
+      [-1, -1],
+    ]) {
+      add(c + dx * k, c + dy * k);
+    }
+  }
+  const path = svgEl('path', {
+    d: [...pixels]
+      .map((p) => {
+        const [x, y] = p.split(',');
+        return `M${x} ${y}h1v1h-1z`;
+      })
+      .join(''),
   });
-  filter.append(blur);
+  const symbol = svgEl('symbol', {
+    id: 'poem-graph-star',
+    viewBox: `0 0 ${STAR_GRID} ${STAR_GRID}`,
+  });
+  symbol.append(path);
   const defs = svgEl('defs');
-  defs.append(filter);
+  defs.append(symbol);
   return defs;
 }
 

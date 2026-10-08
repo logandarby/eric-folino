@@ -1,7 +1,10 @@
 /* The graph fills the window; dragging and the wheel move around in it. */
 .poem-graph {
   --poem-node: #9b5cff;
-  --poem-locked: #555;
+  --poem-locked: #4a4a4a;
+  --poem-link: #c9b3ff;
+  /* The specks along the links: the title's yellow, against the purple. */
+  --poem-flow: #f0e05a;
   position: fixed;
   inset: 0;
   overflow: hidden;
@@ -14,14 +17,69 @@
   cursor: grabbing;
 }
 
+/* Behind it all, the lion (strange-2.webp), inverted to light on dark and
+   barely there. */
+.poem-graph::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('./strange-2.webp') center / contain no-repeat;
+  filter: invert(1);
+  opacity: 0.06;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
 .poem-graph svg {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
 }
 
+/* Links: thin, faint, with a soft glow. The width stays a hair however far
+   in you zoom. */
+.poem-graph-links {
+  filter: drop-shadow(0 0 3px var(--poem-link));
+}
+
 .poem-graph-link {
-  stroke: var(--color-fg);
+  stroke: var(--poem-link);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Links fire like synapses: now and then a short bright streak shoots
+   along one, the way it goes. It's a dashed line whose dashes are far
+   apart (main.ts sets how far, per link, and so how often it fires) and
+   slide along. No element per streak and no script, so it stays cheap
+   however many links. */
+/* One glow for them all, cheaper than one each. */
+.poem-graph-flows {
+  filter: drop-shadow(0 0 3px var(--poem-flow));
+}
+
+.poem-graph-flow {
+  --flow-length: 10px;
+  --flow-gap: 4000px;
+  stroke: var(--poem-flow);
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-dasharray: var(--flow-length) var(--flow-gap);
+  animation: poem-graph-flow 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes poem-graph-flow {
+  to {
+    stroke-dashoffset: calc(-1 * (var(--flow-length) + var(--flow-gap)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poem-graph-flow {
+    animation: none;
+  }
 }
 
 .poem-graph-node {
@@ -29,8 +87,17 @@
   cursor: pointer;
 }
 
+/* The star's pixels stay square. */
+.poem-graph-star {
+  shape-rendering: crispEdges;
+}
+
+.poem-graph-hit {
+  fill: transparent;
+}
+
 /* SVG links don't take the usual outline well, so a read poem gets a
-   dashed ring instead. */
+   dashed square of its own instead. */
 .poem-graph a {
   outline: none;
 }
@@ -40,6 +107,7 @@
   stroke: var(--color-fg);
   stroke-width: var(--border-width);
   stroke-dasharray: 4 3;
+  shape-rendering: crispEdges;
   visibility: hidden;
 }
 
@@ -53,18 +121,17 @@
   }
 }
 
-/* Not read yet: dim, blurred, and going nowhere. */
+/* Not read yet: grey, and its dialog has no way in. */
 .poem-graph-node.is-locked {
   fill: var(--poem-locked);
-  filter: url(#poem-graph-blur);
-  cursor: grab;
 }
 
+/* Over the web, but only as wide as its links, so it doesn't block the
+   stars behind the rest of the top. */
 .poem-graph-back {
   position: relative;
   z-index: 1;
-  margin: 0;
-  padding: 16px;
+  width: fit-content;
 }
 
 /* The dev-only table of links (backtick shows it). */

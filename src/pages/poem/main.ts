@@ -9,7 +9,7 @@ const FOLLOW_LABEL = 'read';
 
 const { dialogs } = bootstrap();
 
-// Unlocks it on the graph page.
+// Unlocks it on the web.
 const slug = document.querySelector<HTMLElement>('[data-poem]')?.dataset.poem;
 if (slug) markRead(slug);
 

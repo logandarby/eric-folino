@@ -51,10 +51,3 @@ export function findPoem(slug: string): Poem {
   if (!poem) throw new Error(`No poem "${slug}"; try \`npm run poems\``);
   return poem;
 }
-
-/** Shown in place of the poems' pages until they're ready. */
-export const placeholder = {
-  title: 'POEMS',
-  instant: true,
-  body: [{ kind: 'text' as const, text: 'Not yet.' }],
-};
