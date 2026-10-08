@@ -1,0 +1,35 @@
+{
+  "hash": "e58d53216b70abb3a337833d6ea2527d4b64e5242ab20071c976dfd2f0412bbf",
+  "themes": [
+    {
+      "theme": "Dreams",
+      "line": 4
+    },
+    {
+      "theme": "Disguise",
+      "line": 7
+    },
+    {
+      "theme": "Futility",
+      "line": 1
+    }
+  ],
+  "words": [
+    {
+      "word": "drown",
+      "suggests": "failure"
+    },
+    {
+      "word": "dream",
+      "suggests": "illusion"
+    },
+    {
+      "word": "masks",
+      "suggests": "deception"
+    },
+    {
+      "word": "fire",
+      "suggests": "passion"
+    }
+  ]
+}

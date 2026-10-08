@@ -15,9 +15,24 @@ export interface DialogBlock {
   text: string;
 }
 
+/** A button along the bottom of a dialog. */
+export interface DialogAction {
+  label: string;
+  /** Where it goes. Without one, it just closes the dialog. */
+  href?: string;
+}
+
 export interface DialogContent {
   title: string;
   body: DialogBlock[];
+  /** Buttons along the bottom, shown once the text has typed out. */
+  actions?: DialogAction[];
+  /**
+   * Show the text all at once, uncovered by the window as it opens,
+   * instead of typing it out. Text effects still play; pacing tags and
+   * voice blips are skipped.
+   */
+  instant?: boolean;
   /** How this dialog's text blips sound as it types; falls back to sound.blip.voice. */
   voice?: Partial<DialogVoice>;
 }
@@ -127,6 +142,12 @@ export interface HotspotConfig {
   dialog: DialogContent;
 }
 
+/**
+ * Where the social links go on mobile: a column of buttons in the bottom
+ * right corner, or above the title as on desktop.
+ */
+export type MobileSocials = 'corner' | 'title';
+
 export interface StageLayout {
   /** Any CSS length. Height follows from `aspectRatio` (width / height). */
   width: string;
@@ -139,6 +160,11 @@ export interface StageLayout {
 
 export interface PageConfig {
   id: string;
+  /**
+   * The folder in src/pages/ whose page.tsx renders it, when that isn't
+   * its `id`: for pages made from one template, like each poem.
+   */
+  view?: string;
   path: string;
   /** Used for the <title> tag; `null` means just the site name. */
   title: string | null;
@@ -260,6 +286,7 @@ export interface SiteConfig {
     blurPx: number;
     sidePreference: Side[];
   };
+  help: HotspotConfig;
   textDemo: {
     /** Key that opens the demo (KeyboardEvent.key). */
     key: string;

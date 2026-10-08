@@ -8,9 +8,11 @@ import { collectStylesheets } from './jsx/assets.ts';
 import { raw, type Html } from './jsx/jsx-runtime.ts';
 
 /*
- * Renders a whole page from its folder in src/pages/<id>/:
+ * Renders a whole page from its folder in src/pages/<id>/ (or <view>/, for
+ * pages that share one, like the poems):
  *
- *   page.tsx   the markup (default export, rendered at build time)
+ *   page.tsx   the markup (default export, rendered at build time, given
+ *              the page's config)
  *   main.ts    the browser entry, if the page has scripts of its own
  *
  * A page without page.tsx, or a draft when drafts are hidden, gets the
@@ -20,7 +22,7 @@ import { raw, type Html } from './jsx/jsx-runtime.ts';
  * what compiles the JSX), so it's fresh on every request in dev.
  */
 
-type PageView = () => Html;
+type PageView = (page: PageConfig) => Html;
 
 const views = import.meta.glob<PageView>('../src/pages/*/page.tsx', {
   eager: true,
@@ -42,16 +44,16 @@ export async function renderPage({
   page,
   showDrafts,
 }: RenderOptions): Promise<string> {
-  const view = views[`../src/pages/${page.id}/page.tsx`] as
-    PageView | undefined;
+  const folder = page.view ?? page.id;
+  const view = views[`../src/pages/${folder}/page.tsx`] as PageView | undefined;
   const full = view !== undefined && (!page.draft || showDrafts);
-  const ownEntry = `/src/pages/${page.id}/main.ts`;
+  const ownEntry = `/src/pages/${folder}/main.ts`;
   const entry = full
     ? existsSync(resolve(root, `.${ownEntry}`)) && ownEntry
     : PLACEHOLDER_ENTRY;
 
   const { result: body, stylesheets } = collectStylesheets(root, () =>
-    full ? view() : <PlaceholderPage page={page} />
+    full ? view(page) : <PlaceholderPage page={page} />
   );
 
   const html = (

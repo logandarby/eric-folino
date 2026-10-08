@@ -30,7 +30,8 @@ export const siteConfig: SiteConfig = {
   nav: [
     { label: 'HOME', href: '/' },
     { label: 'EPK', href: '/epk/' },
-    { label: 'SECRET', href: '/secret/' },
+    { label: 'SECRET', href: '/enter/' },
+    { label: 'WEB OF POEMS', href: '/poems/' },
   ],
 
   layout: {
@@ -78,7 +79,7 @@ export const siteConfig: SiteConfig = {
       aspectRatio: 1,
       title: { x: 50, y: 27, fontSize: 10.2, align: 'center' },
       nav: { x: 22, y: 52, fontSize: 6.6 },
-      socials: { x: 91, y: 17, fontSize: 5.6, align: 'end' },
+      socials: { x: 91, y: 14, fontSize: 5.6, align: 'end' },
     },
   },
 
@@ -86,7 +87,7 @@ export const siteConfig: SiteConfig = {
     /** How often the blobs "boil" to a new shape. */
     blobJitterIntervalMs: 500,
     /** Max distance each blob point moves, as a fraction of the blob's average radius. */
-    blobJitterAmount: 0.035,
+    blobJitterAmount: 0.045,
     /**
      * Corner rounding, like border-radius, in the SVG's own units. Each
      * corner is cut back by up to this much along its edges (at most half an
@@ -127,6 +128,32 @@ export const siteConfig: SiteConfig = {
     dialogCloseMs: 160,
     /** Multiplier on dialog animation durations in the compact layout. */
     compactSpeedFactor: 0.8,
+  },
+
+  /**
+   * The "?" button in the corner of every page (top left on desktop,
+   * bottom left on mobile), hinting that there are things to find. A page
+   * can show its own instead: `bootstrap({ help: … })` in its main.ts.
+   */
+  help: {
+    label: 'What is this place?',
+    dialog: {
+      title: '???',
+      body: [
+        {
+          kind: 'quote',
+          text: '“Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.”',
+        },
+        {
+          kind: 'narration',
+          text: '*You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
+        },
+        {
+          kind: 'narration',
+          text: '*If the noises bother you, the speaker beside this button silences them. So does pressing M.',
+        },
+      ],
+    },
   },
 
   dialog: {

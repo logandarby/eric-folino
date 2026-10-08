@@ -9,6 +9,7 @@
 @import '@fontsource/courier-prime/latin-400.css';
 @import '@fontsource/courier-prime/latin-400-italic.css';
 
+@import './fonts.css';
 @import './tokens.css';
 @import './base.css';
 @import './corner.css';

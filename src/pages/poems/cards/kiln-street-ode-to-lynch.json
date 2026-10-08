@@ -1,0 +1,35 @@
+{
+  "hash": "efb336af64f7edd47481be5609958542c6678fcf818f77ff7bb1f9e082c51a4e",
+  "themes": [
+    {
+      "theme": "loss",
+      "line": 3
+    },
+    {
+      "theme": "solitude",
+      "line": 18
+    },
+    {
+      "theme": "transformation",
+      "line": 17
+    }
+  ],
+  "words": [
+    {
+      "word": "lost",
+      "suggests": "disappearance"
+    },
+    {
+      "word": "hollow",
+      "suggests": "empty"
+    },
+    {
+      "word": "flame",
+      "suggests": "passion"
+    },
+    {
+      "word": "stone",
+      "suggests": "coldness"
+    }
+  ]
+}

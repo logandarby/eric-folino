@@ -1,0 +1,31 @@
+{
+  "hash": "521267783c8be898e239b30e210830bedbdf355bf3deeff3ab4682e47a87a8f0",
+  "themes": [
+    {
+      "theme": "eidolons",
+      "line": 8
+    },
+    {
+      "theme": "shelter",
+      "line": 3
+    },
+    {
+      "theme": "criticism",
+      "line": 3
+    }
+  ],
+  "words": [
+    {
+      "word": "eidolons",
+      "suggests": "illusions"
+    },
+    {
+      "word": "shelter",
+      "suggests": "protection"
+    },
+    {
+      "word": "criticized",
+      "suggests": "challenged"
+    }
+  ]
+}

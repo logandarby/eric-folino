@@ -4,27 +4,28 @@ import { soundConfig } from '../../site/sound.config.ts';
 import { Icon } from '../icon/icon.tsx';
 
 /**
- * The speaker button in the corner (beside the "?" when there is one), with
+ * The speaker button in the corner (beside the "?"), with
  * a volume slider that slides out on hover or focus. Render it outside the
  * page root, so it still works while a dialog has the page inert. Starts
  * pressed to match the config default; sound-control.ts corrects it from
  * the visitor's saved choice.
  */
 export function SoundControl({
-  afterHelp = false,
   scrolls = false,
+  bottom = false,
 }: {
-  afterHelp?: boolean;
   /** Scroll away with the page instead of staying put (for long pages). */
   scrolls?: boolean;
+  /** In the bottom corner on desktop too, not just on mobile. */
+  bottom?: boolean;
 }) {
   stylesheet(import.meta.url, './sound-control.css');
   return (
     <div
       class={[
         'corner sound-control',
-        afterHelp && 'sound-control--after-help',
         scrolls && 'corner--scrolls',
+        bottom && 'corner--bottom',
       ]
         .filter(Boolean)
         .join(' ')}

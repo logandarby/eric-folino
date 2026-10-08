@@ -1,7 +1,10 @@
+import enter from './enter/page.config.ts';
 import epk from './epk/page.config.ts';
 import home from './home/page.config.ts';
+import iris from './iris/page.config.ts';
 import notFound from './not-found/page.config.ts';
-import secret from './secret/page.config.ts';
+import poemGraph from './poem-graph/page.config.ts';
+import poems, { poemPages } from './poems/page.config.ts';
 import type { PageConfig } from '../site/types.ts';
 
 /**
@@ -12,4 +15,13 @@ import type { PageConfig } from '../site/types.ts';
  * Build-time and tests only: the browser imports a page's own config, so
  * one page's content (or secrets) never ends up in another's bundle.
  */
-export const pages: PageConfig[] = [home, epk, secret, notFound];
+export const pages: PageConfig[] = [
+  home,
+  epk,
+  iris,
+  enter,
+  poems,
+  ...poemPages,
+  poemGraph,
+  notFound,
+];

@@ -9,14 +9,38 @@ export interface ShaderOptions {
    *   float u_time        seconds; frozen under reduced motion
    *   vec2  u_resolution  canvas size in device pixels
    *   vec2  u_pointer     pointer position, 0–1 from the bottom left
+   * plus a `sampler2D` for each of `textures`, and any set with `set()`.
    */
   fragment: string;
+  /**
+   * Images the shader reads, by uniform name. They're sampled with (0, 0)
+   * at the image's top left, clamped at the edges, and can be any size.
+   */
+  textures?: Record<string, TexImageSource>;
+  /**
+   * Draw every frame (the default), or only when asked: on `render()` and
+   * when the canvas resizes. Pictures that change only in response to
+   * something, like the pointer, cost nothing while still.
+   */
+  animate?: boolean;
   /** Frame rate cap; lower is kinder to batteries. Default 60. */
   maxFps?: number;
   /** Device pixel ratio cap; shaders are costly per pixel. Default 1.5. */
   maxPixelRatio?: number;
+  /**
+   * The most pixels to draw, [width, height], when the canvas's box is
+   * bigger. For chunky pixels: stretch the canvas with CSS
+   * (`image-rendering: pixelated`). Smaller boxes draw at their own size,
+   * as squeezing pixels down would garble them.
+   */
+  maxSize?: [number, number];
   /** Time shown when motion is reduced, in seconds. Default 0. */
   stillTime?: number;
+  /**
+   * Called before every draw with the shader's time (seconds), to `set()`
+   * uniforms that change from frame to frame.
+   */
+  beforeDraw?: (time: number) => void;
 }
 
 const VERTEX = `attribute vec2 a_position;
@@ -45,6 +69,9 @@ export class ShaderCanvas {
     'time' | 'resolution' | 'pointer',
     WebGLUniformLocation | null
   > = { time: null, resolution: null, pointer: null };
+  private textureUnits: [WebGLUniformLocation | null, number][] = [];
+  /** Uniforms from `set()`, kept to apply on every draw (and after a lost context). */
+  private readonly values = new Map<string, number[]>();
   private time = 0;
   private pointer = [0.5, 0.5];
   private onScreen = false;
@@ -107,6 +134,16 @@ export class ShaderCanvas {
     });
   }
 
+  /** Sets a float uniform (`float` to `vec4`) for the next draw. */
+  set(name: string, ...values: number[]): void {
+    this.values.set(name, values);
+  }
+
+  /** Draws now. For pictures that don't `animate`. */
+  render(): void {
+    this.draw();
+  }
+
   dispose(): void {
     this.stopLoop?.();
     this.disposer.dispose();
@@ -128,7 +165,11 @@ export class ShaderCanvas {
 
   /** Runs the loop only when there's something to see. */
   private update(): void {
-    const live = this.onScreen && !document.hidden && !reducedMotion.matches;
+    const live =
+      this.options.animate !== false &&
+      this.onScreen &&
+      !document.hidden &&
+      !reducedMotion.matches;
     if (live && !this.stopLoop) {
       const interval = 1000 / (this.options.maxFps ?? 60);
       this.stopLoop = ticker.subscribe(interval, (dt) => {
@@ -147,8 +188,18 @@ export class ShaderCanvas {
 
   private resize(): void {
     const ratio = Math.min(devicePixelRatio, this.options.maxPixelRatio ?? 1.5);
-    const width = Math.max(1, Math.round(this.canvas.clientWidth * ratio));
-    const height = Math.max(1, Math.round(this.canvas.clientHeight * ratio));
+    let width = this.canvas.clientWidth * ratio;
+    let height = this.canvas.clientHeight * ratio;
+    const { maxSize } = this.options;
+    if (maxSize) {
+      const scale = Math.min(maxSize[0] / width, maxSize[1] / height);
+      if (scale < 1) {
+        width *= scale;
+        height *= scale;
+      }
+    }
+    width = Math.max(1, Math.round(width));
+    height = Math.max(1, Math.round(height));
     if (this.canvas.width === width && this.canvas.height === height) return;
     this.canvas.width = width;
     this.canvas.height = height;
@@ -159,11 +210,23 @@ export class ShaderCanvas {
   private draw(): void {
     const { gl, program, uniforms } = this;
     if (!program) return;
+    this.options.beforeDraw?.(this.time);
     gl.uniform1f(uniforms.time, this.time);
     gl.uniform2f(uniforms.resolution, this.canvas.width, this.canvas.height);
     gl.uniform2f(uniforms.pointer, this.pointer[0], this.pointer[1]);
+    for (const [location, unit] of this.textureUnits) {
+      gl.uniform1i(location, unit);
+    }
+    for (const [name, values] of this.values) {
+      const location = gl.getUniformLocation(program, name);
+      if (values.length === 1) gl.uniform1f(location, values[0]);
+      else if (values.length === 2) gl.uniform2fv(location, values);
+      else if (values.length === 3) gl.uniform3fv(location, values);
+      else gl.uniform4fv(location, values);
+    }
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    this.flashGuard?.sample(gl, this.time);
+    // Real time, not the shader's: flashes are judged by the clock.
+    this.flashGuard?.sample(gl, performance.now() / 1000);
   }
 
   private setUp(): void {
@@ -193,6 +256,27 @@ export class ShaderCanvas {
     const position = gl.getAttribLocation(program, 'a_position');
     gl.enableVertexAttribArray(position);
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+    this.textureUnits = Object.entries(this.options.textures ?? {}).map(
+      ([name, image], unit) => {
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          image
+        );
+        // WebGL 1 needs these for sizes that aren't powers of two.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        return [gl.getUniformLocation(program, name), unit];
+      }
+    );
 
     this.program = program;
     this.uniforms = {

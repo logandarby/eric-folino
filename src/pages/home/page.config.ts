@@ -5,11 +5,15 @@ import {
   sillyVoice,
   softVoice,
 } from '../../site/voices.ts';
-import type { BlobConfig, HotspotConfig } from '../../site/types.ts';
+import type {
+  BlobConfig,
+  HotspotConfig,
+  MobileSocials,
+} from '../../site/types.ts';
 
 /*
- * The home page: the bus stop scene with clickable blobs, the clickable
- * screen and the "?" button.
+ * The home page: the bus stop scene with clickable blobs and the clickable
+ * screen.
  */
 
 export default definePage<HomePage>({
@@ -102,6 +106,12 @@ export default definePage<HomePage>({
   ],
 
   /**
+   * Where the social links go on mobile: 'corner' (buttons in the bottom
+   * right corner) or 'title' (above the title, like on desktop).
+   */
+  mobileSocials: 'title',
+
+  /**
    * The glowing bus stop screen in the background photo, clickable like the
    * blobs. Its position comes from the photo (see photo.json, made by
    * `npm run images`).
@@ -123,35 +133,10 @@ export default definePage<HomePage>({
       ],
     },
   },
-
-  /**
-   * The "?" button in the corner (top left on desktop, bottom left on
-   * mobile), hinting that the page has things to find.
-   */
-  help: {
-    label: 'What is this place?',
-    dialog: {
-      title: '???',
-      body: [
-        {
-          kind: 'quote',
-          text: '“Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.”',
-        },
-        {
-          kind: 'narration',
-          text: '*You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
-        },
-        {
-          kind: 'narration',
-          text: '*If the noises bother you, the speaker beside this button silences them. So does pressing M.',
-        },
-      ],
-    },
-  },
 });
 
 interface HomePage {
   blobs: BlobConfig[];
   screen: HotspotConfig;
-  help: HotspotConfig;
+  mobileSocials: MobileSocials;
 }

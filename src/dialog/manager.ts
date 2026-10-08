@@ -66,7 +66,7 @@ interface ActiveDialog {
  * connector line, and keeps it positioned as the viewport changes.
  *
  * Open/close requests are queued, so rapid clicks can't interleave
- * animations. `events` announces each open and close (sounds hook in there).
+ * animations; only the latest waiting request runs. `events` announces each open and close (sounds hook in there).
  */
 export class DialogManager {
   readonly events = new Emitter<DialogEvents>();
@@ -75,6 +75,8 @@ export class DialogManager {
   private readonly connector = document.createElementNS(SVG_NS, 'polyline');
   private active: ActiveDialog | null = null;
   private queue: Promise<void> = Promise.resolve();
+  /** Counts requests, so a waiting one can tell it's been overtaken. */
+  private requests = 0;
   private layoutFrame = 0;
 
   /** @param inertRoots page regions disabled while a modal dialog is open. */
@@ -105,8 +107,30 @@ export class DialogManager {
     return this.enqueue(() => this.doClose());
   }
 
+  /** Opens the dialog, or closes it if it's already open for this anchor. */
+  toggle(options: OpenOptions): Promise<void> {
+    return this.isOpenFor(options.anchor) ? this.close() : this.open(options);
+  }
+
+  /**
+   * Re-places the open dialog, for an anchor that moved on its own (one
+   * that's animated, say). Scrolling and resizing already do this.
+   */
+  reposition(): void {
+    if (this.active) this.scheduleLayout();
+  }
+
+  /**
+   * Runs `task` after whatever is animating now. A request that's still
+   * waiting when a newer one arrives is dropped, since the newer one decides
+   * what ends up open: tabbing quickly through many anchors shows the last
+   * one's dialog, not each in turn.
+   */
   private enqueue(task: () => Promise<void>): Promise<void> {
-    const run = this.queue.then(task);
+    const request = ++this.requests;
+    const run = this.queue.then(() =>
+      request === this.requests ? task() : undefined
+    );
     this.queue = run.catch((err: unknown) => console.error(err));
     return run;
   }
@@ -169,12 +193,23 @@ export class DialogManager {
       : Promise.resolve();
 
     await this.animateConnector(active, 'in', duration(t.connectorDrawMs));
+    // Instant text is all there before the window opens, so opening
+    // uncovers it.
+    if (options.content.instant) view.typewriter.finish();
     view.el.style.visibility = '';
     await this.animateWindow(active, 'in', duration(t.dialogOpenMs));
     await dimmed;
 
-    if (modal) (view.closeButton ?? view.el).focus({ preventScroll: true });
-    void view.typewriter.play();
+    if (view.typewriter.done) {
+      if (modal) {
+        (view.firstAction ?? view.closeButton ?? view.el).focus({
+          preventScroll: true,
+        });
+      }
+    } else {
+      if (modal) (view.closeButton ?? view.el).focus({ preventScroll: true });
+      void view.typewriter.play();
+    }
   }
 
   private bindEvents(active: ActiveDialog): void {
@@ -193,17 +228,21 @@ export class DialogManager {
     disposer.add(() => observer.disconnect());
     disposer.add(() => cancelAnimationFrame(this.layoutFrame));
 
-    if (view.closeButton) {
-      disposer.listen(view.closeButton, 'click', () => void this.close());
+    for (const button of [view.closeButton, ...view.closingActions]) {
+      if (button) disposer.listen(button, 'click', () => void this.close());
     }
     disposer.listen(view.el, 'click', () => view.typewriter.finish());
 
-    if (!active.modal) return;
+    // Esc closes any dialog that can be closed, modal or not.
     disposer.listen(document, 'keydown', (e) => {
       if (e.key === 'Escape' && active.closable) {
         e.preventDefault();
         void this.close();
-      } else if (!view.typewriter.done && !isModifierOrNav(e.key)) {
+      } else if (
+        active.modal &&
+        !view.typewriter.done &&
+        !isModifierOrNav(e.key)
+      ) {
         // First key press skips the typing; it shouldn't also activate
         // whatever is focused.
         e.preventDefault();

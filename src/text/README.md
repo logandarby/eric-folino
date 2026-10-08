@@ -95,7 +95,7 @@ the config has a bad tag.
 - **Copy-paste** gets the real text, even mid-scramble.
 - **Stopping motion:** effects stop when their dialog closes. That covers
   WCAG 2.2.2 ("pause, stop, hide") for closable dialogs, so don't use motion
-  tags in the About, Secret or 404 dialogs, which can't be closed.
+  tags in the About or 404 dialogs, which can't be closed.
 
 ## Adding an effect
 

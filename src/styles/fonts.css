@@ -1,0 +1,11 @@
+/*
+ * Px437 Cordata PPC-400, from VileR's Ultimate Oldschool PC Font Pack
+ * (int10h.org), licensed CC BY-SA 4.0. A bitmap font, drawn for 16px: it
+ * stays crisp at whole multiples of that. Only downloaded on pages that
+ * use it.
+ */
+@font-face {
+  font-family: 'Cordata';
+  src: url('../assets/fonts/Px437_Cordata_PPC-400.woff2') format('woff2');
+  font-display: block;
+}

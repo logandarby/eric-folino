@@ -1,0 +1,47 @@
+/* Positioned, so a link can rise above the dim while its dialog is open. */
+.poem-link {
+  position: relative;
+  /* Its hover outline hugs the word, not the lines around it. */
+  --outline-offset: 2px;
+}
+
+/* Lines keep their spacing as written, like a tab at the start. */
+.poem-line {
+  white-space: pre-wrap;
+  tab-size: 4;
+}
+
+/* The frame around the poem (poem.config.ts sets which, and the
+   variables). It's a layer of its own, so the filter that turns it grey
+   leaves the poem alone; it's only a band round the edge, clear in the
+   middle and click-through, so it never covers the poem. No z-index or
+   isolation: links must stay free to rise above the dim. */
+.poem--framed {
+  position: relative;
+  /* A gap at the sides on narrow screens. */
+  max-width: min(44rem, 100% - 32px);
+  margin-top: 16px;
+  /* Room below, so the page doesn't end on the frame's edge. */
+  margin-bottom: 96px;
+  padding: calc(var(--frame-width) + 32px);
+}
+
+.poem--framed::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: var(--frame-width) solid transparent;
+  border-image-slice: var(--frame-slice);
+  border-image-repeat: round;
+  filter: grayscale(1) brightness(var(--frame-brightness));
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.poem--vines::before {
+  border-image-source: url('../../assets/borders/vines.png');
+}
+
+.poem--waves::before {
+  border-image-source: url('../../assets/borders/waves.png');
+}

@@ -1,0 +1,31 @@
+{
+  "hash": "5ebc2a6ae4ffef4e3d2c0d65dc61aafc14d75dd33391105bb1e014ac1284ec8c",
+  "themes": [
+    {
+      "theme": "dreaming",
+      "line": 1
+    },
+    {
+      "theme": "nostalgia",
+      "line": 7
+    },
+    {
+      "theme": "childhood",
+      "line": 3
+    }
+  ],
+  "words": [
+    {
+      "word": "stars",
+      "suggests": "imagination"
+    },
+    {
+      "word": "memories",
+      "suggests": "nostalgia"
+    },
+    {
+      "word": "whisper",
+      "suggests": "soft nostalgia"
+    }
+  ]
+}

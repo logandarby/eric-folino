@@ -27,7 +27,8 @@ export interface Reveal extends TimedGlyph {
  * it appears, which is what scramble and the voice blips listen to.
  */
 export class Typewriter {
-  readonly events = new Emitter<{ reveal: Reveal }>();
+  /** `reveal` for each character; `done` once the last one is shown. */
+  readonly events = new Emitter<{ reveal: Reveal; done: undefined }>();
   private shown = 0;
   private stop: Cleanup | null = null;
   private resolve: (() => void) | null = null;
@@ -69,11 +70,14 @@ export class Typewriter {
   }
 
   private revealUntil(time: number, instant = false): void {
+    const wasDone = this.done;
     while (!this.done && this.glyphs[this.shown].at <= time) {
       const item = this.glyphs[this.shown++];
       item.el.classList.add(SHOWN_CLASS);
       this.events.emit('reveal', { ...item, instant });
     }
-    if (this.done) this.cancel();
+    if (!this.done) return;
+    this.cancel();
+    if (!wasDone) this.events.emit('done', undefined);
   }
 }

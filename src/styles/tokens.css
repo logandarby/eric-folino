@@ -10,6 +10,8 @@
 
   --font-display: 'Golos Text', system-ui, sans-serif;
   --font-dialog: 'Courier Prime', 'Courier New', monospace;
+  /* Cordata (fonts.css), for the enter page and the poems. */
+  --font-pixel: 'Cordata', monospace;
 
   --border-width: 2px;
   --tap-target: 44px;

@@ -1,11 +1,9 @@
 /* Stays above the dim layer, so sound can be muted while a dialog is open. */
 .sound-control {
+  /* Beside the "?". */
+  --corner-slot: 1;
   z-index: var(--z-spotlit);
   display: flex;
-}
-
-.sound-control--after-help {
-  --corner-slot: 1;
 }
 
 .sound-toggle svg {
@@ -56,8 +54,8 @@
   appearance: none;
 }
 
-.sound-volume input:focus-visible {
-  outline-offset: 2px;
+.sound-volume input {
+  --outline-offset: 2px;
 }
 
 .sound-volume input::-webkit-slider-runnable-track {

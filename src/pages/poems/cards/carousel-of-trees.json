@@ -1,0 +1,35 @@
+{
+  "hash": "1e6417a8fac3a781db1dc2100e93c4768f901d4862b01e26d1c040a0d1890fcb",
+  "themes": [
+    {
+      "theme": "Winter",
+      "line": 1
+    },
+    {
+      "theme": "Magic",
+      "line": 2
+    },
+    {
+      "theme": "Imagination",
+      "line": 3
+    }
+  ],
+  "words": [
+    {
+      "word": "hissing",
+      "suggests": "magic"
+    },
+    {
+      "word": "actual",
+      "suggests": "real"
+    },
+    {
+      "word": "cathedrals",
+      "suggests": "imagination"
+    },
+    {
+      "word": "carousels",
+      "suggests": "magic"
+    }
+  ]
+}

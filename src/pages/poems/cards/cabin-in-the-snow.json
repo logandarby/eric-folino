@@ -1,0 +1,39 @@
+{
+  "hash": "2feefe59ef5d13568fbce73e79083edadf8f0d5807ff44b9a09b584cfc73805a",
+  "themes": [
+    {
+      "theme": "Isolation",
+      "line": 8
+    },
+    {
+      "theme": "Nature",
+      "line": 5
+    },
+    {
+      "theme": "Reflection",
+      "line": 3
+    }
+  ],
+  "words": [
+    {
+      "word": "cave",
+      "suggests": "solitude"
+    },
+    {
+      "word": "stillness",
+      "suggests": "loneliness"
+    },
+    {
+      "word": "brushing",
+      "suggests": "touch"
+    },
+    {
+      "word": "interstices",
+      "suggests": "secrets"
+    },
+    {
+      "word": "drying",
+      "suggests": "transience"
+    }
+  ]
+}

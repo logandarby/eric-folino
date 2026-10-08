@@ -1,0 +1,39 @@
+{
+  "hash": "8c18c9181ef6d9f0671bc856089cb02f82a9f4ebf63280891f1451900d3c1837",
+  "themes": [
+    {
+      "theme": "suburban",
+      "line": 1
+    },
+    {
+      "theme": "lighting",
+      "line": 2
+    },
+    {
+      "theme": "order",
+      "line": 5
+    }
+  ],
+  "words": [
+    {
+      "word": "McMansion",
+      "suggests": "uniformity"
+    },
+    {
+      "word": "pot",
+      "suggests": "artificiality"
+    },
+    {
+      "word": "sprinklers",
+      "suggests": "order"
+    },
+    {
+      "word": "seamless",
+      "suggests": "artificial perfection"
+    },
+    {
+      "word": "pylon",
+      "suggests": "monotony"
+    }
+  ]
+}

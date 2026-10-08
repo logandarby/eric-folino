@@ -1,0 +1,31 @@
+{
+  "hash": "135757e64169f25862d274262f5947a9f3cc1ac55d9f093bb08861611f870fdb",
+  "themes": [
+    {
+      "theme": "creation",
+      "line": 6
+    },
+    {
+      "theme": "destruction",
+      "line": 3
+    },
+    {
+      "theme": "rebirth",
+      "line": 8
+    }
+  ],
+  "words": [
+    {
+      "word": "screams",
+      "suggests": "chaos"
+    },
+    {
+      "word": "lava",
+      "suggests": "transformation"
+    },
+    {
+      "word": "raft",
+      "suggests": "journey"
+    }
+  ]
+}

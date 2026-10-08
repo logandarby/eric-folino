@@ -1,0 +1,24 @@
+{
+  "width": 3930,
+  "height": 2642,
+  "screen": {
+    "x": 1594,
+    "y": 959,
+    "width": 604,
+    "height": 463
+  },
+  "crops": {
+    "landscape": {
+      "left": 0,
+      "top": 0,
+      "width": 3930,
+      "height": 2642
+    },
+    "portrait": {
+      "left": 1183,
+      "top": 53,
+      "width": 1427,
+      "height": 2536
+    }
+  }
+}
