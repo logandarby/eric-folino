@@ -60,7 +60,7 @@ export default definePage<{
   eyes: [
     {
       label: 'The first eye',
-      dialog: eyeDialog('EYE I', 'The world is melting and it\'s dripping out my ears.', '*Are you Tiny Tim?'),
+      dialog: eyeDialog('EYE I', '"The world is melting and it\'s dripping out my ears."', '*Are you Tiny Tim?'),
       column: 'left',
       width: '90%',
       x: '0%',
@@ -69,7 +69,7 @@ export default definePage<{
     },
     {
       label: 'The second eye',
-      dialog: eyeDialog('EYE II', 'Is your body made of fabric, or is it just me?', '*You feel around a bit. Nope.'),
+      dialog: eyeDialog('EYE II', '"Is your body made of fabric, or is it just me?"', '*You feel around a bit. Nope.'),
       column: 'right',
       width: '80%',
       x: '14%',
@@ -78,7 +78,7 @@ export default definePage<{
     },
     {
       label: 'The third eye',
-      dialog: eyeDialog('EYE III', 'In a parking garage, I saw a stange entity...', '*Ok?'),
+      dialog: eyeDialog('EYE III', '"In a parking garage, I saw a stange entity..."', '*Ok?'),
       column: 'left',
       width: '82%',
       x: '10%',
