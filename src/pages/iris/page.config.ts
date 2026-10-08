@@ -43,7 +43,7 @@ export default definePage<{
   noindex: true,
 
   /** The text repeated behind the eyes, in lines spread down the page. */
-  backdrop: { text: 'MORE TECH IS GOOD', lines: 12 },
+  backdrop: { text: 'MORE TECH IS GOOD', lines: 20 },
 
   /**
    * The eyes' look, like Dithermark's "Imperial" palette with Pixelate 2,

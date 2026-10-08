@@ -7,13 +7,16 @@ import { Socials } from '../components/socials/socials.tsx';
 import { SoundControl } from '../components/sound-control/sound-control.tsx';
 import { Title } from '../components/title/title.tsx';
 import { siteConfig } from '../site/site.config.ts';
-import type { PageConfig } from '../site/types.ts';
+import type { MobileSocials, PageConfig } from '../site/types.ts';
 import { perLayout, placementVars } from './placement.ts';
 
 interface StageProps {
   page: PageConfig;
-  /** Show the social links above the title. */
-  socials?: boolean;
+  /**
+   * Show the social links above the title, and say where they go on
+   * mobile. Left out, there are none.
+   */
+  socials?: MobileSocials;
   /** Placed on the stage, like the blobs. */
   children?: Child;
   /** In the scene but off the stage, like the screen hotspot. */
@@ -27,7 +30,7 @@ interface StageProps {
  */
 export function StageLayout({
   page,
-  socials = false,
+  socials,
   children,
   scene,
 }: StageProps) {
@@ -45,7 +48,12 @@ export function StageLayout({
           <Title class="placed" style={placementVars((l) => stage[l].title)} />
           {socials && (
             <Socials
-              class="stage__socials placed"
+              class={[
+                'stage__socials placed',
+                socials === 'corner' && 'stage__socials--wide-only',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               style={placementVars((l) => stage[l].socials)}
             />
           )}
@@ -58,6 +66,7 @@ export function StageLayout({
         </div>
         {scene}
         <HelpButton />
+        {socials === 'corner' && <Socials class="socials-corner" />}
       </div>
       <SoundControl />
     </>

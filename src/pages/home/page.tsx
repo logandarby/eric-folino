@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <StageLayout
       page={page}
-      socials
+      socials={page.mobileSocials}
       scene={<ScreenHotspot label={page.screen.label} />}
     >
       {page.blobs.map((blob, index) => (

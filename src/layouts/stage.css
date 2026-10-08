@@ -86,3 +86,42 @@
   min-height: 0;
   padding: 0.25em;
 }
+
+/* On mobile the stage's links are small to tap, so the home page config
+   (mobileSocials) either enlarges their icons or swaps them for a copy
+   stacked in the bottom right corner, styled like the "?" and the sound
+   control in the opposite corner. */
+:root[data-layout='compact'] .stage__socials .socials__icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+:root[data-layout='compact'] .stage__socials--wide-only {
+  display: none;
+}
+
+.socials-corner {
+  display: none;
+}
+
+:root[data-layout='compact'] .socials-corner {
+  position: fixed;
+  right: calc(env(safe-area-inset-right) + 16px);
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  /* Above the photo hotspots, like the corner buttons. */
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 20px;
+}
+
+.socials-corner .socials__link {
+  justify-content: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  -webkit-tap-highlight-color: transparent;
+}

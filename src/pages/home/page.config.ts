@@ -5,7 +5,11 @@ import {
   sillyVoice,
   softVoice,
 } from '../../site/voices.ts';
-import type { BlobConfig, HotspotConfig } from '../../site/types.ts';
+import type {
+  BlobConfig,
+  HotspotConfig,
+  MobileSocials,
+} from '../../site/types.ts';
 
 /*
  * The home page: the bus stop scene with clickable blobs and the clickable
@@ -102,6 +106,12 @@ export default definePage<HomePage>({
   ],
 
   /**
+   * Where the social links go on mobile: 'corner' (buttons in the bottom
+   * right corner) or 'title' (above the title, like on desktop).
+   */
+  mobileSocials: 'title',
+
+  /**
    * The glowing bus stop screen in the background photo, clickable like the
    * blobs. Its position comes from the photo (see photo.json, made by
    * `npm run images`).
@@ -128,4 +138,5 @@ export default definePage<HomePage>({
 interface HomePage {
   blobs: BlobConfig[];
   screen: HotspotConfig;
+  mobileSocials: MobileSocials;
 }

@@ -127,6 +127,12 @@ export interface HotspotConfig {
   dialog: DialogContent;
 }
 
+/**
+ * Where the social links go on mobile: a column of buttons in the bottom
+ * right corner, or above the title as on desktop.
+ */
+export type MobileSocials = 'corner' | 'title';
+
 export interface StageLayout {
   /** Any CSS length. Height follows from `aspectRatio` (width / height). */
   width: string;
