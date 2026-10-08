@@ -1,6 +1,7 @@
 import { stylesheet } from '../../build/jsx/assets.ts';
 import type { Child } from '../../build/jsx/jsx-runtime.ts';
 import { Background } from '../components/background/background.tsx';
+import { HelpButton } from '../components/help-button/help-button.tsx';
 import { Nav } from '../components/nav/nav.tsx';
 import { Socials } from '../components/socials/socials.tsx';
 import { SoundControl } from '../components/sound-control/sound-control.tsx';
@@ -15,10 +16,8 @@ interface StageProps {
   socials?: boolean;
   /** Placed on the stage, like the blobs. */
   children?: Child;
-  /** In the scene but off the stage, like the screen hotspot and the "?". */
+  /** In the scene but off the stage, like the screen hotspot. */
   scene?: Child;
-  /** Whether there's a "?" for the sound control to sit beside. */
-  help?: boolean;
 }
 
 /**
@@ -31,7 +30,6 @@ export function StageLayout({
   socials = false,
   children,
   scene,
-  help = false,
 }: StageProps) {
   stylesheet(import.meta.url, './stage.css');
   const { stage } = siteConfig;
@@ -59,8 +57,9 @@ export function StageLayout({
           {children}
         </div>
         {scene}
+        <HelpButton />
       </div>
-      <SoundControl afterHelp={help} />
+      <SoundControl />
     </>
   );
 }

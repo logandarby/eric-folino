@@ -1,0 +1,108 @@
+@import '@fontsource/coral-pixels/latin-400.css';
+
+.iris {
+  /*
+   * The backdrop text. Coral Pixels is a colour font (its own orange and
+   * blue pixels), so it's dimmed with opacity rather than coloured.
+   */
+  --backdrop-opacity: 0.45;
+  --backdrop-size: clamp(1.25rem, 5vw, 3.25rem);
+  /* The smallest an eye gets, however narrow the screen. */
+  --eye-min-width: 140px;
+
+  position: relative;
+  /* The eyes sit in the middle of the screen; taller than it, they scroll. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100dvh;
+  background: #000;
+}
+
+.iris__eyes {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(12px, 4vw, 48px);
+  /* Narrow, so the eyes read as two columns down the middle. */
+  max-width: 640px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 16px;
+}
+
+.iris__backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* Static text: kept out of the eyes' layout and painting. */
+  contain: strict;
+  opacity: var(--backdrop-opacity);
+  font-family: 'Coral Pixels', monospace;
+  font-size: var(--backdrop-size);
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  /* The lines spread evenly down the whole page. */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.iris__backdrop p {
+  margin: 0;
+}
+
+.iris__column {
+  display: flex;
+  flex-direction: column;
+}
+
+.eye {
+  /* Positioned (and above the backdrop); the dialog's spotlight lifts it. */
+  position: relative;
+  display: block;
+  /* On narrow screens it keeps a usable size, and stays inside its column. */
+  --eye-width: max(var(--width), min(var(--eye-min-width), 100%));
+  width: var(--eye-width);
+  margin-top: var(--y);
+  margin-left: min(var(--x), 100% - var(--eye-width));
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: #000;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.eye {
+  --outline-offset: 6px;
+}
+
+/* Each layer is the whole picture, shifted up to show its own third. */
+.eye__layer {
+  position: absolute;
+  top: calc(var(--layer) * -100%);
+  left: 0;
+  width: 100%;
+  height: 300%;
+  max-width: none;
+}
+
+/*
+ * Drawn by the shader once it's ready (see main.ts), at the dither's low
+ * resolution: scaled up here without smoothing, so its pixels stay crisp.
+ */
+.eye__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.eye[data-gl] .eye__layer {
+  visibility: hidden;
+}

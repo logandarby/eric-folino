@@ -44,10 +44,3 @@ if (screen) {
     toggleDialog(anchor, page.screen.dialog)
   );
 }
-
-// The "?" in the corner hints that there's more to click on.
-const help = document.querySelector<HTMLButtonElement>('[data-help]');
-if (help) {
-  const anchor = elementAnchor(help);
-  help.addEventListener('click', () => toggleDialog(anchor, page.help.dialog));
-}

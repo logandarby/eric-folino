@@ -129,6 +129,32 @@ export const siteConfig: SiteConfig = {
     compactSpeedFactor: 0.8,
   },
 
+  /**
+   * The "?" button in the corner of every page (top left on desktop,
+   * bottom left on mobile), hinting that there are things to find. A page
+   * can show its own instead: `bootstrap({ help: … })` in its main.ts.
+   */
+  help: {
+    label: 'What is this place?',
+    dialog: {
+      title: '???',
+      body: [
+        {
+          kind: 'quote',
+          text: '“Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.”',
+        },
+        {
+          kind: 'narration',
+          text: '*You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
+        },
+        {
+          kind: 'narration',
+          text: '*If the noises bother you, the speaker beside this button silences them. So does pressing M.',
+        },
+      ],
+    },
+  },
+
   dialog: {
     /** Max width of a floating dialog, in px. */
     maxWidth: 400,

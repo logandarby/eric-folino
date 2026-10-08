@@ -9,7 +9,7 @@ describe('dialog text in the configs', () => {
   const dialogs: DialogContent[] = [
     ...home.blobs.map((b) => b.dialog),
     home.screen.dialog,
-    home.help.dialog,
+    siteConfig.help.dialog,
     siteConfig.textDemo.dialog,
     ...pages.flatMap((p) => (p.placeholder ? [p.placeholder] : [])),
   ];

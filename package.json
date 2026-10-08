@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "check-circular": "madge --circular --extensions ts,tsx src/ build/",
     "images": "node scripts/build-images.mjs",
+    "eyes": "node scripts/slice-eyes.mjs",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -27,6 +28,7 @@
     "*.{css,html,json,md,yml}": "prettier --write"
   },
   "dependencies": {
+    "@fontsource/coral-pixels": "^5.3.0",
     "@fontsource/courier-prime": "^5.3.0",
     "@fontsource/golos-text": "^5.3.0"
   },

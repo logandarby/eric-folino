@@ -8,8 +8,8 @@ import {
 import type { BlobConfig, HotspotConfig } from '../../site/types.ts';
 
 /*
- * The home page: the bus stop scene with clickable blobs, the clickable
- * screen and the "?" button.
+ * The home page: the bus stop scene with clickable blobs and the clickable
+ * screen.
  */
 
 export default definePage<HomePage>({
@@ -123,35 +123,9 @@ export default definePage<HomePage>({
       ],
     },
   },
-
-  /**
-   * The "?" button in the corner (top left on desktop, bottom left on
-   * mobile), hinting that the page has things to find.
-   */
-  help: {
-    label: 'What is this place?',
-    dialog: {
-      title: '???',
-      body: [
-        {
-          kind: 'quote',
-          text: '“Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.”',
-        },
-        {
-          kind: 'narration',
-          text: '*You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
-        },
-        {
-          kind: 'narration',
-          text: '*If the noises bother you, the speaker beside this button silences them. So does pressing M.',
-        },
-      ],
-    },
-  },
 });
 
 interface HomePage {
   blobs: BlobConfig[];
   screen: HotspotConfig;
-  help: HotspotConfig;
 }

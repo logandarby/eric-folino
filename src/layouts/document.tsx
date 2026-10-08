@@ -1,5 +1,6 @@
 import { stylesheet } from '../../build/jsx/assets.ts';
 import type { Child } from '../../build/jsx/jsx-runtime.ts';
+import { HelpButton } from '../components/help-button/help-button.tsx';
 import { Nav } from '../components/nav/nav.tsx';
 import { SoundControl } from '../components/sound-control/sound-control.tsx';
 import { Title } from '../components/title/title.tsx';
@@ -25,6 +26,7 @@ export function DocumentLayout({
           <Nav page={page} />
         </header>
         <main class="document__main">{children}</main>
+        <HelpButton scrolls />
       </div>
       <SoundControl scrolls />
     </>

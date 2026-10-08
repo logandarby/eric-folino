@@ -260,6 +260,7 @@ export interface SiteConfig {
     blurPx: number;
     sidePreference: Side[];
   };
+  help: HotspotConfig;
   textDemo: {
     /** Key that opens the demo (KeyboardEvent.key). */
     key: string;

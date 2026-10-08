@@ -103,7 +103,7 @@
 }
 
 /* Invisible, but hovering or focusing it shows the dashed outline every
-   focused control gets (base.css), plus a glow. */
+   button gets (base.css), plus a glow. */
 .hotspot {
   position: absolute;
   left: var(--spot-x);
@@ -116,11 +116,6 @@
   cursor: pointer;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
-}
-
-.hotspot:hover {
-  outline: var(--border-width) dashed var(--color-fg);
-  outline-offset: 4px;
 }
 
 /* Glow. */

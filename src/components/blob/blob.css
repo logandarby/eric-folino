@@ -32,8 +32,8 @@
   transform: scale(0.94);
 }
 
-.blob:focus-visible {
-  outline-offset: 10px;
+.blob {
+  --outline-offset: 10px;
 }
 
 /* Highlight the selected blob with a glow in its own colour. */
