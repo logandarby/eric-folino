@@ -112,7 +112,7 @@ export default definePage<HomePage>({
   listen: {
     label: 'Listen to “Standby”',
     cta: 'Listen?',
-    song: { title: 'Standby', artist: 'Eric Folino', volume: 0.8 },
+    song: { title: 'Standby', artist: 'Eric Folino', volume: 0.7 },
     // A lit ad panel: bright, blooming into the night. It plays the
     // montage (src/assets/video/montage.mp4), then the photos, round
     // `photoRounds` times, then the montage again, until the song ends.
