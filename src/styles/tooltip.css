@@ -1,0 +1,23 @@
+/* A tooltip (src/dialog/tooltip.ts): a small box like a dialog's, over
+   everything, that the pointer goes through. A page can set
+   --tooltip-font for its own type. */
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-tooltip);
+  max-width: min(20rem, 100vw - 16px);
+  padding: 4px 8px;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--tooltip-font, var(--font-dialog));
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.25;
+  pointer-events: none;
+}
+
+.tooltip[hidden] {
+  display: none;
+}

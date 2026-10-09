@@ -1,5 +1,8 @@
+import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { stylesheet } from '../../../build/jsx/assets.ts';
 import type { Child } from '../../../build/jsx/jsx-runtime.ts';
+import { Icon } from '../../components/icon/icon.tsx';
 import { VoidLayout } from '../../layouts/void.tsx';
 import { PoemsNav } from '../poems/poems-nav.tsx';
 import type { PageConfig } from '../../site/types.ts';
@@ -30,9 +33,26 @@ export default function PoemPage(page: PageConfig & { slug?: string }) {
     <VoidLayout corner="bottom">
       <PoemsNav />
       <article {...frame()}>
-        <h1 id={lineId(0)} data-poem={poem.slug}>
-          {line(0)}
-        </h1>
+        <div class="poem-title">
+          <h1 id={lineId(0)} data-poem={poem.slug}>
+            {line(0)}
+          </h1>
+          {/* Starred or not is only known in the browser; main.ts shows it. */}
+          <button
+            type="button"
+            class="poem-favourite"
+            aria-pressed="false"
+            aria-label="Favourite"
+            data-favourite
+            hidden
+          >
+            <Icon
+              icon={faStarOutline}
+              class="favourite-star favourite-star--off"
+            />
+            <Icon icon={faStar} class="favourite-star favourite-star--on" />
+          </button>
+        </div>
         {stanzas(poem.lines).map((stanza) =>
           // An empty stanza is an extra blank line, a longer pause.
           stanza.length === 0 ? (

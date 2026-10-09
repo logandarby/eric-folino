@@ -1,4 +1,4 @@
-Summer night porch?
+Summer night porch
 
 The summer night porch swings its fist through the wind tunnel into my throat
 I caught its wooden hands and they struck twice, telling me it was time to leave

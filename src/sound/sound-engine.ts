@@ -59,6 +59,8 @@ export class SoundEngine {
   private readonly loops = new Set<Voice>();
   private readonly random: () => number;
   private graph: AudioGraph | null = null;
+  /** Whether a click or key press has let audio start. */
+  private unlocked = false;
   private unsupported = false;
   private idleTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -104,7 +106,7 @@ export class SoundEngine {
     if (on) {
       // Turned on elsewhere (another tab): resume if audio already started,
       // otherwise wait for the next click or key press.
-      if (this.graph) this.resume(this.graph);
+      if (this.graph && this.unlocked) this.resume(this.graph);
     } else {
       this.loops.forEach((loop) => loop.stop());
       this.loops.clear();
@@ -119,18 +121,26 @@ export class SoundEngine {
   }
 
   /**
+   * Makes the audio graph ahead of time, paused, so `unlock()` only has to
+   * resume it. Making an AudioContext can take a while (a fifth of a second
+   * in one trace); done in the visitor's first tap, it holds up the page's
+   * response to it. Silent until unlocked.
+   */
+  prepare(): void {
+    if (!this.enabled || this.unsupported || this.graph) return;
+    this.graph = this.createGraph(this.options.config, this.volume);
+    if (!this.graph) this.unsupported = true;
+  }
+
+  /**
    * Starts audio. Must run inside a click or key press handler the first
    * time; after that the browser lets it resume freely.
    */
   unlock(): void {
     if (!this.enabled || this.unsupported) return;
-    if (!this.graph) {
-      this.graph = this.createGraph(this.options.config, this.volume);
-      if (!this.graph) {
-        this.unsupported = true;
-        return;
-      }
-    }
+    this.prepare();
+    if (!this.graph) return;
+    this.unlocked = true;
     this.resume(this.graph);
   }
 
@@ -182,7 +192,9 @@ export class SoundEngine {
 
   /** The graph, if sound may play right now. */
   private live(): AudioGraph | null {
-    if (!this.enabled || !this.graph) return null;
+    // Not before it's unlocked: sounds would wait in the paused graph and
+    // all play at once when it starts.
+    if (!this.enabled || !this.graph || !this.unlocked) return null;
     this.resume(this.graph);
     return this.graph;
   }

@@ -39,6 +39,19 @@ export interface OpenOptions {
   modal?: boolean;
   /** Shows a close button and allows Esc / click-outside. Default true. */
   closable?: boolean;
+  /**
+   * Draws the connector and opens and closes the window over time, rather
+   * than at once. Default true.
+   */
+  animate?: boolean;
+  /**
+   * Places the dialog once, as it opens, and keeps it there while the
+   * anchor moves: `reposition()` only re-routes the connector. For an
+   * anchor that moves a long way (a view zooming out, say), which would
+   * otherwise send the dialog jumping to another side. The window
+   * resizing places it again. Default false.
+   */
+  fixed?: boolean;
 }
 
 export interface DialogEvents extends Record<string, unknown> {
@@ -53,12 +66,29 @@ interface ActiveDialog {
   view: DialogView;
   modal: boolean;
   closable: boolean;
+  /** How long each of its animations takes, from the site's timings. */
+  ms: (ms: number) => number;
   disposer: Disposer;
   returnFocus: HTMLElement | null;
   /** Where the connector meets the dialog, relative to the dialog's box. */
   attach: Point;
+  fixed: boolean;
+  /** Where it was last placed. */
+  box: Rect | null;
+  /** The anchor's box when it was last laid out. */
+  anchorRect: Rect | null;
   size: { width: number; height: number };
   connectorLength: number;
+  /**
+   * What the last full layout measured besides the anchor, for
+   * `reposition()` to reuse: reading them again each frame, after the page
+   * has just moved the anchor, would make the browser lay out the page
+   * there and then.
+   */
+  measured: {
+    viewport: Rect;
+    avoid: { hard: Rect[]; soft: Rect[] };
+  } | null;
 }
 
 /**
@@ -113,11 +143,28 @@ export class DialogManager {
   }
 
   /**
-   * Re-places the open dialog, for an anchor that moved on its own (one
-   * that's animated, say). Scrolling and resizing already do this.
+   * Re-places the open dialog now, for an anchor that moved on its own
+   * (one that's animated, say): call it each frame it moves, and the
+   * connector keeps up. Only the anchor is read again (so make its rect
+   * cheap); the dialog's size, the window and what to avoid are as last
+   * measured. Scrolling and resizing already do this. Nothing happens if
+   * the anchor hasn't moved.
    */
   reposition(): void {
-    if (this.active) this.scheduleLayout();
+    const active = this.active;
+    if (!active) return;
+    const at = active.anchorRect;
+    const now = active.anchor.rect();
+    if (
+      at &&
+      at.x === now.x &&
+      at.y === now.y &&
+      at.width === now.width &&
+      at.height === now.height
+    ) {
+      return;
+    }
+    this.layout(active, false);
   }
 
   /**
@@ -164,14 +211,19 @@ export class DialogManager {
       view,
       modal,
       closable,
+      ms: (ms) => (options.animate === false ? 0 : duration(ms)),
       disposer: new Disposer(),
       returnFocus:
         document.activeElement instanceof HTMLElement
           ? document.activeElement
           : null,
       attach: { x: 0, y: 0 },
+      fixed: options.fixed ?? false,
+      box: null,
+      anchorRect: null,
       size: { width: 0, height: 0 },
       connectorLength: 0,
+      measured: null,
     };
     this.active = active;
     this.layout(active);
@@ -187,17 +239,17 @@ export class DialogManager {
     const dimmed = modal
       ? this.spotlight.show(
           options.anchor.element,
-          duration(t.spotlightFadeMs),
+          active.ms(t.spotlightFadeMs),
           options.anchor.spotlight
         )
       : Promise.resolve();
 
-    await this.animateConnector(active, 'in', duration(t.connectorDrawMs));
+    await this.animateConnector(active, 'in', active.ms(t.connectorDrawMs));
     // Instant text is all there before the window opens, so opening
     // uncovers it.
     if (options.content.instant) view.typewriter.finish();
     view.el.style.visibility = '';
-    await this.animateWindow(active, 'in', duration(t.dialogOpenMs));
+    await this.animateWindow(active, 'in', active.ms(t.dialogOpenMs));
     await dimmed;
 
     if (view.typewriter.done) {
@@ -260,40 +312,49 @@ export class DialogManager {
     });
   }
 
-  /** Measures, places the dialog and routes the connector. */
-  private layout(active: ActiveDialog): void {
+  /** Places the dialog and its connector; `measure` re-reads everything. */
+  private layout(active: ActiveDialog, measure = true): void {
     const { anchor, view } = active;
     const mode: PlacementMode =
       currentLayout() === 'compact' ? 'docked' : 'floating';
-    view.el.dataset.mode = mode;
-
-    const size = { width: view.el.offsetWidth, height: view.el.offsetHeight };
-    const viewport = rect(
-      0,
-      0,
-      document.documentElement.clientWidth,
-      window.innerHeight
-    );
+    // A fixed dialog stays where it is unless the window or it changed
+    // size (or shape).
+    let place = !active.fixed || !active.box;
+    if (view.el.dataset.mode !== mode) {
+      view.el.dataset.mode = mode;
+      measure = place = true;
+    }
+    if (measure || !active.measured) {
+      const before = { ...active.size, ...active.measured?.viewport };
+      active.size = {
+        width: view.el.offsetWidth,
+        height: view.el.offsetHeight,
+      };
+      active.measured = {
+        viewport: rect(
+          0,
+          0,
+          document.documentElement.clientWidth,
+          window.innerHeight
+        ),
+        avoid: avoidRects(anchor.element),
+      };
+      const after = { ...active.size, ...active.measured.viewport };
+      place ||= (Object.keys(after) as (keyof typeof after)[]).some(
+        (key) => after[key] !== before[key]
+      );
+    }
+    const { avoid } = active.measured;
     const anchorRect = anchor.rect();
-    const avoid = avoidRects(anchor.element);
-    const { rect: box } = placeDialog({
-      anchor: anchorRect,
-      size,
-      viewport,
-      mode,
-      margin: siteConfig.dialog.viewportMargin,
-      gap: siteConfig.dialog.anchorGap,
-      edgeInset: EDGE_INSET,
-      sides: siteConfig.dialog.sidePreference,
-      avoid: avoid.hard,
-      softAvoid: avoid.soft,
-      comfort:
-        Math.min(viewport.width, viewport.height) *
-        siteConfig.dialog.edgeComfort,
-    });
+    active.anchorRect = anchorRect;
+    const box =
+      place || !active.box ? this.place(active, anchorRect, mode) : active.box;
+    active.box = box;
     if (active.modal) this.spotlight.reframe();
-    view.el.style.left = `${box.x}px`;
-    view.el.style.top = `${box.y}px`;
+    if (place) {
+      view.el.style.left = `${box.x}px`;
+      view.el.style.top = `${box.y}px`;
+    }
 
     const points = routeConnector(
       box,
@@ -312,8 +373,34 @@ export class DialogManager {
 
     const start = points.length ? points[0] : center(box);
     active.attach = { x: start.x - box.x, y: start.y - box.y };
-    active.size = size;
     active.connectorLength = polylineLength(points);
+  }
+
+  /** Where the dialog goes for an anchor at `anchorRect`. */
+  private place(
+    active: ActiveDialog,
+    anchorRect: Rect,
+    mode: PlacementMode
+  ): Rect {
+    const { viewport, avoid } = active.measured ?? {
+      viewport: rect(0, 0, 0, 0),
+      avoid: { hard: [], soft: [] },
+    };
+    return placeDialog({
+      anchor: anchorRect,
+      size: active.size,
+      viewport,
+      mode,
+      margin: siteConfig.dialog.viewportMargin,
+      gap: siteConfig.dialog.anchorGap,
+      edgeInset: EDGE_INSET,
+      sides: siteConfig.dialog.sidePreference,
+      avoid: avoid.hard,
+      softAvoid: avoid.soft,
+      comfort:
+        Math.min(viewport.width, viewport.height) *
+        siteConfig.dialog.edgeComfort,
+    }).rect;
   }
 
   // Closing -----------------------------------------------------------------
@@ -327,15 +414,15 @@ export class DialogManager {
     this.events.emit('close', { view: active.view });
 
     const t = siteConfig.animation;
-    await this.animateWindow(active, 'out', duration(t.dialogCloseMs));
+    await this.animateWindow(active, 'out', active.ms(t.dialogCloseMs));
     active.view.el.remove();
 
     const undim = active.modal
-      ? this.spotlight.hide(duration(t.spotlightFadeMs))
+      ? this.spotlight.hide(active.ms(t.spotlightFadeMs))
       : Promise.resolve();
     if (active.modal) this.inertRoots.forEach((root) => (root.inert = false));
     await Promise.all([
-      this.animateConnector(active, 'out', duration(t.dialogCloseMs)),
+      this.animateConnector(active, 'out', active.ms(t.dialogCloseMs)),
       undim,
     ]);
     this.connector.getAnimations().forEach((a) => a.cancel());
