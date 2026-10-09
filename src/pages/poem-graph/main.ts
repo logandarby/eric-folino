@@ -267,13 +267,14 @@ function drawGraph(container: HTMLElement, dialogs: DialogManager): Cleanup {
       link,
       el: svgEl('line', {
         class: 'poem-graph-link',
-        'stroke-opacity': String(LINK_OPACITY[ends]),
+        // Through CSS, which dims it further (see graph.css).
+        style: `--opacity: ${LINK_OPACITY[ends]}`,
       }),
       // One dash, and a gap longer than any link, parked before the start
       // (with room for its square ends) until it fires.
       flow: svgEl('line', {
         class: 'poem-graph-flow',
-        'stroke-opacity': String(FLOW_OPACITY[ends]),
+        style: `--opacity: ${FLOW_OPACITY[ends]}`,
         'stroke-dasharray': `${SPECK} 100000`,
         'stroke-dashoffset': String(SPECK + 2),
       }),

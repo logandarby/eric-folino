@@ -5,6 +5,8 @@
   --poem-link: #c9b3ff;
   /* The specks along the links: the title's yellow, against the purple. */
   --poem-flow: #f0e05a;
+  /* How much of each thing shows: less while another poem is in focus. */
+  --shade: 1;
   position: fixed;
   inset: 0;
   overflow: hidden;
@@ -45,6 +47,8 @@
 
 .poem-graph-link {
   stroke: var(--poem-link);
+  /* --opacity is each link's own, from main.ts. */
+  stroke-opacity: calc(var(--opacity) * var(--shade));
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -55,6 +59,7 @@
    between nothing moves, so the web can sit still. */
 .poem-graph-flow {
   stroke: var(--poem-flow);
+  stroke-opacity: calc(var(--opacity) * var(--shade));
   stroke-width: 2;
   stroke-linecap: square;
   pointer-events: none;
@@ -67,6 +72,7 @@
 
 .poem-graph-node {
   fill: var(--poem-node);
+  fill-opacity: var(--shade);
   cursor: pointer;
 }
 
@@ -143,6 +149,8 @@
   /* Grey, so they sit back from the stars and the tooltip. */
   fill: color-mix(in srgb, var(--color-fg) 55%, var(--color-bg));
   stroke: var(--color-bg);
+  fill-opacity: var(--shade);
+  stroke-opacity: var(--shade);
   stroke-width: 4px;
   stroke-linejoin: round;
   paint-order: stroke;
@@ -154,16 +162,19 @@
   visibility: visible;
 }
 
-/* With a poem in focus, the rest of the web steps back, at once. Not
-   faded: while its opacity is animating, Chrome gives each of the hundred
-   or so stars, links and titles a compositor layer of its own, and making
-   them stalled the first tap for a tenth of a second. */
+/* With a poem in focus, the rest of the web steps back, at once. Through
+   --shade, not opacity: Chrome draws each element with an opacity of its
+   own on a canvas of its own, and the hundred or so stars, links and
+   titles each redrawn that way every frame made a phone stutter as the
+   view glided out (fitNear in main.ts). Not faded, either: while its
+   opacity is animating, Chrome gives each a compositor layer of its own,
+   and making them stalled the first tap for a tenth of a second. */
 .poem-graph.is-focusing :is(.poem-graph-node, .poem-graph-label):not(.is-near) {
-  opacity: 0.25;
+  --shade: 0.25;
 }
 
 .poem-graph.is-focusing :is(.poem-graph-link, .poem-graph-flow):not(.is-near) {
-  opacity: 0.2;
+  --shade: 0.2;
 }
 
 /* Its own links stand out, however faint they are otherwise. */

@@ -39,12 +39,8 @@ export const graph: { poems: Poem[]; links: PoemLink[] } = data;
 
 export const poemPath = (slug: string) => `/poems/${slug}/`;
 
-/** The page's id for line `n` of its poem, which links land on. */
-export const lineId = (n: number) => `l-${n}`;
-
-/** Where a link goes: the poem, at the line it lands on. */
-export const linkHref = (link: PoemLink) =>
-  `${poemPath(link.to)}#${lineId(link.line)}`;
+/** Where a link goes: the top of the poem (its dialog quotes the line). */
+export const linkHref = (link: PoemLink) => poemPath(link.to);
 
 export function findPoem(slug: string): Poem {
   const poem = graph.poems.find((p) => p.slug === slug);

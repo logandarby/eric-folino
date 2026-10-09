@@ -20,7 +20,7 @@ export function PoemsNav({
     <nav class={['poems-back', cls].filter(Boolean).join(' ')}>
       <a href="/">Home</a>
       {item('welcome', '/poems/', 'Welcome')}
-      {item('web', '/poems/web/', 'Web')}
+      {item('web', '/poems/web/', 'The Web')}
       {item('favourites', '/poems/favourites/', 'Favourites')}
     </nav>
   );
