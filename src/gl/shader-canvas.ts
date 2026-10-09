@@ -23,6 +23,11 @@ export interface ShaderOptions {
    * something, like the pointer, cost nothing while still.
    */
   animate?: boolean;
+  /**
+   * See-through where the shader's alpha is below 1 (default false). Its
+   * colours are then premultiplied: rgb at most alpha.
+   */
+  transparent?: boolean;
   /** Frame rate cap; lower is kinder to batteries. Default 60. */
   maxFps?: number;
   /** Device pixel ratio cap; shaders are costly per pixel. Default 1.5. */
@@ -75,6 +80,7 @@ export class ShaderCanvas {
   private time = 0;
   private pointer = [0.5, 0.5];
   private onScreen = false;
+  private paused = false;
   private stopLoop: Cleanup | null = null;
   private readonly flashGuard = import.meta.env.DEV ? new FlashGuard() : null;
 
@@ -82,7 +88,10 @@ export class ShaderCanvas {
     canvas: HTMLCanvasElement,
     options: ShaderOptions
   ): ShaderCanvas | null {
-    const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+    const gl = canvas.getContext('webgl', {
+      antialias: false,
+      alpha: options.transparent ?? false,
+    });
     return gl ? new ShaderCanvas(canvas, gl, options) : null;
   }
 
@@ -139,6 +148,12 @@ export class ShaderCanvas {
     this.values.set(name, values);
   }
 
+  /** Holds the picture still (true), or lets it run on. */
+  pause(paused: boolean): void {
+    this.paused = paused;
+    this.update();
+  }
+
   /** Draws now. For pictures that don't `animate`. */
   render(): void {
     this.draw();
@@ -167,6 +182,7 @@ export class ShaderCanvas {
   private update(): void {
     const live =
       this.options.animate !== false &&
+      !this.paused &&
       this.onScreen &&
       !document.hidden &&
       !reducedMotion.matches;
@@ -188,8 +204,11 @@ export class ShaderCanvas {
 
   private resize(): void {
     const ratio = Math.min(devicePixelRatio, this.options.maxPixelRatio ?? 1.5);
-    let width = this.canvas.clientWidth * ratio;
-    let height = this.canvas.clientHeight * ratio;
+    // As drawn, after any transforms (a zoomed photo layer, say), so the
+    // picture is sharp at the size it shows.
+    const box = this.canvas.getBoundingClientRect();
+    let width = box.width * ratio;
+    let height = box.height * ratio;
     const { maxSize } = this.options;
     if (maxSize) {
       const scale = Math.min(maxSize[0] / width, maxSize[1] / height);

@@ -43,12 +43,19 @@ export const siteConfig: SiteConfig = {
     /** When this matches, the portrait crop of the background is served. */
     portraitQuery: '(max-aspect-ratio: 4/5)',
     /**
-     * Framing of the landscape photo, matched to the Figma design: scaled
-     * past "cover" by this factor and anchored at this point (CSS
-     * object-position), which puts the lit bus stop middle-left.
+     * Framing of the landscape photo: scaled past "cover" by this factor
+     * and anchored at this point (CSS object-position), which puts the lit
+     * bus stop large, middle-left, beside the stage.
      */
-    landscapeZoom: 1.27,
-    landscapeFocus: '85% 97%',
+    landscapeZoom: 1.9,
+    landscapeFocus: '55% 92%',
+    /**
+     * Framing of the portrait crop (phones): scaled past "cover" by this
+     * factor about this point of the screen, which puts the bus stop large
+     * below the stage.
+     */
+    portraitZoom: 1.6,
+    portraitFocus: '45% 85%',
     /**
      * The bus stop ad light flickers now and then. The "lights off" image
      * is made by `npm run images` (see LIGHTS_OFF in build-images.mjs).
@@ -75,10 +82,10 @@ export const siteConfig: SiteConfig = {
       socials: { x: 82, y: 22, fontSize: 4.8, align: 'end' },
     },
     compact: {
-      width: 'min(92vw, 52dvh)',
+      width: 'min(92vw, 44dvh)',
       aspectRatio: 1,
       title: { x: 50, y: 27, fontSize: 10.2, align: 'center' },
-      nav: { x: 22, y: 52, fontSize: 6.6 },
+      nav: { x: 22, y: 50, fontSize: 5.8 },
       socials: { x: 91, y: 14, fontSize: 5.6, align: 'end' },
     },
   },

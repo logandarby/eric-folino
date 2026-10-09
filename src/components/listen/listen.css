@@ -1,0 +1,138 @@
+/*
+ * Over the screen in the photo: placed in the PhotoLayer (background.css),
+ * whose --spot-* say where the screen is. "Listen?" hangs below it, sized
+ * by the screen's width (cqw), so it keeps its proportion at every size.
+ */
+.listen {
+  --outline-offset: 4px;
+  position: absolute;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  width: var(--spot-w);
+  height: var(--spot-h);
+  container-type: inline-size;
+}
+
+/* The video, over the screen in the photo, its bloom and reflections
+   spilling past it. It fades in as the song starts, holds its picture
+   when paused, and fades out when it ends. */
+.listen__video {
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+.listen__video:not([data-state='idle']) {
+  opacity: 1;
+}
+
+/* collage-video.ts places its canvases past the panel. */
+.listen__video canvas {
+  display: block;
+  pointer-events: none;
+}
+
+.listen__screen,
+.listen__cta {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-fg);
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Always outlined, so it's plain you can press it. */
+.listen__screen {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+  outline: var(--border-width) dashed var(--color-fg);
+  outline-offset: var(--outline-offset);
+  transition: outline-offset 0.15s;
+}
+
+/* "Listen?", centred below the screen. */
+.listen__cta {
+  left: 50%;
+  top: 100%;
+  translate: -50% 0;
+  margin-top: 8cqw;
+  padding: 0.15em 0.3em;
+  font-family: var(--font-pixel);
+  font-size: max(20px, 30cqw);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0.06em 0.06em 0 rgb(20 24 40 / 0.6);
+}
+
+/* The play or pause sign, in the middle of the screen. */
+.listen__sign {
+  position: relative;
+  display: grid;
+  width: min(55cqw, 55cqh);
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.55);
+  transition:
+    opacity 0.6s,
+    scale 0.15s;
+}
+
+.listen__icon {
+  grid-area: 1 / 1;
+  width: 40%;
+  height: 40%;
+}
+
+.listen__icon--play {
+  /* The triangle's middle isn't its box's. */
+  translate: 8% 0;
+}
+
+.listen[data-state='playing'] .listen__icon--play,
+.listen:not([data-state='playing']) .listen__icon--pause {
+  display: none;
+}
+
+/* Playing, the sign fades away, until the screen is pointed at again. */
+.listen[data-state='playing'] .listen__sign {
+  opacity: 0;
+}
+
+/* Paused too, where there's a pointer to bring it back. On touch, the
+   play sign stays, as the only sign the screen's paused. */
+@media (hover: hover) {
+  .listen[data-state='paused'] .listen__sign {
+    opacity: 0;
+  }
+}
+
+/* Hovering either (or tabbing to it) answers on both: the screen's
+   outline steps out and the sign grows. */
+.listen:has(.listen__screen:focus-visible, .listen__cta:focus-visible) {
+  --outline-offset: 8px;
+}
+
+.listen:has(.listen__screen:focus-visible, .listen__cta:focus-visible)
+  .listen__sign {
+  opacity: 1;
+  scale: 1.15;
+  transition-duration: 0s, 0.15s;
+}
+
+@media (hover: hover) {
+  .listen:has(.listen__screen:hover, .listen__cta:hover) {
+    --outline-offset: 8px;
+  }
+
+  .listen:has(.listen__screen:hover, .listen__cta:hover) .listen__sign {
+    opacity: 1;
+    scale: 1.15;
+    transition-duration: 0s, 0.15s;
+  }
+}

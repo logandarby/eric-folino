@@ -44,3 +44,15 @@
   min-height: var(--tap-target);
   padding-block: 0;
 }
+
+/* Short phones: a little less room per link, so the bus stop's screen
+   below the stage keeps clear of them. Still big enough to tap. */
+@media (max-height: 700px) {
+  :root[data-layout='compact'] .nav ul {
+    gap: 0.1em;
+  }
+
+  :root[data-layout='compact'] .nav__link {
+    min-height: 36px;
+  }
+}

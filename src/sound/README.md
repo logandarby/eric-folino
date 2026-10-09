@@ -10,7 +10,7 @@ download. Settings are in `src/site/sound.config.ts`, voices in `src/site/voices
 | `open`  | a dialog opens                                             | noise through a band-pass filter sweeping up                   |
 | `close` | a dialog closes                                            | the same, sweeping down, quieter                               |
 | `blip`  | each letter typed in a dialog                              | a very short tone in the dialog's voice, pitch jittered        |
-| `hum`   | while the bus stop screen is hovered or its dialog is open | detuned 60 Hz sawtooth buzz, low-passed, plus fluttering fizz  |
+| `hum`   | while the enter page's TV is hovered or its dialog is open | detuned 60 Hz sawtooth buzz, low-passed, plus fluttering fizz  |
 
 ## Pieces and patterns
 
@@ -77,7 +77,8 @@ changes made in another tab apply here too.
   switch (Safari 16.4+).
 - **Nothing relies on sound:** every sound echoes something visible.
 - **WCAG 1.4.2:** the hum is the only sound over 3 seconds; it only plays
-  while you're on the screen or its dialog is open, and muting stops it.
+  while you're on the TV or its dialog is open, and muting stops it. (The
+  home page's music plays only when asked, and muting pauses it too.)
 - **Keyboard and touch:** only focus moved with Tab ticks (not focus
   moved by clicks or dialogs), and Enter / Space click like a press. Touch
   has no hover, so taps only click. The volume slider is hard to reach on

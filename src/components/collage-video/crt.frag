@@ -1,30 +1,11 @@
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
-#else
-precision mediump float;
-#endif
-
 /*
- * The TV's screen: photos of the band cutting from one to the next like
- * a video, with static fading in and out over them, seen through a CRT,
- * after daenavan's crt-threejs (https://daenavan.github.io/crt-threejs/):
- * bulging glass, colour fringing, scanlines, a vignette and a faint
- * flicker. tv.ts sets the uniforms from the page config.
+ * The enter page's TV: the collage (collage.glsl) with static fading in
+ * and out over it, seen through a CRT, after daenavan's crt-threejs
+ * (https://daenavan.github.io/crt-threejs/): bulging glass, colour
+ * fringing, scanlines, a vignette and a faint flicker. collage-video.ts
+ * sets the uniforms from the page config.
  */
 
-uniform float u_time;
-uniform vec2 u_resolution;
-
-/**
- * The photos, side by side in one image (collage.webp, made by
- * `npm run tv:collage`), `u_frames` across and down.
- */
-uniform sampler2D u_collage;
-uniform vec2 u_frames;
-/** Which photo is showing, counting across then down. */
-uniform float u_frame;
-/** How bright the picture is, 0–1. */
-uniform float u_level;
 /** How much static covers the photo, 0–1. */
 uniform float u_noise;
 /** The static's colour at full brightness. */
@@ -37,13 +18,8 @@ uniform float u_aberration;
 uniform float u_vignette;
 uniform float u_flicker;
 
-const float FPS = 30.0;
 /** Grains of static down the screen, at most. */
 const float GRAIN_ROWS = 240.0;
-
-float hash(vec2 p) {
-  return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-}
 
 /** Pushes `uv` (0–1) outwards from the middle, like curved glass. */
 vec2 bulge(vec2 uv) {
@@ -62,16 +38,6 @@ float grain(vec2 uv, float frame) {
 }
 
 /**
- * Where `uv` (0–1 on the screen) is in the showing photo's part of the
- * atlas. Kept a hair inside it, so the next photo never bleeds in at the
- * edges.
- */
-vec2 frameUv(vec2 uv) {
-  vec2 cell = vec2(mod(u_frame, u_frames.x), floor(u_frame / u_frames.x));
-  return (cell + clamp(uv, 0.002, 0.998)) / u_frames;
-}
-
-/**
  * What the TV is showing at `uv` (0–1 from the top left): the photo,
  * under the static's `noise` in the tint, with a faint brighter band
  * rolling slowly down like a drifting hold. The colour fringing reads this
@@ -81,8 +47,8 @@ vec2 frameUv(vec2 uv) {
 vec3 picture(vec2 uv, float noise) {
   float roll = fract(uv.y * 0.7 - u_time * 0.09);
   float band = smoothstep(0.0, 0.12, roll) * smoothstep(0.3, 0.12, roll);
-  vec3 photo = texture2D(u_collage, frameUv(uv)).rgb;
-  vec3 shown = mix(photo, noise * u_tint, u_noise);
+  // The photos are cut to the TV's shape already: shown whole, uncropped.
+  vec3 shown = mix(photo(uv, u_frame_aspect), noise * u_tint, u_noise);
   return shown * u_level * (1.0 + band * 0.15);
 }
 
