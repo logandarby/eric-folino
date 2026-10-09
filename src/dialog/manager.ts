@@ -70,6 +70,8 @@ interface ActiveDialog {
   ms: (ms: number) => number;
   disposer: Disposer;
   returnFocus: HTMLElement | null;
+  /** What it made inert, to wake again when it closes. */
+  inert: HTMLElement[];
   /** Where the connector meets the dialog, relative to the dialog's box. */
   attach: Point;
   fixed: boolean;
@@ -109,8 +111,11 @@ export class DialogManager {
   private requests = 0;
   private layoutFrame = 0;
 
-  /** @param inertRoots page regions disabled while a modal dialog is open. */
-  constructor(private readonly inertRoots: HTMLElement[]) {
+  /**
+   * @param inertRoots the page regions a modal dialog disables, found
+   * afresh as each opens (the page under the dialogs changes).
+   */
+  constructor(private readonly inertRoots: () => HTMLElement[]) {
     this.connectorLayer.classList.add('connector-layer');
     this.connectorLayer.setAttribute('aria-hidden', 'true');
     this.connector.classList.add('connector');
@@ -133,8 +138,12 @@ export class DialogManager {
     return this.enqueue(() => this.doOpen(options));
   }
 
-  close(): Promise<void> {
-    return this.enqueue(() => this.doClose());
+  /**
+   * Closes the open dialog. `animate: false` takes it away at once, for
+   * when the page it's on is going.
+   */
+  close({ animate = true }: { animate?: boolean } = {}): Promise<void> {
+    return this.enqueue(() => this.doClose(animate));
   }
 
   /** Opens the dialog, or closes it if it's already open for this anchor. */
@@ -217,6 +226,7 @@ export class DialogManager {
         document.activeElement instanceof HTMLElement
           ? document.activeElement
           : null,
+      inert: modal ? this.inertRoots() : [],
       attach: { x: 0, y: 0 },
       fixed: options.fixed ?? false,
       box: null,
@@ -235,7 +245,7 @@ export class DialogManager {
       anchor: options.anchor,
     });
     const t = siteConfig.animation;
-    if (modal) this.inertRoots.forEach((root) => (root.inert = true));
+    active.inert.forEach((root) => (root.inert = true));
     const dimmed = modal
       ? this.spotlight.show(
           options.anchor.element,
@@ -405,10 +415,11 @@ export class DialogManager {
 
   // Closing -----------------------------------------------------------------
 
-  private async doClose(): Promise<void> {
+  private async doClose(animate = true): Promise<void> {
     const active = this.active;
     if (!active) return;
     this.active = null;
+    if (!animate) active.ms = () => 0;
     active.disposer.dispose();
     active.view.dispose();
     this.events.emit('close', { view: active.view });
@@ -420,7 +431,7 @@ export class DialogManager {
     const undim = active.modal
       ? this.spotlight.hide(active.ms(t.spotlightFadeMs))
       : Promise.resolve();
-    if (active.modal) this.inertRoots.forEach((root) => (root.inert = false));
+    active.inert.forEach((root) => (root.inert = false));
     await Promise.all([
       this.animateConnector(active, 'out', active.ms(t.dialogCloseMs)),
       undim,

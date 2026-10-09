@@ -1,4 +1,5 @@
 import { $$ } from '../core/component.ts';
+import { Disposer, type Cleanup } from '../core/disposer.ts';
 import { prefersReducedMotion } from '../core/motion.ts';
 import { UserPreferences } from '../core/preferences.ts';
 import { LightFlicker } from '../components/background/light-flicker.ts';
@@ -13,12 +14,13 @@ import { bindSounds } from '../sound/bindings.ts';
 import { SoundEngine, type SoundPreferences } from '../sound/sound-engine.ts';
 import { installTextDemo } from './text-demo.ts';
 
+/** What lasts the whole visit, from page to page (see router.ts). */
 export interface Site {
   dialogs: DialogManager;
   sound: SoundEngine;
 }
 
-export interface BootstrapOptions {
+export interface PageOptions {
   /** What the "?" in the corner says on this page (default: siteConfig.help). */
   help?: DialogContent;
   /** The text demo's key (see text-demo.ts); off for pages that use it. Default true. */
@@ -26,38 +28,14 @@ export interface BootstrapOptions {
 }
 
 /**
- * Shared setup for every page: dialogs and sound, plus whichever shared
- * components the page's layout rendered (each is optional).
+ * Sets up what lasts the whole visit: the dialogs and the sound, so audio
+ * the visitor has started keeps going from page to page. Once, on the
+ * first page. Also returns a function that stops sounds held by the page
+ * that's going.
  */
-export function bootstrap({
-  help = siteConfig.help.dialog,
-  textDemo = true,
-}: BootstrapOptions = {}): Site {
-  const title = document.querySelector<HTMLElement>('[data-rainbow]');
-  if (title) {
-    new RainbowText(title, {
-      palette: siteConfig.palette,
-      intervalMs: siteConfig.animation.titleColorCycleIntervalMs,
-      animate: !prefersReducedMotion(),
-    });
-  }
-
-  const { flicker } = siteConfig.background;
-  const lightsOff = document.querySelector<HTMLElement>('[data-lights-off]');
-  if (lightsOff && flicker.enabled) {
-    new LightFlicker(lightsOff, flicker);
-  }
-
+export function startSite(): { site: Site; releaseSounds: Cleanup } {
   // Layouts mark what a modal dialog makes inert with [data-page-root].
-  const dialogs = new DialogManager($$('[data-page-root]'));
-  if (textDemo) {
-    installTextDemo(
-      dialogs,
-      document.querySelector<HTMLElement>('[data-text-demo-anchor]') ??
-        document.body
-    );
-  }
-
+  const dialogs = new DialogManager(() => $$('[data-page-root]'));
   const preferences = new UserPreferences<SoundPreferences>({
     // Reduced motion is the closest thing to a "less stimulation, please"
     // setting, so it also starts sound off. The visitor can still turn it on.
@@ -65,19 +43,65 @@ export function bootstrap({
     volume: 1,
   });
   const sound = new SoundEngine({ config: soundConfig, preferences });
-  bindSounds(sound, dialogs);
+  const releaseSounds = bindSounds(sound, dialogs);
+  return { site: { dialogs, sound }, releaseSounds };
+}
+
+/**
+ * Brings each page's shared components to life, whichever its layout
+ * rendered (each is optional): the title's colours, the light's flicker,
+ * the sound button, the "?" and the text demo. Returns a function that
+ * stops them, for when the page goes.
+ */
+export function mountLayout(
+  { dialogs, sound }: Site,
+  { help = siteConfig.help.dialog, textDemo = true }: PageOptions = {}
+): Cleanup {
+  const disposer = new Disposer();
+
+  const title = document.querySelector<HTMLElement>('[data-rainbow]');
+  if (title) {
+    const rainbow = new RainbowText(title, {
+      palette: siteConfig.palette,
+      intervalMs: siteConfig.animation.titleColorCycleIntervalMs,
+      animate: !prefersReducedMotion(),
+    });
+    disposer.add(() => rainbow.destroy());
+  }
+
+  const { flicker } = siteConfig.background;
+  const lightsOff = document.querySelector<HTMLElement>('[data-lights-off]');
+  if (lightsOff && flicker.enabled) {
+    const flickering = new LightFlicker(lightsOff, flicker);
+    disposer.add(() => flickering.destroy());
+  }
+
+  if (textDemo) {
+    disposer.add(
+      installTextDemo(
+        dialogs,
+        document.querySelector<HTMLElement>('[data-text-demo-anchor]') ??
+          document.body
+      )
+    );
+  }
+
   const control = document.querySelector<HTMLElement>('[data-sound-control]');
-  if (control) new SoundControl(control, sound);
+  if (control) {
+    const soundControl = new SoundControl(control, sound);
+    disposer.add(() => soundControl.destroy());
+  }
 
   // The "?" in the corner hints that there's more to click on.
   const helpButton = document.querySelector<HTMLElement>('[data-help]');
   if (helpButton) {
     const anchor = elementAnchor(helpButton);
-    helpButton.addEventListener(
+    disposer.listen(
+      helpButton,
       'click',
       () => void dialogs.toggle({ anchor, content: help })
     );
   }
 
-  return { dialogs, sound };
+  return () => disposer.dispose();
 }

@@ -21,8 +21,14 @@ const SPOKEN = /[\p{L}\p{N}]/u;
  *   the element is open.
  *
  * `data-sound="none"` silences an element's hover sound.
+ *
+ * Bound once for the whole visit, across pages. Returns a function that
+ * stops any loop still held, for when the page with its element goes.
  */
-export function bindSounds(sound: SoundEngine, dialogs: DialogManager): void {
+export function bindSounds(
+  sound: SoundEngine,
+  dialogs: DialogManager
+): Cleanup {
   // Browsers only allow audio to start from these events.
   for (const type of ['pointerdown', 'pointerup', 'keydown'] as const) {
     window.addEventListener(type, () => sound.unlock(), { capture: true });
@@ -54,6 +60,11 @@ export function bindSounds(sound: SoundEngine, dialogs: DialogManager): void {
     if (looping) hover.leave(looping, 'dialog');
     looping = null;
   });
+
+  return () => {
+    hover.release();
+    looping = null;
+  };
 }
 
 /**
@@ -87,6 +98,8 @@ type Holder = 'pointer' | 'focus' | 'dialog';
 function bindHover(sound: SoundEngine): {
   enter: (el: HTMLElement, by: Holder) => void;
   leave: (el: HTMLElement, by: Holder) => void;
+  /** Stops every loop, and forgets what's hovered. */
+  release: () => void;
 } {
   let hovered: HTMLElement | null = null;
   let lastTab = -Infinity;
@@ -150,7 +163,13 @@ function bindHover(sound: SoundEngine): {
     if (el) leave(el, 'focus');
   });
 
-  return { enter, leave };
+  const release = () => {
+    for (const { stop } of held.values()) stop();
+    held.clear();
+    hovered = null;
+  };
+
+  return { enter, leave, release };
 }
 
 function bindPress(sound: SoundEngine): void {

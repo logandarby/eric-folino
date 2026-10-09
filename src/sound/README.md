@@ -61,7 +61,8 @@ changes made in another tab apply here too.
 
 - **Autoplay:** browsers block audio until the visitor clicks or presses a
   key, so sound is "on" by default but starts on that first interaction.
-  Hovers before it are silent.
+  Hovers before it are silent. Links don't reload the page (see
+  `src/app/router.ts`), so once started, sound lasts the whole visit.
 - **Reduced motion:** visitors who prefer it start with sound off. It's
   the closest thing browsers have to a "less stimulation" setting. Their
   own choice still wins.

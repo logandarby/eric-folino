@@ -56,4 +56,9 @@ export class EyeShader {
     this.shader.set('u_look', x, y);
     this.shader.render();
   }
+
+  /** Lets its WebGL go. */
+  dispose(): void {
+    this.shader.dispose();
+  }
 }

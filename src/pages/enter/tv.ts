@@ -1,4 +1,5 @@
 import { h } from '../../core/component.ts';
+import type { Cleanup } from '../../core/disposer.ts';
 import { ShaderCanvas } from '../../gl/shader-canvas.ts';
 import collage from './collage.json';
 import collageUrl from './collage.webp';
@@ -12,24 +13,32 @@ const DRIFT_S = 1.6;
  * Plays the TV's screen: a shader on a canvas behind the photo's hole
  * (tv.frag), cutting between photos of the band with static fading in
  * and out over them. Without WebGL, or if the photos won't load, the
- * screen stays dark.
+ * screen stays dark. Returns a function that turns it off.
  */
-export function playTv(tv: HTMLElement, config: TvConfig): void {
+export function playTv(tv: HTMLElement, config: TvConfig): Cleanup {
   const screen = tv.querySelector<HTMLElement>('[data-tv-screen]');
-  if (!screen) return;
+  if (!screen) return () => undefined;
+  let stopped = false;
+  let shader: ShaderCanvas | null = null;
   const photos = new Image();
   photos.src = collageUrl;
   photos.decode().then(
-    () => start(screen, photos, config),
+    () => {
+      if (!stopped) shader = start(screen, photos, config);
+    },
     () => undefined
   );
+  return () => {
+    stopped = true;
+    shader?.dispose();
+  };
 }
 
 function start(
   screen: HTMLElement,
   photos: HTMLImageElement,
   config: TvConfig
-): void {
+): ShaderCanvas | null {
   const { crt } = config;
   const canvas = h('canvas', { 'aria-hidden': 'true' });
   const shader = ShaderCanvas.create(canvas, {
@@ -47,7 +56,7 @@ function start(
       );
     },
   });
-  if (!shader) return;
+  if (!shader) return null;
   shader.set('u_frames', collage.columns, collage.rows);
   shader.set('u_tint', ...rgb(config.tint));
   shader.set('u_curvature', crt.curvature);
@@ -58,6 +67,7 @@ function start(
   shader.set('u_flicker', crt.flicker);
   screen.append(canvas);
   screen.closest<HTMLElement>('[data-tv]')?.setAttribute('data-gl', '');
+  return shader;
 }
 
 /**

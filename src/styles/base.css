@@ -19,6 +19,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* What changes from page to page (see src/app/router.ts): no box of its
+   own, so the page lays out as if it weren't there. */
+#swup {
+  display: contents;
+}
+
 /* The mark of something you can use: a dashed outline when it's focused
    from the keyboard and, for every button (and link styled as one, with
    class="button"), when it's hovered. Set --outline-offset on an element

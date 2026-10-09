@@ -63,7 +63,7 @@ Sections with nothing in them are left out, and the line of links at the top of 
 - **`src/styles/tokens.css`**: colours, fonts and z-index order.
 - **Dialog buttons**: give a dialog `actions: [{ label: 'yes', href: '/' }]` for buttons along its bottom, which appear once the text has typed out. One without `href` just closes the dialog.
 - **Instant dialogs**: `instant: true` on a dialog shows its text all at once, uncovered by the window as it opens. Use it for UI and menus; dialogs where something speaks type their text out.
-- **The "?" button's dialog**: `help` in `src/site/site.config.ts`. Every layout puts the "?" in the corner beside the sound button; a page can say something else with `bootstrap({ help: … })` in its `main.ts`.
+- **The "?" button's dialog**: `help` in `src/site/site.config.ts`. Every layout puts the "?" in the corner beside the sound button; a page can say something else with `pageScript(import.meta.url, mount, { help: … })` in its `main.ts`.
 - **`src/styles/base.css`**: the dashed outline that marks anything usable. Every button gets it on hover, and anything focusable gets it on keyboard focus, so new pages have it for free; set `--outline-offset` on an element to move it.
 - **`src/assets/blobs/*.svg`**: blob shapes (one `<path>` each; the colour comes from its `fill`).
 - **`assets-src/web-background.png`**: the full-size background. Run `npm run images` after changing it.
@@ -80,7 +80,7 @@ Each page is a folder in `src/pages/`:
 | ---------------- | ------------------------------------------------------------------- |
 | `page.config.ts` | Title, description, path and the page's own settings (`definePage`) |
 | `page.tsx`       | The markup, written in JSX and rendered to HTML at build time       |
-| `main.ts`        | The browser script, if the page needs one                           |
+| `main.ts`        | The browser script, if the page needs one (see `pageScript` below)  |
 | `*.css`          | The page's own styles, linked from `page.tsx` with `stylesheet()`   |
 
 A page without `page.tsx` (like the 404) is a **placeholder**: the bus stop with a dialog from its `placeholder` setting.
@@ -102,9 +102,18 @@ A page without `page.tsx` (like the 404) is a **placeholder**: the bus stop with
 
 **Components** (`src/components/<name>/`) keep everything about one thing together. `name.tsx` renders its markup at build time (and links its `name.css`), and `name.ts` brings it to life in the browser. **`.tsx` files only ever run at build time; `.ts` files in `src/` run in the browser.**
 
+**Moving between pages** doesn't reload the page: links swap in the next page's content (with [Swup](https://swup.js.org), in `src/app/router.ts`), so sound keeps playing and visitors only have to start it once. So a page's `main.ts` doesn't set the page up straight away. It hands that to `pageScript(import.meta.url, ({ dialogs, sound }) => { …; return cleanup; })`, which runs each time the page shows and calls `cleanup` when it goes. The cleanup must undo anything outside the page's own markup:
+
+- listeners on `window` or `document` (`Disposer.listen` keeps track of them);
+- timers and `ticker` subscriptions;
+- shaders (`dispose()`);
+- handlers on `dialogs.events`.
+
+Listeners on the page's own elements go with them, and open dialogs and tooltips close on their own. Links to files (a ZIP, an image) load as usual, and so does any link marked `data-no-swup`.
+
 **Islands** are components whose script loads only when needed. A page lists them in its `main.ts` with `hydrateIslands({ name: () => import(…) })`, and each `<div data-island="name">` fetches its code as it nears the screen. The video embed works this way, so its code never slows down a page that doesn't show it.
 
-**Invisible buttons over a picture**, like the bus stop screen or the enter page's TV, are the `Hotspot` component (`src/components/hotspot/`): place it with `--spot-x`, `--spot-y`, `--spot-w` and `--spot-h`, and `bindHotspot(dialogs, name, content)` in `main.ts` opens its dialog with a vignette spotlight around it.
+**Invisible buttons over a picture**, like the bus stop screen or the enter page's TV, are the `Hotspot` component (`src/components/hotspot/`): place it with `--spot-x`, `--spot-y`, `--spot-w` and `--spot-h`, and `bindHotspot(dialogs, name, content)` in `main.ts` opens its dialog with a vignette spotlight around it (and returns what undoes that).
 
 **Shaders** run with `ShaderCanvas` (`src/gl/`), as on the iris and enter pages. That takes care of resizing, pausing off-screen, a still frame under reduced motion and lost WebGL contexts. It can also read images (`textures`), draw only when asked (`animate: false`) and draw at a capped resolution for chunky pixels (`maxSize`), as the iris page's eyes do. `src/gl/dither.ts` adds Dithermark-style ordered dithering to a palette to any shader. On the dev server it also warns if the picture flashes more than three times a second, which can trigger seizures.
 
@@ -159,7 +168,7 @@ Sound is on by default (off for visitors who prefer reduced motion) but, as brow
   - `images.ts`: responsive images, resized with `sharp` and cached in `node_modules/.cache/responsive-images/`.
   - `published-files.ts`: files kept at a permanent address, like the press photo downloads and their ZIP.
 - **Screen sizes:** two layouts, `wide` and `compact`, chosen by a media query in the site config. An inline head script sets `<html data-layout>` before first paint. On the home page, the "stage" has a fixed aspect ratio and its children are positioned in percentages and sized from its width, so the whole composition scales together.
-- **`src/app`**: what every page's script starts with (`bootstrap.ts`: dialogs, sound and the shared components), the entry for placeholder pages, and the text-effects demo.
+- **`src/app`**: moving between pages (`router.ts`, with `head.ts` bringing over each page's stylesheets in order), what lasts the whole visit and what every page sets up (`bootstrap.ts`: dialogs and sound, then the shared components), the entry for placeholder pages, and the text-effects demo.
 - **`src/core`** holds the small shared pieces:
   - the component base class and cleanup helper (`Disposer`)
   - a typed event emitter
