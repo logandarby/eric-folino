@@ -7,7 +7,7 @@ import { softVoice } from './voices.ts';
  */
 export const soundConfig: SoundConfig = {
   enabledByDefault: true,
-  volume: 0.4,
+  volume: 0.6,
   channels: { ui: 0.7, voice: 0.45, ambient: 0.6 },
   maxVoices: 8,
   idleSuspendMs: 30_000,
