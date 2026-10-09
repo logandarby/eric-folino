@@ -1,0 +1,60 @@
+.copy-button {
+  display: inline-flex;
+}
+
+/* Like the socials' links: no box until it's hovered, then inverted. */
+.copy-button__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-height: var(--tap-target);
+  padding: 0.2em 0.3em;
+  border: 0;
+  background: none;
+  color: var(--color-fg);
+  font: 600 1rem var(--font-display);
+  cursor: pointer;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.copy-button__button:hover,
+.copy-button__button:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+/* Inverting is hover enough: the dashed outline (base.css) is only for
+   the keyboard. */
+.copy-button__button:hover:not(:focus-visible) {
+  outline: none;
+}
+
+.copy-button__label {
+  font-weight: 400;
+}
+
+.copy-button__icon {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+/* Once copied: a tick in place of the pages, inverted until it resets. */
+.copy-button__icon--done,
+.copy-button__button[data-state='done'] .copy-button__icon--copy {
+  display: none;
+}
+
+.copy-button__button[data-state='done'] .copy-button__icon--done {
+  display: block;
+}
+
+.copy-button__button[data-state='done'] {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.copy-button__button[hidden] {
+  display: none;
+}

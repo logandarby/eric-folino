@@ -108,6 +108,24 @@
   opacity: 1;
 }
 
+/* A heading with a button beside it (the bio's copy). */
+.about__heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+/* Links that don't invert on hover get the dashed outline on hover that
+   buttons do (base.css), so they look as usable. */
+@media (hover: hover) {
+  .about__toc a:hover,
+  .interview__title a:hover {
+    outline: var(--border-width) dashed var(--color-fg);
+    outline-offset: var(--outline-offset, 4px);
+  }
+}
+
 /* Jumping to a section leaves a little room above its heading. */
 .section__heading {
   scroll-margin-top: 24px;
