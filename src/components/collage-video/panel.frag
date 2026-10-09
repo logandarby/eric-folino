@@ -35,10 +35,28 @@ uniform float u_max_gain;
 uniform float u_saturation;
 /** The darkest the picture gets, 0–1: a backlit panel is never black. */
 uniform float u_lift;
+/**
+ * The noise over the panel: how much (its spread, or standard deviation,
+ * 0–1), and how big its specks are, in pixels.
+ */
+uniform float u_noise;
+uniform float u_grain;
 
 /** Points across and down the panel that the bloom gathers light from. */
 const int BLOOM_X = 4;
 const int BLOOM_Y = 6;
+
+/**
+ * Gaussian noise at `px` (mean 0, spread 1), new every frame of the video,
+ * from two even ones (Box–Muller). The frame wraps so the hash's inputs
+ * stay small enough to be precise.
+ */
+float gaussian(vec2 px) {
+  float frame = mod(floor(u_time * FPS), 61.0);
+  float a = max(hash(px + vec2(frame * 13.1, frame * 7.7)), 1e-4);
+  float b = hash(px + vec2(frame * 5.3 + 31.0, frame * 11.9 + 17.0));
+  return sqrt(-2.0 * log(a)) * cos(6.2831853 * b);
+}
 
 float luma(vec3 c) {
   return dot(c, vec3(0.2126, 0.7152, 0.0722));
@@ -95,7 +113,7 @@ void main() {
   // clear where it's dark.
   vec3 shown = grade(photo(clamp(uv, 0.0, 1.0), aspect), gain);
   vec3 panel = (u_lift + (1.0 - u_lift) * shown) * u_level +
-    glow * u_bloom_over;
+    glow * u_bloom_over + u_noise * gaussian(floor(px / u_grain));
 
   // How see-through the photo is here, as if the video and its light
   // were behind it: the video in the screen, the light in reflections.

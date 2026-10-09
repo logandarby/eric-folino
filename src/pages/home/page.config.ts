@@ -113,17 +113,24 @@ export default definePage<HomePage>({
     label: 'Listen to “Standby”',
     cta: 'Listen?',
     song: { title: 'Standby', artist: 'Eric Folino', volume: 0.8 },
-    // A lit ad panel: bright, blooming into the night.
+    // A lit ad panel: bright, blooming into the night. It plays the
+    // montage (src/assets/video/montage.mp4), then the photos, round
+    // `photoRounds` times, then the montage again, until the song ends.
+    // The montage is made from the edit, muted, with
+    // `ffmpeg -i edit.mp4 -an -c:v libx264 -preset veryslow -crf 28 -pix_fmt yuv420p -movflags +faststart montage.mp4`.
     video: {
       look: 'panel',
       signal: { min: 0.9, max: 1 },
       photoSeconds: 0.5,
+      photoRounds: 2,
       bloom: { spread: 0.5, radius: 0.2, strength: 3, over: 0.25 },
       // The video's light on the pavement below it, and the colour it
       // gives the reflections.
       reflections: { light: 1.2, saturation: 0.3 },
       // Every photo about as light as the next, and a little faded.
       tone: { exposure: 0.65, maxGain: 5, saturation: 0.5, lift: 0.3 },
+      // A faint film grain over the picture.
+      noise: { amount: 0.005, size: 1.5 },
     },
   },
 });

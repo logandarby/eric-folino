@@ -18,6 +18,11 @@ interface CollageBase {
    * (assets-src/tv-collage/, put together by `npm run tv:collage`).
    */
   photoSeconds: number;
+  /**
+   * With a montage (see CollageOptions), how many times the photos go
+   * round between its plays. Default 1.
+   */
+  photoRounds?: number;
 }
 
 /** The collage on an old TV, under static (crt.frag). */
@@ -85,6 +90,11 @@ export interface PanelCollage extends CollageBase {
     saturation: number;
     lift: number;
   };
+  /**
+   * Film grain over the picture: how much, 0–1 (its spread), and how big
+   * its specks are, in pixels of the screen.
+   */
+  noise: { amount: number; size: number };
 }
 
 export type CollageConfig = CrtCollage | PanelCollage;
@@ -126,13 +136,20 @@ export interface CollageOptions {
    * shares of the screen's width and height from its top left.
    */
   reflections?: { url: string; box: Box };
+  /**
+   * A video (muted) to play first, and again after the photos have gone
+   * round (all of them, `photoRounds` times), for as long as the collage
+   * plays.
+   */
+  montage?: string;
 }
 
 /**
  * Plays the collage video in `screen`: a shader on a canvas, cutting
- * between photos of the band, cropped to fill the screen, in the look
- * `config` asks for. Without WebGL, or if the photos won't load, nothing
- * is added and the screen shows what it showed before.
+ * between photos of the band (and the montage, if asked for), cropped to
+ * fill the screen, in the look `config` asks for. Without WebGL, or if
+ * the photos won't load, nothing is added and the screen shows what it
+ * showed before; if only the montage won't, it's the photos alone.
  */
 export function playCollage(
   screen: HTMLElement,
@@ -147,12 +164,26 @@ export function playCollage(
   const reflections = options.reflections
     ? loadImage(options.reflections.url)
     : null;
-  Promise.all([photos.decode(), mask?.decode(), reflections?.decode()]).then(
-    () => {
+  const video = options.montage ? loadVideo(options.montage) : null;
+  let reel: Reel | null = null;
+  Promise.all([
+    photos.decode(),
+    mask?.decode(),
+    reflections?.decode(),
+    video && ready(video).catch(() => undefined),
+  ]).then(
+    ([, , , montage]) => {
       if (disposed) return;
+      if (montage) {
+        reel = new Reel(
+          montage,
+          collage.count * config.photoSeconds * (config.photoRounds ?? 1)
+        );
+        reel.run(state === 'playing');
+      }
       shaders = start(
         screen,
-        { photos, mask, reflections },
+        { photos, mask, reflections, reel },
         config,
         options,
         () => state
@@ -163,12 +194,20 @@ export function playCollage(
   );
   return {
     set(value) {
+      // Played again once it's over, it starts again from the montage.
+      if (value === 'off') reel?.rewind();
+      reel?.run(value === 'playing');
       state = value;
       for (const shader of shaders) shader.pause(value === 'off');
     },
     dispose() {
       disposed = true;
       for (const shader of shaders) shader.dispose();
+      if (video) {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      }
     },
   };
 }
@@ -179,33 +218,125 @@ function loadImage(url: string): HTMLImageElement {
   return image;
 }
 
+/** A video for a texture: muted, and inline, so phones let it play. */
+function loadVideo(url: string): HTMLVideoElement {
+  const video = h('video', {});
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+  video.src = url;
+  return video;
+}
+
+/** `video`, once its first frame is in, or an error if it won't load. */
+function ready(video: HTMLVideoElement): Promise<HTMLVideoElement> {
+  if (video.readyState >= video.HAVE_CURRENT_DATA) {
+    return Promise.resolve(video);
+  }
+  return new Promise((resolve, reject) => {
+    video.addEventListener('loadeddata', () => resolve(video), { once: true });
+    video.addEventListener('error', reject, { once: true });
+  });
+}
+
+/**
+ * What the screen shows when: the montage, then the photos (for `round`
+ * seconds), then the montage again, and so on. The photos go by
+ * the picture's clock; the montage plays while the picture runs.
+ */
+class Reel {
+  private montage = true;
+  /**
+   * The picture's clock when the photos' turn began; null when
+   * the montage has just ended, until the next draw says what time it is.
+   */
+  private photosFrom: number | null = 0;
+  private running = false;
+  /** Set if the browser won't play it (an iPhone saving power, say). */
+  private blocked = false;
+
+  constructor(
+    readonly video: HTMLVideoElement,
+    private readonly round: number
+  ) {
+    video.addEventListener('ended', () => {
+      this.montage = false;
+      this.photosFrom = null;
+      // Back to the start straight away, so it's ready for its next turn.
+      video.currentTime = 0;
+    });
+  }
+
+  /** Whether the montage is showing at `clock`, the picture's (seconds). */
+  showsMontage(clock: number): boolean {
+    if (this.blocked) return false;
+    this.photosFrom ??= clock;
+    if (!this.montage && clock - this.photosFrom >= this.round) {
+      this.montage = true;
+      this.run(this.running);
+    }
+    return this.montage;
+  }
+
+  /** How long the photos have been showing at `clock`, in seconds. */
+  photoTime(clock: number): number {
+    return clock - (this.photosFrom ?? clock);
+  }
+
+  /** Plays the montage, if it's showing (true), or holds it. */
+  run(playing: boolean): void {
+    this.running = playing;
+    if (!playing || !this.montage || this.blocked) {
+      this.video.pause();
+      return;
+    }
+    this.video.play().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        this.blocked = true;
+      }
+    });
+  }
+
+  /** Back to the start of the montage, for the next time it plays. */
+  rewind(): void {
+    this.montage = true;
+    this.photosFrom = 0;
+    this.video.pause();
+    this.video.currentTime = 0;
+  }
+}
+
 interface Images {
   photos: HTMLImageElement;
   mask: HTMLImageElement | null;
   reflections: HTMLImageElement | null;
+  reel: Reel | null;
 }
 
 /** The collage's canvas, and the reflections' below it if asked for. */
 function start(
   screen: HTMLElement,
-  { photos, mask, reflections }: Images,
+  { photos, mask, reflections, reel }: Images,
   config: CollageConfig,
   options: CollageOptions,
   state: () => CollageState
 ): ShaderCanvas[] {
   if (config.look === 'panel' && !mask) return [];
   const { light } = options;
-  // Which photo shows, read by the reflections too.
+  // Which photo shows, or the montage, read by the reflections too.
   let frame = 0;
+  let montage = false;
   const canvas = h('canvas', { 'aria-hidden': 'true' });
   // The picture's own clock, which stops while it's held.
   let clock = 0;
   let last = 0;
   const shader = ShaderCanvas.create(canvas, {
     fragment: collageGlsl + (config.look === 'crt' ? crtFrag : panelFrag),
-    textures: mask
-      ? { u_collage: photos, u_mask: mask }
-      : { u_collage: photos },
+    textures: {
+      u_collage: photos,
+      ...(mask && { u_mask: mask }),
+      ...(reel && { u_video: reel.video }),
+    },
     maxFps: 30,
     stillTime: 4.2,
     transparent: config.look === 'panel',
@@ -213,8 +344,11 @@ function start(
       if (state() === 'playing') clock += time - last;
       last = time;
       shader?.set('u_level', drift(clock, DRIFT_S, config.signal));
+      montage = reel?.showsMontage(clock) ?? false;
+      shader?.set('u_source', montage ? 1 : 0);
       // In order, round and round (the order is shuffled when it's made).
-      frame = Math.floor(clock / config.photoSeconds) % collage.count;
+      const photoTime = reel ? reel.photoTime(clock) : clock;
+      frame = Math.floor(photoTime / config.photoSeconds) % collage.count;
       shader?.set('u_frame', frame);
       if (config.look === 'crt') {
         shader?.set('u_noise', staticAmount(clock, config.static));
@@ -231,6 +365,12 @@ function start(
       (photos.naturalHeight / collage.rows)
   );
   shader.set('u_light', 1);
+  if (reel) {
+    shader.set(
+      'u_video_aspect',
+      reel.video.videoWidth / reel.video.videoHeight
+    );
+  }
   if (config.look === 'crt') {
     const { crt } = config;
     shader.set('u_tint', ...rgb(config.tint));
@@ -262,6 +402,9 @@ function start(
     shader.set('u_max_gain', config.tone.maxGain);
     shader.set('u_saturation', config.tone.saturation);
     shader.set('u_lift', config.tone.lift);
+    shader.set('u_noise', config.noise.amount);
+    // The canvas draws at up to 1.5 pixels per CSS pixel (ShaderCanvas).
+    shader.set('u_grain', config.noise.size * Math.min(devicePixelRatio, 1.5));
   }
   screen.append(canvas);
   if (config.look !== 'panel' || !reflections || !options.reflections) {
@@ -270,8 +413,11 @@ function start(
   const tints = photoColours(photos).map((c) =>
     tint(c, config.reflections.saturation)
   );
+  const videoTint = reel
+    ? videoColour(reel.video, (c) => tint(c, config.reflections.saturation))
+    : null;
   const below = reflectionLayer(reflections, options.reflections.box, {
-    tint: () => tints[frame],
+    tint: () => (montage && videoTint ? videoTint() : tints[frame]),
     light: light ?? (() => 1),
   });
   if (!below) return [shader];
@@ -337,6 +483,40 @@ function photoColours(photos: HTMLImageElement): Rgb[] {
     }
     return sum.map((v) => v / (per * per)) as Rgb;
   });
+}
+
+/** How often the montage's colour is read again, in ms. */
+const VIDEO_COLOUR_MS = 150;
+
+/**
+ * The montage's average colour now, as `toTint` makes it: read a few
+ * times a second, as reading a video back is slow, and that's enough for
+ * light.
+ */
+function videoColour(
+  video: HTMLVideoElement,
+  toTint: (colour: Rgb) => Rgb
+): () => Rgb {
+  const per = 4;
+  const canvas = h('canvas', {});
+  canvas.width = per;
+  canvas.height = per;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  let colour: Rgb = [1, 1, 1];
+  let read = -Infinity;
+  return () => {
+    const now = performance.now();
+    if (!context || now - read < VIDEO_COLOUR_MS) return colour;
+    read = now;
+    context.drawImage(video, 0, 0, per, per);
+    const { data } = context.getImageData(0, 0, per, per);
+    const sum: Rgb = [0, 0, 0];
+    for (let at = 0; at < data.length; at += 4) {
+      for (let c = 0; c < 3; c++) sum[c] += data[at + c] / 255;
+    }
+    colour = toTint(sum.map((v) => v / (per * per)) as Rgb);
+    return colour;
+  };
 }
 
 /**

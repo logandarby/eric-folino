@@ -12,6 +12,7 @@ import screenMask from '../../assets/bg/screen-mask.json';
 import screenMaskUrl from '../../assets/bg/screen-mask.webp';
 import screenReflections from '../../assets/bg/screen-reflections.json';
 import screenReflectionsUrl from '../../assets/bg/screen-reflections.webp';
+import montageUrl from '../../assets/video/montage.mp4';
 
 /**
  * How bright the "lights off" overlay leaves the panel (LIGHTS_OFF.brightness
@@ -105,6 +106,7 @@ export function bindListen(
       light: lightLevel,
       mask: { url: screenMaskUrl, margin: screenMask.margin },
       reflections: { url: screenReflectionsUrl, box: screenReflections },
+      montage: montageUrl,
     });
     show('playing');
     audio.play().catch(() => show(audio.currentTime ? 'paused' : 'idle'));
