@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { zipSync } from 'fflate';
 import { isResizable, responsiveImage } from '../../../build/images.ts';
 import { stylesheet } from '../../../build/jsx/assets.ts';
@@ -31,7 +31,9 @@ interface PressGalleryProps {
 /**
  * Photos for press to download. Every image in `dir` is listed (in file
  * name order), shown resized, and offered as its full-size original at a
- * permanent address, along with a zip of them all.
+ * permanent address, along with a zip of them all. Clicking a photo opens
+ * it large over the dimmed page (press-gallery.ts); without scripts it's a
+ * link to the original.
  */
 export function PressGallery({
   dir,
@@ -47,7 +49,7 @@ export function PressGallery({
   const paths = files.map((name) => fileURLToPath(new URL(name, dir)));
 
   return (
-    <div class="press-gallery">
+    <div class="press-gallery" data-island="press-gallery">
       {/* With one photo, its own download does the job. */}
       {files.length > 1 && (
         <DownloadAll url={`${url}/${zipName}`} files={files} paths={paths} />
@@ -59,11 +61,13 @@ export function PressGallery({
           return (
             <li>
               <figure class="press-gallery__photo">
-                {responsiveImage(paths[i], {
-                  alt,
-                  sizes:
-                    '(min-width: 1100px) 220px, (min-width: 600px) 30vw, 50vw',
-                })}
+                <a class="press-gallery__view button" href={href}>
+                  {responsiveImage(paths[i], {
+                    alt,
+                    sizes:
+                      '(min-width: 1100px) 220px, (min-width: 600px) 30vw, 50vw',
+                  })}
+                </a>
                 <figcaption class="press-gallery__caption">
                   {credit && <span>Photo: {credit}</span>}
                   <a class="press-gallery__download" href={href} download>
@@ -81,7 +85,27 @@ export function PressGallery({
           );
         })}
       </ul>
+      <Preview />
     </div>
+  );
+}
+
+/**
+ * The photo opened large, with a way back and its download (filled in by
+ * press-gallery.ts). Hidden until then.
+ */
+function Preview() {
+  return (
+    <dialog class="photo-preview" aria-label="Photo">
+      <div class="photo-preview__bar">
+        <button type="button" class="photo-preview__back" data-close>
+          <Icon icon={faArrowLeft} class="press-gallery__icon" />
+          Back
+        </button>
+        <span data-download></span>
+      </div>
+      <div class="photo-preview__photo" data-photo></div>
+    </dialog>
   );
 }
 

@@ -113,3 +113,123 @@
 .press-gallery__meta {
   white-space: nowrap;
 }
+
+/* Each photo opens large (press-gallery.ts). */
+.press-gallery__view {
+  display: block;
+  cursor: zoom-in;
+}
+
+/* The preview fills the screen over the page, dimmed and blurred as a
+   dialog's spotlight dims it (dialog.css). */
+.photo-preview {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: calc(env(safe-area-inset-top) + 16px)
+    calc(env(safe-area-inset-right) + 16px)
+    calc(env(safe-area-inset-bottom) + 16px)
+    calc(env(safe-area-inset-left) + 16px);
+  border: 0;
+  background: none;
+  color: var(--color-fg);
+  overflow: hidden;
+}
+
+.photo-preview[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.photo-preview::backdrop {
+  background: rgb(0 0 0 / var(--dim-opacity));
+  -webkit-backdrop-filter: blur(var(--dim-blur));
+  backdrop-filter: blur(var(--dim-blur));
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .photo-preview::backdrop {
+    background: rgb(0 0 0 / calc(var(--dim-opacity) + 0.1));
+  }
+}
+
+/* The page behind stays put. */
+html:has(.photo-preview[open]) {
+  overflow: hidden;
+}
+
+.photo-preview__bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+.photo-preview__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: var(--tap-target);
+  padding: 0.2em 0.7em;
+  border: var(--border-width) solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font: 600 1rem var(--font-display);
+  cursor: pointer;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.photo-preview__back:hover,
+.photo-preview__back:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+/* Inverting is hover enough: the dashed outline (base.css) is only for
+   the keyboard. */
+.photo-preview__back:hover:not(:focus-visible) {
+  outline: none;
+}
+
+/* Its download, as wide as it needs rather than the tile's width. */
+.photo-preview .press-gallery__download {
+  width: auto;
+  min-height: var(--tap-target);
+  font-size: 1rem;
+}
+
+/* The photo, as large as fits below the buttons. */
+.photo-preview__photo {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  /* A definite area, so the photo's max sizes have something to go by. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+}
+
+.photo-preview__photo picture {
+  display: contents;
+}
+
+.photo-preview__photo img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  border: var(--border-width) solid var(--color-fg);
+  /* The tile's smaller file, until the larger one loads. */
+  background-size: 100% 100%;
+}

@@ -6,6 +6,7 @@ import {
   listPhotos,
   PressGallery,
 } from '../../components/press-gallery/press-gallery.tsx';
+import { CopyButton } from '../../components/copy-button/copy-button.tsx';
 import { Icon } from '../../components/icon/icon.tsx';
 import { Socials } from '../../components/socials/socials.tsx';
 import { VideoEmbed } from '../../components/video-embed/video-embed.tsx';
@@ -27,8 +28,23 @@ export default function AboutPage() {
 
   // In page order. Sections with nothing to show yet are left out, and the
   // table of contents at the top is made from the same list.
-  const sections: { id: string; heading: string; content: Child }[] = [
-    { id: 'bio', heading: 'Bio', content: <div class="prose">{bio.html}</div> },
+  const sections: {
+    id: string;
+    heading: string;
+    /** Beside the heading. */
+    action?: Child;
+    content: Child;
+  }[] = [
+    {
+      id: 'bio',
+      heading: 'Bio',
+      action: <CopyButton target="bio-text" label="bio" />,
+      content: (
+        <div id="bio-text" class="prose">
+          {bio.html}
+        </div>
+      ),
+    },
     page.video && {
       id: 'video',
       heading: 'Latest video',
@@ -103,8 +119,8 @@ export default function AboutPage() {
         </ul>
       </nav>
 
-      {sections.map(({ id, heading, content }) => (
-        <Section id={id} heading={heading}>
+      {sections.map(({ id, heading, action, content }) => (
+        <Section id={id} heading={heading} action={action}>
           {content}
         </Section>
       ))}
@@ -115,17 +131,29 @@ export default function AboutPage() {
 function Section({
   id,
   heading,
+  action,
   children,
 }: {
   id: string;
   heading: string;
+  action?: Child;
   children?: Child;
 }) {
+  const h2 = (
+    <h2 id={id} class="section__heading">
+      {heading}
+    </h2>
+  );
   return (
     <section class="section" aria-labelledby={id}>
-      <h2 id={id} class="section__heading">
-        {heading}
-      </h2>
+      {action ? (
+        <div class="about__heading-row">
+          {h2}
+          {action}
+        </div>
+      ) : (
+        h2
+      )}
       {children}
     </section>
   );
