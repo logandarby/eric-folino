@@ -27,6 +27,7 @@ export function bindSounds(sound: SoundEngine, dialogs: DialogManager): void {
   for (const type of ['pointerdown', 'pointerup', 'keydown'] as const) {
     window.addEventListener(type, () => sound.unlock(), { capture: true });
   }
+  prepareWhenStill(sound);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) sound.suspend();
   });
@@ -53,6 +54,27 @@ export function bindSounds(sound: SoundEngine, dialogs: DialogManager): void {
     if (looping) hover.leave(looping, 'dialog');
     looping = null;
   });
+}
+
+/**
+ * How long the browser must expect to be idle (ms) to make the audio graph
+ * then: only when nothing is animating, so the wait can't stall a frame.
+ */
+const STILL_MS = 40;
+
+/**
+ * Makes the audio graph before the visitor's first click or key press,
+ * once the page is still (see `SoundEngine.prepare`). Without
+ * requestIdleCallback (older Safari), the first press makes it as before.
+ */
+function prepareWhenStill(sound: SoundEngine): void {
+  if (typeof requestIdleCallback === 'undefined') return;
+  const wait = () =>
+    requestIdleCallback((deadline) => {
+      if (deadline.timeRemaining() >= STILL_MS) sound.prepare();
+      else wait();
+    });
+  wait();
 }
 
 function interactive(target: EventTarget | null): HTMLElement | null {

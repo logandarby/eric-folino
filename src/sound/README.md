@@ -41,7 +41,10 @@ bindings.ts ──play/loop──▶ sound-engine.ts ──▶ patches/*.ts ─�
 - At most `maxVoices` one-shots play at once; the oldest is cut off.
 - Blips skip spaces and punctuation, and text revealed all at once (skipped
   or reduced motion) doesn't blip (`Reveal.instant`).
-- No `AudioContext` exists until the first click or key press. The noise is
+- The `AudioContext` is made, paused, once the page is first still
+  (`prepare()`), since making one can take a fifth of a second; the first
+  click or key press only resumes it (or makes it, without
+  `requestIdleCallback`). Nothing sounds before then. The noise is
   generated once and shared. Sounds are a few throwaway nodes; no
   per-frame JavaScript.
 - Audio is suspended while the tab is hidden and after `idleSuspendMs` of

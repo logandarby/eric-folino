@@ -193,6 +193,21 @@ describe('SoundEngine', () => {
     expect(played).toEqual(['hover']);
   });
 
+  it('can make audio ahead of time, staying silent until unlocked', () => {
+    const { engine, played, createGraph, ctx } = setup();
+    engine.prepare();
+    expect(createGraph).toHaveBeenCalledTimes(1);
+    ctx.state = 'suspended';
+    engine.play('hover');
+    expect(played).toEqual([]);
+    expect(ctx.resume).not.toHaveBeenCalled();
+    engine.unlock();
+    engine.play('hover');
+    expect(createGraph).toHaveBeenCalledTimes(1);
+    expect(ctx.resume).toHaveBeenCalled();
+    expect(played).toEqual(['hover']);
+  });
+
   it('never creates audio while sound is off', () => {
     const { engine, played, createGraph } = setup({ on: false });
     engine.unlock();

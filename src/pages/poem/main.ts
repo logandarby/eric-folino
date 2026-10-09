@@ -1,7 +1,9 @@
 import { bootstrap } from '../../app/bootstrap.ts';
 import { $$ } from '../../core/component.ts';
 import { elementAnchor } from '../../dialog/anchor.ts';
+import { tooltip } from '../../dialog/tooltip.ts';
 import type { DialogContent } from '../../site/types.ts';
+import { favourites, setFavourite } from '../poems/favourites.ts';
 import { markRead } from '../poems/read.ts';
 
 /** The dialog's button that follows the link. */
@@ -12,6 +14,24 @@ const { dialogs } = bootstrap();
 // Unlocks it on the web.
 const slug = document.querySelector<HTMLElement>('[data-poem]')?.dataset.poem;
 if (slug) markRead(slug);
+
+// The star by the title keeps the poem in favourites (see favourites.ts).
+const star = document.querySelector<HTMLButtonElement>('[data-favourite]');
+if (slug && star) {
+  const show = (on: boolean) => {
+    star.setAttribute('aria-pressed', String(on));
+  };
+  show(favourites().includes(slug));
+  star.hidden = false;
+  tooltip(star, () =>
+    star.getAttribute('aria-pressed') === 'true' ? 'Favourited' : 'Favourite'
+  );
+  star.addEventListener('click', () => {
+    const on = star.getAttribute('aria-pressed') !== 'true';
+    setFavourite(slug, on);
+    show(on);
+  });
+}
 
 /**
  * A link opens a dialog first: the poem it goes to, the line it lands on,

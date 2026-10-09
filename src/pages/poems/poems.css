@@ -1,5 +1,10 @@
 /* Shared by the poems' pages: the welcome, each poem and the web. */
 
+/* Tooltips in the poems' own type. */
+:root {
+  --tooltip-font: var(--font-pixel);
+}
+
 /* Dialogs here are mostly a title, so they're only as wide as it (and their
    other contents), up to the usual width. Docked ones on mobile stay as
    they are. */
@@ -86,4 +91,71 @@
   flex-wrap: wrap;
   gap: 16px;
   margin: 32px 0;
+}
+
+/* The title, with the star that keeps the poem in favourites beside it,
+   centred on it however many lines it wraps to. */
+.poem-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 32px;
+}
+
+.poem .poem-title h1 {
+  margin: 0;
+}
+
+.poem-favourite {
+  display: grid;
+  flex: none;
+  place-items: center;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: var(--color-fg);
+  cursor: pointer;
+  translate: 0 -3px;
+}
+
+.poem-favourite[hidden] {
+  display: none;
+}
+
+.favourite-star {
+  width: 28px;
+  height: 28px;
+}
+
+.poem-favourite[aria-pressed='true'] .favourite-star--off,
+.poem-favourite[aria-pressed='false'] .favourite-star--on {
+  display: none;
+}
+
+/* The favourites page: each poem's title, and its first line under it. */
+.poems-loading {
+  margin-block: 48px;
+}
+
+.poems-favourites {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.poems-favourites li {
+  display: grid;
+  /* The title's link, and its hover outline, only as wide as the title. */
+  justify-items: start;
+}
+
+/* Its hover outline hugs the title, clear of the line under it. */
+.poems-favourites a {
+  --outline-offset: 2px;
+}
+
+.poems-favourites-line {
+  opacity: 0.6;
 }

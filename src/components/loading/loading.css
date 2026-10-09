@@ -1,0 +1,72 @@
+/* A loading indicator (loading.tsx): a window one frame big, with the
+   frames stacked in a strip behind it, slid up one at a time, and its
+   label under it. It centres itself in the space it's in, and its size is
+   its own, whatever a page's rules for svg say. */
+.loading {
+  --loading-size: 48px;
+  --loading-frame-ms: 160ms;
+  --loading-delay: 300ms;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-inline: auto;
+  color: var(--color-fg);
+  animation: loading-appear 0s var(--loading-delay) both;
+}
+
+.loading__window {
+  display: block;
+  width: var(--loading-size);
+  height: var(--loading-size);
+  overflow: hidden;
+}
+
+.loading .loading__strip {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  shape-rendering: crispEdges;
+  animation: loading-play calc(4 * var(--loading-frame-ms)) steps(4) infinite;
+}
+
+/* In the pixel font, at the size it's drawn for, to match the grid. */
+.loading__label {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+@keyframes loading-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The whole strip's height: steps() stops on each frame in turn and never
+   on the end, which is the first again. */
+@keyframes loading-play {
+  to {
+    translate: 0 -100%;
+  }
+}
+
+/* Without scripts nothing would ever finish loading. */
+@media (scripting: none) {
+  .loading {
+    display: none;
+  }
+}
+
+/* Slower rather than still: still, it wouldn't look like it's working.
+   (base.css stops every animation; this wins by being more specific.) */
+@media (prefers-reduced-motion: reduce) {
+  .loading .loading__strip {
+    animation-duration: calc(16 * var(--loading-frame-ms)) !important;
+  }
+}

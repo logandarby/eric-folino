@@ -30,7 +30,7 @@
   pointer-events: none;
 }
 
-.poem-graph svg {
+.poem-graph > svg {
   position: relative;
   display: block;
   width: 100%;
@@ -50,36 +50,19 @@
 }
 
 /* Links fire like synapses: now and then a short bright streak shoots
-   along one, the way it goes. It's a dashed line whose dashes are far
-   apart (main.ts sets how far, per link, and so how often it fires) and
-   slide along. No element per streak and no script, so it stays cheap
-   however many links. */
-/* One glow for them all, cheaper than one each. */
-.poem-graph-flows {
-  filter: drop-shadow(0 0 3px var(--poem-flow));
-}
-
+   along one, the way it goes. It's a single dash, parked just before the
+   line's start, that main.ts slides along it when the link fires; in
+   between nothing moves, so the web can sit still. */
 .poem-graph-flow {
-  --flow-length: 10px;
-  --flow-gap: 4000px;
   stroke: var(--poem-flow);
   stroke-width: 2;
   stroke-linecap: square;
-  stroke-dasharray: var(--flow-length) var(--flow-gap);
-  animation: poem-graph-flow 4s linear infinite;
   pointer-events: none;
 }
 
-@keyframes poem-graph-flow {
-  to {
-    stroke-dashoffset: calc(-1 * (var(--flow-length) + var(--flow-gap)));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .poem-graph-flow {
-    animation: none;
-  }
+/* Glowing only while it crosses (main.ts), so the glow covers one link. */
+.poem-graph-flow.is-firing {
+  filter: drop-shadow(0 0 3px var(--poem-flow));
 }
 
 .poem-graph-node {
@@ -143,4 +126,55 @@
   overflow: auto;
   background: var(--color-bg);
   border-top: var(--border-width) solid var(--color-fg);
+}
+
+/* Titles under the stars (main.ts sets them up). Hidden until they're
+   wanted: a read poem's when zoomed in, and the neighbours' of the poem in
+   focus. The one in focus has its title in a tooltip or its dialog
+   instead. A dark edge keeps them clear of the links behind. */
+.poem-graph-labels {
+  pointer-events: none;
+}
+
+.poem-graph-label {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 400;
+  /* Grey, so they sit back from the stars and the tooltip. */
+  fill: color-mix(in srgb, var(--color-fg) 55%, var(--color-bg));
+  stroke: var(--color-bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  visibility: hidden;
+}
+
+.poem-graph.shows-labels .poem-graph-label:not(.is-locked, .is-focused),
+.poem-graph.is-focusing .poem-graph-label.is-near:not(.is-locked, .is-focused) {
+  visibility: visible;
+}
+
+/* With a poem in focus, the rest of the web steps back, at once. Not
+   faded: while its opacity is animating, Chrome gives each of the hundred
+   or so stars, links and titles a compositor layer of its own, and making
+   them stalled the first tap for a tenth of a second. */
+.poem-graph.is-focusing :is(.poem-graph-node, .poem-graph-label):not(.is-near) {
+  opacity: 0.25;
+}
+
+.poem-graph.is-focusing :is(.poem-graph-link, .poem-graph-flow):not(.is-near) {
+  opacity: 0.2;
+}
+
+/* Its own links stand out, however faint they are otherwise. */
+.poem-graph-link.is-near {
+  stroke-opacity: 0.8;
+}
+
+/* In the middle of the screen, where the web will be. */
+.poem-graph-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
 }

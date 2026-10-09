@@ -1,13 +1,13 @@
 /**
- * The way around the web of poems, at the top of the welcome page, each
- * poem and the web: home, the welcome page and the web. The page you're
- * on isn't a link.
+ * The way around the web of poems, at the top of each of its pages: home,
+ * the welcome page, the web and the poems you starred. The page you're on
+ * isn't a link.
  */
 export function PoemsNav({
   current,
   class: cls,
 }: {
-  current?: 'welcome' | 'web';
+  current?: 'welcome' | 'web' | 'favourites';
   class?: string;
 }) {
   const item = (page: typeof current, href: string, label: string) =>
@@ -21,6 +21,7 @@ export function PoemsNav({
       <a href="/">Home</a>
       {item('welcome', '/poems/', 'Welcome')}
       {item('web', '/poems/web/', 'Web')}
+      {item('favourites', '/poems/favourites/', 'Favourites')}
     </nav>
   );
 }
