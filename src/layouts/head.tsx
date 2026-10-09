@@ -22,7 +22,7 @@ export function Head({ page }: { page: PageConfig }) {
     siteConfig.layout.compactQuery
   )}),d=document.documentElement,s=()=>{d.dataset.layout=m.matches?'compact':'wide'};s();m.addEventListener('change',s)})()`;
 
-  const rootVars = `:root{--dialog-max-w:${d.maxWidth}px;--dialog-margin:${d.viewportMargin}px;--dim-opacity:${d.dimOpacity};--dim-blur:${d.blurPx}px;--bg-zoom:${siteConfig.background.landscapeZoom};--bg-focus:${siteConfig.background.landscapeFocus};${focusVars(siteConfig.background.landscapeFocus)}--title-tilt:${siteConfig.titleTiltDeg}deg}`;
+  const rootVars = `:root{--dialog-max-w:${d.maxWidth}px;--dialog-margin:${d.viewportMargin}px;--dim-opacity:${d.dimOpacity};--dim-blur:${d.blurPx}px;--bg-zoom:${siteConfig.background.landscapeZoom};--bg-focus:${siteConfig.background.landscapeFocus};--bg-portrait-zoom:${siteConfig.background.portraitZoom};--bg-portrait-focus:${siteConfig.background.portraitFocus};${focusVars(siteConfig.background.landscapeFocus)}--title-tilt:${siteConfig.titleTiltDeg}deg}`;
 
   return (
     <>

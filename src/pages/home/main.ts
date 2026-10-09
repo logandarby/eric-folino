@@ -1,14 +1,15 @@
 import { pageScript } from '../../app/router.ts';
 import { Blob } from '../../components/blob/blob.ts';
-import { bindHotspot } from '../../components/hotspot/hotspot.ts';
+import { bindListen } from '../../components/listen/listen.ts';
 import { $$ } from '../../core/component.ts';
 import { Disposer } from '../../core/disposer.ts';
 import { prefersReducedMotion } from '../../core/motion.ts';
 import { siteConfig } from '../../site/site.config.ts';
 import { RadialJitter } from '../../svg/jitter.ts';
+import songUrl from '../../assets/audio/standby.mp3';
 import page from './page.config.ts';
 
-pageScript(import.meta.url, ({ dialogs }) => {
+pageScript(import.meta.url, ({ dialogs, sound }) => {
   const disposer = new Disposer();
   const { animation } = siteConfig;
   const jitter = new RadialJitter(animation.blobJitterAmount);
@@ -34,6 +35,9 @@ pageScript(import.meta.url, ({ dialogs }) => {
     );
   }
 
-  disposer.add(bindHotspot(dialogs, 'screen', page.screen.dialog));
+  const listen = document.querySelector<HTMLElement>('[data-listen]');
+  if (listen) {
+    disposer.add(bindListen(listen, sound, page.listen, songUrl));
+  }
   return () => disposer.dispose();
 });

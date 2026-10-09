@@ -19,8 +19,10 @@ interface StageProps {
   socials?: MobileSocials;
   /** Placed on the stage, like the blobs. */
   children?: Child;
-  /** In the scene but off the stage, like the screen hotspot. */
+  /** In the scene but off the stage, over it, like the screen's player. */
   scene?: Child;
+  /** In the scene but under the stage, like the screen's light. */
+  underlay?: Child;
 }
 
 /**
@@ -28,7 +30,13 @@ interface StageProps {
  * title, the nav and anything the page places there. Used by the home
  * page and by placeholder pages.
  */
-export function StageLayout({ page, socials, children, scene }: StageProps) {
+export function StageLayout({
+  page,
+  socials,
+  children,
+  scene,
+  underlay,
+}: StageProps) {
   stylesheet(import.meta.url, './stage.css');
   const { stage } = siteConfig;
   const stageVars = perLayout((l) => ({
@@ -39,6 +47,7 @@ export function StageLayout({ page, socials, children, scene }: StageProps) {
     <>
       <Background />
       <div class="scene" data-scene data-page-root>
+        {underlay}
         <div class="stage" style={stageVars}>
           <Title class="placed" style={placementVars((l) => stage[l].title)} />
           {socials && (

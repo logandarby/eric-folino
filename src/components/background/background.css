@@ -58,7 +58,21 @@
 }
 
 /*
- * Clickable spots in the photo (the bus stop screen). The layer repeats the
+ * Portrait screens (phones; siteConfig.background.portraitQuery, keep in
+ * sync): the portrait crop, zoomed past cover so the bus stop is large
+ * below the stage. --bg-portrait-zoom and --bg-portrait-focus come from
+ * src/site/site.config.ts.
+ */
+@media (max-aspect-ratio: 4/5) {
+  .background img,
+  .lights-off img {
+    transform: scale(var(--bg-portrait-zoom));
+    transform-origin: var(--bg-portrait-focus);
+  }
+}
+
+/*
+ * Things on the photo (the bus stop screen's player). The layer repeats the
  * photo's framing by hand: "cover" sizing and object-position worked out in
  * container units, plus the landscape zoom. A button placed in percentages
  * of the photo then stays on its spot at every size.
@@ -73,6 +87,11 @@
   z-index: 1;
   container-type: size;
   pointer-events: none;
+}
+
+/* Painted in page order, before the stage, so under it. */
+.hotspots--below {
+  z-index: auto;
 }
 
 .hotspots__frame {
@@ -99,5 +118,12 @@
   .hotspots__frame {
     transform: scale(var(--bg-zoom));
     transform-origin: var(--bg-focus);
+  }
+}
+
+@media (max-aspect-ratio: 4/5) {
+  .hotspots__frame {
+    transform: scale(var(--bg-portrait-zoom));
+    transform-origin: var(--bg-portrait-focus);
   }
 }

@@ -9,7 +9,6 @@ import { compile } from './markup/timeline.ts';
 describe('dialog text in the configs', () => {
   const dialogs: DialogContent[] = [
     ...home.blobs.map((b) => b.dialog),
-    home.screen.dialog,
     enter.tv.dialog,
     siteConfig.help.dialog,
     siteConfig.textDemo.dialog,

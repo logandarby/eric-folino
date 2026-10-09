@@ -1,8 +1,9 @@
-// Makes the enter page's TV picture: the images in assets-src/tv-collage/,
-// each cropped to the screen's shape and laid side by side in one image
-// (an atlas), which the TV cuts between like a video (see tv.frag). Run
-// with `npm run tv:collage` whenever they change. Output is committed,
-// like the TV's photo.
+// Makes the collage video, played on the enter page's TV and the home
+// page's bus stop screen: the images in assets-src/tv-collage/, each
+// cropped to the TV screen's shape and laid side by side in one image (an
+// atlas), which the screens cut between like a video (see
+// src/components/collage-video/). Run with `npm run tv:collage` whenever
+// they change. Output is committed, like the TV's photo.
 //
 // The order is random but seeded, so the same images always play the same
 // way. Change SEED for another order.
@@ -14,7 +15,9 @@ import sharp from 'sharp';
 const SOURCE_DIR = fileURLToPath(
   new URL('../assets-src/tv-collage/', import.meta.url)
 );
-const OUT_DIR = fileURLToPath(new URL('../src/pages/enter/', import.meta.url));
+const OUT_DIR = fileURLToPath(
+  new URL('../src/components/collage-video/', import.meta.url)
+);
 
 /** One frame, the TV screen's shape (see src/pages/enter/tv/tv.json), about 4:3. */
 const FRAME_WIDTH = 640;

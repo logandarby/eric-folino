@@ -15,6 +15,7 @@ export interface ShaderOptions {
   /**
    * Images the shader reads, by uniform name. They're sampled with (0, 0)
    * at the image's top left, clamped at the edges, and can be any size.
+   * A video's showing frame is read on every draw (black until it has one).
    */
   textures?: Record<string, TexImageSource>;
   /**
@@ -23,6 +24,11 @@ export interface ShaderOptions {
    * something, like the pointer, cost nothing while still.
    */
   animate?: boolean;
+  /**
+   * See-through where the shader's alpha is below 1 (default false). Its
+   * colours are then premultiplied: rgb at most alpha.
+   */
+  transparent?: boolean;
   /** Frame rate cap; lower is kinder to batteries. Default 60. */
   maxFps?: number;
   /** Device pixel ratio cap; shaders are costly per pixel. Default 1.5. */
@@ -70,11 +76,19 @@ export class ShaderCanvas {
     WebGLUniformLocation | null
   > = { time: null, resolution: null, pointer: null };
   private textureUnits: [WebGLUniformLocation | null, number][] = [];
+  /** Videos among the textures, with the time of the frame last uploaded. */
+  private videos: {
+    video: HTMLVideoElement;
+    texture: WebGLTexture;
+    unit: number;
+    shown: number;
+  }[] = [];
   /** Uniforms from `set()`, kept to apply on every draw (and after a lost context). */
   private readonly values = new Map<string, number[]>();
   private time = 0;
   private pointer = [0.5, 0.5];
   private onScreen = false;
+  private paused = false;
   private stopLoop: Cleanup | null = null;
   private readonly flashGuard = import.meta.env.DEV ? new FlashGuard() : null;
 
@@ -82,7 +96,10 @@ export class ShaderCanvas {
     canvas: HTMLCanvasElement,
     options: ShaderOptions
   ): ShaderCanvas | null {
-    const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+    const gl = canvas.getContext('webgl', {
+      antialias: false,
+      alpha: options.transparent ?? false,
+    });
     return gl ? new ShaderCanvas(canvas, gl, options) : null;
   }
 
@@ -139,6 +156,12 @@ export class ShaderCanvas {
     this.values.set(name, values);
   }
 
+  /** Holds the picture still (true), or lets it run on. */
+  pause(paused: boolean): void {
+    this.paused = paused;
+    this.update();
+  }
+
   /** Draws now. For pictures that don't `animate`. */
   render(): void {
     this.draw();
@@ -167,6 +190,7 @@ export class ShaderCanvas {
   private update(): void {
     const live =
       this.options.animate !== false &&
+      !this.paused &&
       this.onScreen &&
       !document.hidden &&
       !reducedMotion.matches;
@@ -188,8 +212,11 @@ export class ShaderCanvas {
 
   private resize(): void {
     const ratio = Math.min(devicePixelRatio, this.options.maxPixelRatio ?? 1.5);
-    let width = this.canvas.clientWidth * ratio;
-    let height = this.canvas.clientHeight * ratio;
+    // As drawn, after any transforms (a zoomed photo layer, say), so the
+    // picture is sharp at the size it shows.
+    const box = this.canvas.getBoundingClientRect();
+    let width = box.width * ratio;
+    let height = box.height * ratio;
     const { maxSize } = this.options;
     if (maxSize) {
       const scale = Math.min(maxSize[0] / width, maxSize[1] / height);
@@ -217,6 +244,7 @@ export class ShaderCanvas {
     for (const [location, unit] of this.textureUnits) {
       gl.uniform1i(location, unit);
     }
+    this.uploadVideoFrames();
     for (const [name, values] of this.values) {
       const location = gl.getUniformLocation(program, name);
       if (values.length === 1) gl.uniform1f(location, values[0]);
@@ -257,18 +285,36 @@ export class ShaderCanvas {
     gl.enableVertexAttribArray(position);
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
+    this.videos = [];
     this.textureUnits = Object.entries(this.options.textures ?? {}).map(
       ([name, image], unit) => {
+        const texture = gl.createTexture();
         gl.activeTexture(gl.TEXTURE0 + unit);
-        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-        gl.texImage2D(
-          gl.TEXTURE_2D,
-          0,
-          gl.RGBA,
-          gl.RGBA,
-          gl.UNSIGNED_BYTE,
-          image
-        );
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        if (image instanceof HTMLVideoElement) {
+          // Black until it has a frame (uploadVideoFrames).
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            1,
+            1,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            new Uint8Array([0, 0, 0, 255])
+          );
+          this.videos.push({ video: image, texture, unit, shown: -1 });
+        } else {
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            image
+          );
+        }
         // WebGL 1 needs these for sizes that aren't powers of two.
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -284,6 +330,31 @@ export class ShaderCanvas {
       resolution: gl.getUniformLocation(program, 'u_resolution'),
       pointer: gl.getUniformLocation(program, 'u_pointer'),
     };
+  }
+
+  /** Each video's showing frame, if it's moved on since the last upload. */
+  private uploadVideoFrames(): void {
+    const { gl } = this;
+    for (const entry of this.videos) {
+      const { video } = entry;
+      if (
+        video.readyState < video.HAVE_CURRENT_DATA ||
+        video.currentTime === entry.shown
+      ) {
+        continue;
+      }
+      gl.activeTexture(gl.TEXTURE0 + entry.unit);
+      gl.bindTexture(gl.TEXTURE_2D, entry.texture);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        video
+      );
+      entry.shown = video.currentTime;
+    }
   }
 
   private compile(type: number, source: string): WebGLShader {

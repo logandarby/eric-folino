@@ -2,7 +2,10 @@ import type { Cleanup } from './disposer.ts';
 
 interface Subscription {
   interval: number;
+  /** Towards the next call, with what's left past the last one's due time. */
   elapsed: number;
+  /** Real time since the last call, which is what it's given. */
+  since: number;
   callback: (dt: number) => void;
 }
 
@@ -21,7 +24,7 @@ export class Ticker {
   private last = 0;
 
   subscribe(interval: number, callback: (dt: number) => void): Cleanup {
-    const sub: Subscription = { interval, elapsed: 0, callback };
+    const sub: Subscription = { interval, elapsed: 0, since: 0, callback };
     this.subs.add(sub);
     this.start();
     return () => {
@@ -46,11 +49,14 @@ export class Ticker {
     this.last = now;
     for (const sub of this.subs) {
       sub.elapsed += dt;
+      sub.since += dt;
       if (sub.elapsed >= sub.interval) {
         // Keep the remainder so long-run timing doesn't drift, but never
-        // fire more than once per frame.
-        const fired = sub.elapsed;
+        // fire more than once per frame. The time given is only what's
+        // passed since the last call, so the remainder isn't counted twice.
+        const fired = sub.since;
         sub.elapsed = sub.interval > 0 ? sub.elapsed % sub.interval : 0;
+        sub.since = 0;
         sub.callback(fired);
       }
     }

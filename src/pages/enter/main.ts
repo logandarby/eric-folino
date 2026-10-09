@@ -1,8 +1,8 @@
 import { pageScript } from '../../app/router.ts';
+import { playCollage } from '../../components/collage-video/collage-video.ts';
 import { bindHotspot } from '../../components/hotspot/hotspot.ts';
 import { Disposer } from '../../core/disposer.ts';
 import page from './page.config.ts';
-import { playTv } from './tv.ts';
 
 pageScript(import.meta.url, ({ dialogs }) => {
   const disposer = new Disposer();
@@ -13,7 +13,11 @@ pageScript(import.meta.url, ({ dialogs }) => {
   const cta = document.querySelector<HTMLElement>('[data-tv-cta]');
   if (cta) disposer.listen(cta, 'click', () => hotspot?.click());
 
-  const tv = document.querySelector<HTMLElement>('[data-tv]');
-  if (tv) disposer.add(playTv(tv, page.tv));
+  // The screen plays behind the photo's hole.
+  const screen = document.querySelector<HTMLElement>('[data-tv-screen]');
+  if (screen) {
+    const player = playCollage(screen, page.tv);
+    disposer.add(() => player.dispose());
+  }
   return () => disposer.dispose();
 });

@@ -16,7 +16,7 @@ const SPOKEN = /[\p{L}\p{N}]/u;
  * - a hover tick for buttons and links (pointer hover or keyboard focus);
  * - a clunk when one is pressed;
  * - a swoosh as dialogs open and close, and voice blips as they type;
- * - a looping sound for elements with `data-sound="<loop>"` (the screen's
+ * - a looping sound for elements with `data-sound="<loop>"` (the TV's
  *   hum), held while hovered or focused, or while a dialog pointing at
  *   the element is open.
  *

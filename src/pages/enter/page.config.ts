@@ -1,3 +1,4 @@
+import type { CrtCollage } from '../../components/collage-video/collage-video.ts';
 import { definePage } from '../../site/define-page.ts';
 import type { HotspotConfig } from '../../site/types.ts';
 import { screenVoice } from '../../site/voices.ts';
@@ -7,7 +8,8 @@ import { screenVoice } from '../../site/voices.ts';
  * like to come in. The nav's "Secret" leads here.
  */
 
-export interface TvConfig extends HotspotConfig {
+/** The TV, with what it plays (see collage-video.ts). */
+export interface TvConfig extends HotspotConfig, CrtCollage {
   /**
    * The TV, in pixels of the photo (assets-src/strange-tv.png): what the
    * invisible button covers. The screen's own place is found from the
@@ -22,36 +24,6 @@ export interface TvConfig extends HotspotConfig {
     text: string;
     /** Font size, as a share of the TV's width. */
     size: number;
-  };
-  /** How bright the picture is, 0–1. It drifts slowly between the two. */
-  signal: { min: number; max: number };
-  /**
-   * How long each photo shows, in seconds, before the TV cuts to the next
-   * (assets-src/tv-collage/, put together by `npm run tv:collage`).
-   */
-  photoSeconds: number;
-  /**
-   * How much static covers the photos, 0–1. It fades between the two at random, to a
-   * new amount every `seconds`; `shape` above 1 keeps it nearer `min`
-   * more of the time.
-   */
-  static: { min: number; max: number; seconds: number; shape: number };
-  /** The static's colour at full brightness, "#rrggbb". */
-  tint: string;
-  /** The CRT look over the picture (tv.frag), after daenavan's crt-threejs. */
-  crt: {
-    /** How much the glass bulges. */
-    curvature: number;
-    /** Scanlines down the screen (fewer on small screens, so they stay sharp). */
-    scanlines: number;
-    /** How dark the gaps between scanlines are, 0–1. */
-    scanlineDepth: number;
-    /** Colour fringing: how far red and blue drift apart, as a share of the width. */
-    aberration: number;
-    /** How dark the corners get. */
-    vignette: number;
-    /** How much the brightness wavers, 0–1. Kept tiny: it never flashes. */
-    flicker: number;
   };
 }
 
@@ -81,6 +53,7 @@ export default definePage<{ tv: TvConfig }>({
     },
     body: { x: 1538, y: 888, width: 726, height: 724 },
     cta: { text: 'enter?', size: 0.13 },
+    look: 'crt',
     signal: { min: 0.72, max: 0.95 },
     photoSeconds: 0.5,
     static: { min: 0.15, max: 0.9, seconds: 1.2, shape: 2 },

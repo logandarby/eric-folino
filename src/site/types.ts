@@ -260,6 +260,8 @@ export interface SiteConfig {
     portraitQuery: string;
     landscapeZoom: number;
     landscapeFocus: string;
+    portraitZoom: number;
+    portraitFocus: string;
     flicker: FlickerConfig;
   };
   stage: Record<LayoutName, StageLayout>;

@@ -1,19 +1,11 @@
 import { definePage } from '../../site/define-page.ts';
-import {
-  hushVoice,
-  screenVoice,
-  sillyVoice,
-  softVoice,
-} from '../../site/voices.ts';
-import type {
-  BlobConfig,
-  HotspotConfig,
-  MobileSocials,
-} from '../../site/types.ts';
+import type { ListenConfig } from '../../components/listen/listen.ts';
+import { hushVoice, sillyVoice, softVoice } from '../../site/voices.ts';
+import type { BlobConfig, MobileSocials } from '../../site/types.ts';
 
 /*
- * The home page: the bus stop scene with clickable blobs and the clickable
- * screen.
+ * The home page: the bus stop scene with clickable blobs, and the screen
+ * that plays our music.
  */
 
 export default definePage<HomePage>({
@@ -30,7 +22,7 @@ export default definePage<HomePage>({
       width: { wide: 19.5, compact: 27 },
       position: { wide: { x: 14, y: 2 }, compact: { x: 6, y: 0 } },
       dialog: {
-        title: 'THE INEFFABLE BLOB',
+        title: 'THE NONSENSICAL BLOB',
         voice: softVoice,
         body: [
           {
@@ -74,7 +66,7 @@ export default definePage<HomePage>({
         body: [
           {
             kind: 'quote',
-            text: "“Have you seen a silly splotch anywhere? I can't find them.”",
+            text: "“Have you seen a silly splotch {shake}anywhere?{/shake} I can't find them.”",
           },
           {
             kind: 'narration',
@@ -112,31 +104,39 @@ export default definePage<HomePage>({
   mobileSocials: 'title',
 
   /**
-   * The glowing bus stop screen in the background photo, clickable like the
-   * blobs. Its position comes from the photo (see photo.json, made by
-   * `npm run images`).
+   * The glowing bus stop screen in the background photo, which plays a
+   * clip of the music with the collage video on the screen. Its position
+   * comes from the photo (see photo.json, made by `npm run images`); the
+   * song is src/assets/audio/standby.mp3.
    */
-  screen: {
-    label: 'Bus stop screen',
-    dialog: {
-      title: "THE GHOST'S FINGERPRINT",
-      voice: screenVoice,
-      body: [
-        {
-          kind: 'quote',
-          text: "{scramble:loop}{float}“I feel like we're one and the same.”{/float}{/scramble:loop}",
-        },
-        {
-          kind: 'narration',
-          text: '*You feel dizzy.',
-        },
-      ],
+  listen: {
+    label: 'Listen to “Standby”',
+    cta: 'Listen?',
+    song: { title: 'Standby', artist: 'Eric Folino', volume: 0.8 },
+    // A lit ad panel: bright, blooming into the night. It plays the
+    // montage (src/assets/video/montage.mp4), then the photos, round
+    // `photoRounds` times, then the montage again, until the song ends.
+    // The montage is made from the edit, muted, with
+    // `ffmpeg -i edit.mp4 -an -c:v libx264 -preset veryslow -crf 28 -pix_fmt yuv420p -movflags +faststart montage.mp4`.
+    video: {
+      look: 'panel',
+      signal: { min: 0.9, max: 1 },
+      photoSeconds: 0.5,
+      photoRounds: 2,
+      bloom: { spread: 0.5, radius: 0.2, strength: 3, over: 0.25 },
+      // The video's light on the pavement below it, and the colour it
+      // gives the reflections.
+      reflections: { light: 1.2, saturation: 0.3 },
+      // Every photo about as light as the next, and a little faded.
+      tone: { exposure: 0.65, maxGain: 5, saturation: 0.5, lift: 0.3 },
+      // A faint film grain over the picture.
+      noise: { amount: 0.005, size: 1.5 },
     },
   },
 });
 
 interface HomePage {
   blobs: BlobConfig[];
-  screen: HotspotConfig;
+  listen: ListenConfig;
   mobileSocials: MobileSocials;
 }

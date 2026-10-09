@@ -6,10 +6,37 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
+// Temporarily the second photo (a different ad, same framing); the
+// original is assets-src/web-background.png.
 const SOURCE = fileURLToPath(
-  new URL('../assets-src/web-background.png', import.meta.url)
+  new URL('../assets-src/web-background-2.png', import.meta.url)
+);
+// The same photo with the lit screen cut out (fully see-through) and its
+// reflections on the pavement part see-through, so light from the screen
+// can show through them. Its reflections are white, not the ad's pink, so
+// they take the colour of whatever the screen shows.
+const CUTOUT = fileURLToPath(
+  new URL('../assets-src/web-background-2-cutout.png', import.meta.url)
 );
 const OUT_DIR = fileURLToPath(new URL('../src/assets/bg/', import.meta.url));
+
+// How far around the screen the mask made from CUTOUT reaches, as a share
+// of the screen's width (sideways) and height (up and down).
+const SCREEN_MASK_MARGIN = 0.5;
+
+// Where CUTOUT's reflections differ from SOURCE's (white, not pink), in
+// source pixels; how much they must differ, relative to the pixel's
+// brightness, to take the screen's colour in full; and how much that's
+// softened, and faded out at the box's edges, in source pixels.
+const REFLECTIONS = {
+  x0: 893,
+  y0: 2183,
+  x1: 3127,
+  y1: 3456,
+  full: 0.25,
+  blur: 6,
+  feather: 200,
+};
 
 const LANDSCAPE_WIDTHS = [640, 1280, 1920, 2560, 3840];
 const PORTRAIT_WIDTHS = [720, 1080, 1440];
@@ -103,6 +130,8 @@ async function main() {
   jobs.push(placeholder(landscape, 'landscape-placeholder'));
   jobs.push(placeholder(portrait, 'portrait-placeholder'));
 
+  jobs.push(screenMask(), screenReflections());
+
   const results = await Promise.all(jobs);
   for (const line of results.flat()) console.log(line);
 }
@@ -193,6 +222,108 @@ async function lightsOffOverlay() {
     out[p * 4 + 3] = alpha[p];
   }
   return { data: out, info: { width, height, channels: 4 } };
+}
+
+/**
+ * How see-through CUTOUT is around the screen (white: fully), as a grey
+ * image: where the screen's video shows, and where its light falls (see
+ * panel.frag). Covers the screen and SCREEN_MASK_MARGIN around it.
+ */
+async function screenMask() {
+  const { x0, y0, x1, y1 } = LIGHTS_OFF.panel;
+  const mx = Math.round((x1 - x0) * SCREEN_MASK_MARGIN);
+  const my = Math.round((y1 - y0) * SCREEN_MASK_MARGIN);
+  const file = `${OUT_DIR}screen-mask.webp`;
+  const info = await sharp(CUTOUT)
+    .extract({
+      left: x0 - mx,
+      top: y0 - my,
+      width: x1 - x0 + 2 * mx,
+      height: y1 - y0 + 2 * my,
+    })
+    .ensureAlpha()
+    .extractChannel(3)
+    .negate()
+    .webp({ quality: 85 })
+    .toFile(file);
+  await writeFile(
+    `${OUT_DIR}screen-mask.json`,
+    `${JSON.stringify({ margin: SCREEN_MASK_MARGIN }, null, 2)}\n`
+  );
+  return `screen-mask.webp  ${(info.size / 1024).toFixed(0)} KB`;
+}
+
+/**
+ * The screen's reflections, white (from CUTOUT), for reflection.frag to
+ * colour like the video: opaque where SOURCE's are pink, so they cover
+ * them, fading to clear where the two are the same. Where they sit,
+ * relative to the screen, goes in screen-reflections.json.
+ */
+async function screenReflections() {
+  const { x0, y0, x1, y1, full } = REFLECTIONS;
+  const box = { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
+  const pink = await sharp(SOURCE).extract(box).removeAlpha().raw().toBuffer();
+  const white = await sharp(CUTOUT).extract(box).removeAlpha().raw().toBuffer();
+  const pixels = box.width * box.height;
+  const differs = Buffer.alloc(pixels);
+  for (let p = 0; p < pixels; p++) {
+    let diff = 0;
+    let peak = 0;
+    for (let c = 0; c < 3; c++) {
+      diff = Math.max(diff, Math.abs(pink[p * 3 + c] - white[p * 3 + c]));
+      peak = Math.max(peak, white[p * 3 + c]);
+    }
+    // Dark pixels differ by little, and noisily: count them as a bit lit.
+    differs[p] = Math.min(
+      255,
+      Math.round((diff / Math.max(peak, 24) / full) * 255)
+    );
+  }
+  const { data: alpha } = await sharp(differs, {
+    raw: { width: box.width, height: box.height, channels: 1 },
+  })
+    .blur(REFLECTIONS.blur)
+    .extractChannel(0)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  // Clear at the box's edges, so they never show; not at the bottom, the
+  // photo's own edge.
+  const { feather } = REFLECTIONS;
+  for (let y = 0; y < box.height; y++) {
+    for (let x = 0; x < box.width; x++) {
+      const edge = Math.min(x, box.width - 1 - x, y) / feather;
+      if (edge >= 1) continue;
+      const t = Math.max(0, edge);
+      alpha[y * box.width + x] *= t * t * (3 - 2 * t);
+    }
+  }
+  const file = `${OUT_DIR}screen-reflections.webp`;
+  const info = await sharp(white, {
+    raw: { width: box.width, height: box.height, channels: 3 },
+  })
+    .joinChannel(alpha, {
+      raw: { width: box.width, height: box.height, channels: 1 },
+    })
+    // Lossless alpha (the default), or the light would show steps.
+    .webp({ quality: 70, effort: 6 })
+    .toFile(file);
+  const panel = LIGHTS_OFF.panel;
+  const pw = panel.x1 - panel.x0;
+  const ph = panel.y1 - panel.y0;
+  await writeFile(
+    `${OUT_DIR}screen-reflections.json`,
+    `${JSON.stringify(
+      {
+        x: (x0 - panel.x0) / pw,
+        y: (y0 - panel.y0) / ph,
+        width: box.width / pw,
+        height: box.height / ph,
+      },
+      null,
+      2
+    )}\n`
+  );
+  return `screen-reflections.webp  ${(info.size / 1024).toFixed(0)} KB`;
 }
 
 async function placeholder(pipeline, name) {

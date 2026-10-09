@@ -27,6 +27,22 @@ export default defineConfig({
       file.includes('/assets/bg/') ? false : undefined,
     rolldownOptions: {
       input: pageInputs(import.meta.dirname),
+      output: {
+        // Each component's CSS in a file of its own. Left to itself, a
+        // component only one page uses joins that page's sheets, and then
+        // its layout's can't go between them (see build/css-order.ts).
+        codeSplitting: {
+          groups: [
+            {
+              debugName: 'component-css',
+              name: (id) =>
+                /[\\/]src[\\/]components[\\/]([^\\/]+)[\\/][^\\/]+\.css(\?|$)/.exec(
+                  id
+                )?.[1] ?? null,
+            },
+          ],
+        },
+      },
     },
   },
   test: {

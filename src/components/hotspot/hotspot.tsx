@@ -1,8 +1,8 @@
 import { stylesheet } from '../../../build/jsx/assets.ts';
 
 /**
- * An invisible button over something in a picture, like the bus stop
- * screen or the enter page's TV. Hovering or focusing it shows the dashed
+ * An invisible button over something in a picture, like the enter page's
+ * TV. Hovering or focusing it shows the dashed
  * outline every button gets, plus a glow; its dialog dims the page around
  * it with a soft vignette (bind it with `bindHotspot`, hotspot.ts).
  *

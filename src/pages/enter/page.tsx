@@ -29,7 +29,7 @@ const SCREEN_BLEED = 0.02;
 
 /**
  * The TV in the corner of a room, a photo with a hole where the screen is.
- * The screen plays behind the hole (see tv.ts), and the TV is one big
+ * The screen plays behind the hole (see collage-video.ts), and the TV is one big
  * invisible button that asks if you'd like to enter (see main.ts), as
  * does the "enter?" above it.
  *

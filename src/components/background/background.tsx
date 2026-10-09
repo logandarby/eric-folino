@@ -1,9 +1,8 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { stylesheet } from '../../../build/jsx/assets.ts';
-import { raw } from '../../../build/jsx/jsx-runtime.ts';
+import { raw, type Child } from '../../../build/jsx/jsx-runtime.ts';
 import { siteConfig } from '../../site/site.config.ts';
-import { Hotspot } from '../hotspot/hotspot.tsx';
 
 const BG_DIR = new URL('../../assets/bg/', import.meta.url);
 /** Where the images are served from (Vite hashes and bundles them). */
@@ -57,7 +56,7 @@ export function Background() {
 
 /** Portrait and landscape <source>s for the images named `${prefix}${crop}-${width}.${ext}`. */
 function sources(files: string[], prefix: string) {
-  const { portraitQuery, landscapeZoom } = siteConfig.background;
+  const { portraitQuery, landscapeZoom, portraitZoom } = siteConfig.background;
   const srcset = (crop: string, ext: string) =>
     files
       .map((f) => new RegExp(`^${prefix}${crop}-(\\d+)\\.${ext}$`).exec(f))
@@ -70,7 +69,7 @@ function sources(files: string[], prefix: string) {
     (['avif', 'webp'] as const).map((ext) => (
       <source
         type={`image/${ext}`}
-        sizes={`${crop === 'portrait' ? 100 : Math.ceil(landscapeZoom * 100)}vw`}
+        sizes={`${Math.ceil((crop === 'portrait' ? portraitZoom : landscapeZoom) * 100)}vw`}
         srcset={srcset(crop, ext)}
         media={crop === 'portrait' ? portraitQuery : undefined}
       />
@@ -85,12 +84,22 @@ interface PhotoCrop {
 }
 
 /**
- * An invisible button (a Hotspot) over the bus stop screen. It sits in a layer framed
- * exactly like the background photo (see background.css), at the screen's
- * position in whichever crop is showing (from photo.json, made by
- * `npm run images`).
+ * A layer framed exactly like the background photo (see background.css),
+ * for things that sit on it, like the bus stop screen's player. Inside,
+ * --spot-x, --spot-y, --spot-w and --spot-h are where the screen is in
+ * whichever crop is showing (from photo.json, made by `npm run images`),
+ * as percentages of the photo.
+ *
+ * It's over the stage, so what's on it can be pressed. A layer `below` it
+ * is under the stage instead, for light that mustn't cover the nav.
  */
-export function ScreenHotspot({ label }: { label: string }) {
+export function PhotoLayer({
+  children,
+  below = false,
+}: {
+  children: Child;
+  below?: boolean;
+}) {
   const photo = JSON.parse(
     readFileSync(fileURLToPath(new URL('photo.json', BG_DIR)), 'utf8')
   ) as Record<'landscape' | 'portrait', PhotoCrop>;
@@ -104,11 +113,12 @@ export function ScreenHotspot({ label }: { label: string }) {
           `.hotspots{${vars(photo.landscape)}}@media ${portraitQuery}{.hotspots{${vars(photo.portrait)}}}`
         )}
       </style>
-      <div class="hotspots" data-hotspots>
+      <div
+        class={below ? 'hotspots hotspots--below' : 'hotspots'}
+        data-hotspots
+      >
         <div class="hotspots__frame">
-          <div class="hotspots__photo">
-            <Hotspot name="screen" label={label} sound="hum" />
-          </div>
+          <div class="hotspots__photo">{children}</div>
         </div>
       </div>
     </>
