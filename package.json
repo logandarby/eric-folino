@@ -34,10 +34,13 @@
     "@fontsource/coral-pixels": "^5.3.0",
     "@fontsource/courier-prime": "^5.3.0",
     "@fontsource/golos-text": "^5.3.0",
+    "@swup/a11y-plugin": "^5.2.1",
+    "@swup/scroll-plugin": "^4.0.0",
     "d3-drag": "^3.0.0",
     "d3-force": "^3.0.0",
     "d3-selection": "^3.0.0",
-    "d3-zoom": "^3.0.0"
+    "d3-zoom": "^3.0.0",
+    "swup": "^4.10.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

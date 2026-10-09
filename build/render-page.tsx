@@ -13,7 +13,8 @@ import { raw, type Html } from './jsx/jsx-runtime.ts';
  *
  *   page.tsx   the markup (default export, rendered at build time, given
  *              the page's config)
- *   main.ts    the browser entry, if the page has scripts of its own
+ *   main.ts    the browser entry, if the page has scripts of its own;
+ *              it hands them to pageScript() (see src/app/router.ts)
  *
  * A page without page.tsx, or a draft when drafts are hidden, gets the
  * placeholder: the stage with its `placeholder` dialog.
@@ -52,7 +53,7 @@ export async function renderPage({
     ? existsSync(resolve(root, `.${ownEntry}`)) && ownEntry
     : PLACEHOLDER_ENTRY;
 
-  const { result: body, stylesheets } = collectStylesheets(root, () =>
+  const { result: body, stylesheets } = collectStylesheets(root, folder, () =>
     full ? view(page) : <PlaceholderPage page={page} />
   );
 
@@ -60,12 +61,18 @@ export async function renderPage({
     <html lang="en" data-page={page.id}>
       <head>
         <Head page={page} />
-        {[SHARED_STYLES, ...stylesheets].map((href) => (
-          <link rel="stylesheet" href={href} />
-        ))}
+        {/* data-tier is for the build (see build/css-order.ts). */}
+        {[{ href: SHARED_STYLES, tier: 0 }, ...stylesheets].map(
+          ({ href, tier }) => (
+            <link rel="stylesheet" href={href} data-tier={tier} />
+          )
+        )}
         {entry && <script type="module" src={entry}></script>}
       </head>
-      <body>{body}</body>
+      <body>
+        {/* What changes from page to page (see src/app/router.ts). */}
+        <div id="swup">{body}</div>
+      </body>
     </html>
   );
   // Resizes any images the page used (see build/images.ts).

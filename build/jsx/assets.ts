@@ -22,9 +22,18 @@ export function stylesheet(moduleUrl: string, file: string): void {
   );
 }
 
+/** A stylesheet the page links, and where it falls in the cascade. */
+export interface Stylesheet {
+  href: string;
+  tier: number;
+}
+
 /**
  * Shared styles first, then components, then layouts (which may restyle the
- * components they arrange) and finally the page's own.
+ * components they arrange), then sheets borrowed from other pages and
+ * finally the page's own. Sheets in the same tier style different things,
+ * so their order among themselves doesn't matter; the build keeps the
+ * tiers in order (see build/css-order.ts).
  */
 const CASCADE = [
   '/src/styles/',
@@ -32,21 +41,34 @@ const CASCADE = [
   '/src/layouts/',
   '/src/pages/',
 ];
-const rank = (url: string) => {
-  const i = CASCADE.findIndex((prefix) => url.startsWith(prefix));
-  return i === -1 ? CASCADE.length : i;
+/**
+ * The tier of the sheet at `href`, as linked by the page in
+ * src/pages/<ownFolder>/ (or by another page, if not given).
+ */
+export const tierOf = (href: string, ownFolder?: string) => {
+  if (ownFolder && href.startsWith(`/src/pages/${ownFolder}/`)) {
+    return CASCADE.length;
+  }
+  const i = CASCADE.findIndex((prefix) => href.startsWith(prefix));
+  return i === -1 ? CASCADE.length + 1 : i;
 };
 
-/** Runs `render`, returning what it made and the stylesheets it asked for. */
+/**
+ * Runs `render` for the page in src/pages/<ownFolder>/, returning what it
+ * made and the stylesheets it asked for, in cascade order.
+ */
 export function collectStylesheets<T>(
   root: string,
+  ownFolder: string,
   render: () => T
-): { result: T; stylesheets: string[] } {
+): { result: T; stylesheets: Stylesheet[] } {
   const files = new Set<string>();
   collecting = { root, files };
   try {
     const result = render();
-    const stylesheets = [...files].sort((a, b) => rank(a) - rank(b));
+    const stylesheets = [...files]
+      .map((href) => ({ href, tier: tierOf(href, ownFolder) }))
+      .sort((a, b) => a.tier - b.tier);
     return { result, stylesheets };
   } finally {
     collecting = null;

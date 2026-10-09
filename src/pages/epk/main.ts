@@ -1,8 +1,8 @@
-import { bootstrap } from '../../app/bootstrap.ts';
+import { pageScript } from '../../app/router.ts';
 import { hydrateIslands } from '../../core/islands.ts';
 
-bootstrap();
-
-hydrateIslands({
-  'video-embed': () => import('../../components/video-embed/video-embed.ts'),
-});
+pageScript(import.meta.url, () =>
+  hydrateIslands({
+    'video-embed': () => import('../../components/video-embed/video-embed.ts'),
+  })
+);

@@ -1,13 +1,11 @@
-import { bootstrap } from '../../app/bootstrap.ts';
+import { pageScript } from '../../app/router.ts';
 import { $$ } from '../../core/component.ts';
-import type { Cleanup } from '../../core/disposer.ts';
+import { Disposer, type Cleanup } from '../../core/disposer.ts';
 import { prefersReducedMotion } from '../../core/motion.ts';
 import { ticker } from '../../core/ticker.ts';
 import { elementAnchor } from '../../dialog/anchor.ts';
 import { EyeShader } from './eye.ts';
 import page from './page.config.ts';
-
-const { dialogs } = bootstrap();
 
 /** How quickly an iris catches up with the pointer, in ms (smaller is snappier). */
 const EASE_MS = 90;
@@ -20,66 +18,85 @@ interface Eye {
   look: { x: number; y: number };
 }
 
-const eyes: Eye[] = $$('[data-eye]').map((el) => {
-  const config = page.eyes[Number(el.dataset.eye)];
-  const anchor = elementAnchor(el);
-  el.addEventListener(
-    'click',
-    () => void dialogs.toggle({ anchor, content: config.dialog })
-  );
-  return { el, reach: config.reach, shader: null, look: { x: 0, y: 0 } };
-});
+pageScript(import.meta.url, ({ dialogs }) => {
+  const disposer = new Disposer();
+  let stopped = false;
 
-// The irises ease towards the pointer. The loop runs only while one is
-// still on its way; scrolling moves the eyes under the pointer, so it
-// wakes the loop too.
-let pointer: { x: number; y: number } | null = null;
-let stopFollowing: Cleanup | null = null;
-
-const startFollowing = () => {
-  if (!pointer || prefersReducedMotion()) return;
-  stopFollowing ??= ticker.subscribe(0, follow);
-};
-
-window.addEventListener(
-  'pointermove',
-  (e) => {
-    pointer = { x: e.clientX, y: e.clientY };
-    startFollowing();
-  },
-  { passive: true }
-);
-window.addEventListener('scroll', startFollowing, { passive: true });
-
-for (const eye of eyes) {
-  void EyeShader.create(eye.el, page.dither).then((shader) => {
-    eye.shader = shader;
-    startFollowing();
+  const eyes: Eye[] = $$('[data-eye]').map((el) => {
+    const config = page.eyes[Number(el.dataset.eye)];
+    const anchor = elementAnchor(el);
+    disposer.listen(
+      el,
+      'click',
+      () => void dialogs.toggle({ anchor, content: config.dialog })
+    );
+    return { el, reach: config.reach, shader: null, look: { x: 0, y: 0 } };
   });
-}
 
-function follow(dt: number): void {
-  const ease = 1 - Math.exp(-dt / EASE_MS);
-  let moving = false;
+  // The irises ease towards the pointer. The loop runs only while one is
+  // still on its way; scrolling moves the eyes under the pointer, so it
+  // wakes the loop too.
+  let pointer: { x: number; y: number } | null = null;
+  let stopFollowing: Cleanup | null = null;
+
+  const startFollowing = () => {
+    if (!pointer || prefersReducedMotion()) return;
+    stopFollowing ??= ticker.subscribe(0, follow);
+  };
+
+  disposer.listen(
+    window,
+    'pointermove',
+    (e) => {
+      pointer = { x: e.clientX, y: e.clientY };
+      startFollowing();
+    },
+    { passive: true }
+  );
+  disposer.listen(window, 'scroll', startFollowing, { passive: true });
+
   for (const eye of eyes) {
-    if (!eye.shader || !pointer) continue;
-    const box = eye.el.getBoundingClientRect();
-    // Off screen, it can catch up when it's back.
-    if (box.bottom < 0 || box.top > innerHeight) continue;
-    const target = lookAt(box, pointer, eye.reach);
-    const dx = target.x - eye.look.x;
-    const dy = target.y - eye.look.y;
-    if (Math.abs(dx) + Math.abs(dy) < 1e-4) continue;
-    eye.look.x += dx * ease;
-    eye.look.y += dy * ease;
-    eye.shader.look(eye.look.x, eye.look.y);
-    moving = true;
+    void EyeShader.create(eye.el, page.dither).then((shader) => {
+      // The page went while its picture loaded.
+      if (stopped) {
+        shader?.dispose();
+        return;
+      }
+      eye.shader = shader;
+      startFollowing();
+    });
   }
-  if (!moving) {
+
+  function follow(dt: number): void {
+    const ease = 1 - Math.exp(-dt / EASE_MS);
+    let moving = false;
+    for (const eye of eyes) {
+      if (!eye.shader || !pointer) continue;
+      const box = eye.el.getBoundingClientRect();
+      // Off screen, it can catch up when it's back.
+      if (box.bottom < 0 || box.top > innerHeight) continue;
+      const target = lookAt(box, pointer, eye.reach);
+      const dx = target.x - eye.look.x;
+      const dy = target.y - eye.look.y;
+      if (Math.abs(dx) + Math.abs(dy) < 1e-4) continue;
+      eye.look.x += dx * ease;
+      eye.look.y += dy * ease;
+      eye.shader.look(eye.look.x, eye.look.y);
+      moving = true;
+    }
+    if (!moving) {
+      stopFollowing?.();
+      stopFollowing = null;
+    }
+  }
+
+  return () => {
+    stopped = true;
+    disposer.dispose();
     stopFollowing?.();
-    stopFollowing = null;
-  }
-}
+    for (const eye of eyes) eye.shader?.dispose();
+  };
+});
 
 /**
  * Where an eye in `box` looks for a pointer at `to`: towards it, reaching

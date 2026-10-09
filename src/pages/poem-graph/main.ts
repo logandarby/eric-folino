@@ -11,13 +11,15 @@ import {
 } from 'd3-force';
 import { select, selectAll } from 'd3-selection';
 import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
-import { bootstrap } from '../../app/bootstrap.ts';
+import { pageScript } from '../../app/router.ts';
 import { loaded } from '../../components/loading/loading.ts';
 import { currentLayout } from '../../core/layout.ts';
 import { h } from '../../core/component.ts';
+import { Disposer, type Cleanup } from '../../core/disposer.ts';
 import { center, rectPolygon } from '../../core/geometry.ts';
 import { prefersReducedMotion } from '../../core/motion.ts';
 import type { DialogAnchor } from '../../dialog/anchor.ts';
+import type { DialogManager } from '../../dialog/manager.ts';
 import {
   hideTooltip,
   repositionTooltip,
@@ -119,11 +121,18 @@ interface Edge extends SimulationLinkDatum<PoemNode> {
   flow: SVGLineElement;
 }
 
-// The text demo has the same key as the table of links.
-const { dialogs } = bootstrap({ textDemo: false });
-const container = document.querySelector<HTMLElement>('[data-poem-graph]');
-if (container) drawGraph(container);
-if (import.meta.env.DEV) installDebugTable();
+pageScript(
+  import.meta.url,
+  ({ dialogs }) => {
+    const disposer = new Disposer();
+    const container = document.querySelector<HTMLElement>('[data-poem-graph]');
+    if (container) disposer.add(drawGraph(container, dialogs));
+    if (import.meta.env.DEV) disposer.add(installDebugTable());
+    return () => disposer.dispose();
+  },
+  // The text demo has the same key as the table of links.
+  { textDemo: false }
+);
 
 /**
  * Each poem a pixel star, each link a faint glowing line pulling its two
@@ -133,9 +142,10 @@ if (import.meta.env.DEV) installDebugTable();
  * dims the rest; zoomed in, every read poem's title shows. A click reads
  * the poem; on touch, a tap shows a dialog with a button to read it.
  * Dragging a poem moves it, dragging elsewhere moves around, and the wheel
- * (or a pinch) zooms.
+ * (or a pinch) zooms. Returns a function that stops it all.
  */
-function drawGraph(container: HTMLElement): void {
+function drawGraph(container: HTMLElement, dialogs: DialogManager): Cleanup {
+  const disposer = new Disposer();
   const read = readPoems();
   // Only the read poems are there for a screen reader, as links named by
   // their titles; the rest is decoration.
@@ -273,9 +283,11 @@ function drawGraph(container: HTMLElement): void {
   flows.append(...edges.map((e) => e.flow));
   // Only links to a poem that's been read fire, so locked parts stay still.
   if (!prefersReducedMotion()) {
+    const firing = new AbortController();
+    disposer.add(() => firing.abort());
     for (const edge of edges) {
       if (FLOW_OPACITY[Number(edge.source.read) + Number(edge.target.read)]) {
-        fireNowAndThen(edge);
+        fireNowAndThen(edge, firing.signal);
       }
     }
   }
@@ -306,6 +318,7 @@ function drawGraph(container: HTMLElement): void {
     .force('x', forceX(0).strength(GATHER))
     .force('y', forceY(0).strength(GATHER))
     .on('tick', draw);
+  disposer.add(() => simulation.stop());
   // Without motion, it settles before it's shown and then only moves when
   // dragged.
   const still = prefersReducedMotion();
@@ -355,7 +368,7 @@ function drawGraph(container: HTMLElement): void {
     ];
   };
   measureView();
-  window.addEventListener('resize', measureView);
+  disposer.listen(window, 'resize', measureView);
   const zoomer = zoom<SVGSVGElement, unknown>()
     .extent(() => viewSize)
     .scaleExtent(ZOOM_RANGE)
@@ -488,6 +501,11 @@ function drawGraph(container: HTMLElement): void {
    * and their titles are all in the room its dialog leaves.
    */
   let fitting = 0;
+  // A glide still going stops, and one waiting for a dialog doesn't start.
+  disposer.add(() => {
+    fitting++;
+    shown = null;
+  });
   /** Where the view was before it zoomed out for a tapped poem. */
   let before: { k: number; x: number; y: number } | null = null;
   function fitNear(node: PoemNode) {
@@ -619,14 +637,18 @@ function drawGraph(container: HTMLElement): void {
   );
   // Its close button and Esc, too. Only for `shown`'s own dialog, not when
   // another poem's replaces it.
-  dialogs.events.on('open', ({ view, anchor }) => {
-    shownView = anchor === shown?.anchor ? view : null;
-  });
-  dialogs.events.on('close', ({ view }) => {
-    if (shown && view === shownView) setUnshown();
-  });
+  disposer.add(
+    dialogs.events.on('open', ({ view, anchor }) => {
+      shownView = anchor === shown?.anchor ? view : null;
+    })
+  );
+  disposer.add(
+    dialogs.events.on('close', ({ view }) => {
+      if (shown && view === shownView) setUnshown();
+    })
+  );
   // Esc puts away the tooltip (see tooltip.ts), and with it the focus.
-  document.addEventListener('keydown', (e) => {
+  disposer.listen(document, 'keydown', (e) => {
     if (e.key !== 'Escape' || (!hovered && !tabbed)) return;
     hovered = tabbed = null;
     refocus();
@@ -669,15 +691,17 @@ function drawGraph(container: HTMLElement): void {
     });
   }
   loaded(container);
+  return () => disposer.dispose();
 }
 
 /**
  * Fires `edge` now and then: its speck crosses it at `FIRE_SPEED`, then
  * it waits its own while (see `FIRE_GAP`), the first time from a random
  * point in that, so links don't fire together. The speck only moves while
- * it's crossing; the rest of the time there's nothing to redraw.
+ * it's crossing; the rest of the time there's nothing to redraw. Stops for
+ * good when `signal` aborts.
  */
-function fireNowAndThen(edge: Edge): void {
+function fireNowAndThen(edge: Edge, signal: AbortSignal): void {
   const wait = () =>
     ((FIRE_GAP.min + Math.random() * (FIRE_GAP.max - FIRE_GAP.min)) /
       FIRE_SPEED) *
@@ -691,20 +715,21 @@ function fireNowAndThen(edge: Edge): void {
     // Its glow only while it crosses: a glow over every link's speck at
     // once covers the whole web, and that's costly to draw.
     edge.flow.classList.add('is-firing');
-    edge.flow
-      .animate(
-        [{ strokeDashoffset: SPECK + 2 }, { strokeDashoffset: -length - 2 }],
-        { duration: ((length + SPECK + 4) / FIRE_SPEED) * 1000 }
-      )
-      .finished.then(
-        () => {
-          edge.flow.classList.remove('is-firing');
-          setTimeout(fire, wait());
-        },
-        () => undefined
-      );
+    const crossing = edge.flow.animate(
+      [{ strokeDashoffset: SPECK + 2 }, { strokeDashoffset: -length - 2 }],
+      { duration: ((length + SPECK + 4) / FIRE_SPEED) * 1000 }
+    );
+    signal.addEventListener('abort', () => crossing.cancel(), { once: true });
+    crossing.finished.then(
+      () => {
+        edge.flow.classList.remove('is-firing');
+        timer = setTimeout(fire, wait());
+      },
+      () => undefined
+    );
   };
-  setTimeout(fire, Math.random() * wait());
+  let timer = setTimeout(fire, Math.random() * wait());
+  signal.addEventListener('abort', () => clearTimeout(timer), { once: true });
 }
 
 /**
@@ -818,8 +843,11 @@ function svgEl<K extends keyof SVGElementTagNameMap>(
   return el;
 }
 
-/** Every link in a table, for checking them: the debug key shows it. */
-function installDebugTable(): void {
+/**
+ * Every link in a table, for checking them: the debug key shows it.
+ * Returns a function that takes it away.
+ */
+function installDebugTable(): Cleanup {
   const title = (slug: string) => findPoem(slug).lines[0];
   const cells = (tag: 'th' | 'td', values: (Node | string)[]) =>
     h(
@@ -845,8 +873,13 @@ function installDebugTable(): void {
   ]);
   const panel = h('div', { class: 'poem-graph-debug', hidden: '' }, [table]);
   document.body.append(panel);
-  document.addEventListener('keydown', (e) => {
+  const onKey = (e: KeyboardEvent) => {
     if (e.key !== DEBUG_KEY || e.repeat || e.ctrlKey || e.metaKey) return;
     panel.hidden = !panel.hidden;
-  });
+  };
+  document.addEventListener('keydown', onKey);
+  return () => {
+    panel.remove();
+    document.removeEventListener('keydown', onKey);
+  };
 }

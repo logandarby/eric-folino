@@ -1,34 +1,39 @@
-import { bootstrap } from '../../app/bootstrap.ts';
+import { pageScript } from '../../app/router.ts';
 import { Blob } from '../../components/blob/blob.ts';
 import { bindHotspot } from '../../components/hotspot/hotspot.ts';
 import { $$ } from '../../core/component.ts';
+import { Disposer } from '../../core/disposer.ts';
 import { prefersReducedMotion } from '../../core/motion.ts';
 import { siteConfig } from '../../site/site.config.ts';
 import { RadialJitter } from '../../svg/jitter.ts';
 import page from './page.config.ts';
 
-const { dialogs } = bootstrap();
-const { animation } = siteConfig;
-const jitter = new RadialJitter(animation.blobJitterAmount);
+pageScript(import.meta.url, ({ dialogs }) => {
+  const disposer = new Disposer();
+  const { animation } = siteConfig;
+  const jitter = new RadialJitter(animation.blobJitterAmount);
 
-for (const el of $$<HTMLButtonElement>('[data-blob]')) {
-  const blob = new Blob(el, {
-    jitter,
-    cornerRadius: animation.blobCornerRadius,
-    minPointSpacing: animation.blobMinPointSpacing,
-    intervalMs: animation.blobJitterIntervalMs,
-    animate: !prefersReducedMotion(),
-  });
+  for (const el of $$<HTMLButtonElement>('[data-blob]')) {
+    const blob = new Blob(el, {
+      jitter,
+      cornerRadius: animation.blobCornerRadius,
+      minPointSpacing: animation.blobMinPointSpacing,
+      intervalMs: animation.blobJitterIntervalMs,
+      animate: !prefersReducedMotion(),
+    });
+    disposer.add(() => blob.destroy());
 
-  // Clicking a blob opens its dialog, or closes it if it's already open.
-  blob.events.on(
-    'select',
-    () =>
-      void dialogs.toggle({
-        anchor: blob,
-        content: page.blobs[blob.index].dialog,
-      })
-  );
-}
+    // Clicking a blob opens its dialog, or closes it if it's already open.
+    blob.events.on(
+      'select',
+      () =>
+        void dialogs.toggle({
+          anchor: blob,
+          content: page.blobs[blob.index].dialog,
+        })
+    );
+  }
 
-bindHotspot(dialogs, 'screen', page.screen.dialog);
+  disposer.add(bindHotspot(dialogs, 'screen', page.screen.dialog));
+  return () => disposer.dispose();
+});
