@@ -7,19 +7,13 @@ import { VoidLayout } from '../../layouts/void.tsx';
 import { PoemsNav } from '../poems/poems-nav.tsx';
 import type { PageConfig } from '../../site/types.ts';
 import { borders, poemConfig } from './poem.config.ts';
-import {
-  findPoem,
-  graph,
-  lineId,
-  linkHref,
-  type PoemLink,
-} from '../poems/graph.ts';
+import { findPoem, graph, linkHref, type PoemLink } from '../poems/graph.ts';
 
 /**
  * One poem, line for line, with its links on their words. Hovering a link
  * shows the title of the poem it goes to; clicking it opens a dialog with
- * the line it lands on (see main.ts). Each line has an id for links to land
- * on, and the title says which poem it is, to mark it read.
+ * the line it lands on (see main.ts). The title says which poem it is, to
+ * mark it read.
  */
 export default function PoemPage(page: PageConfig & { slug?: string }) {
   if (!page.slug) throw new Error(`Page "${page.id}" isn't a poem`);
@@ -34,9 +28,7 @@ export default function PoemPage(page: PageConfig & { slug?: string }) {
       <PoemsNav />
       <article {...frame()}>
         <div class="poem-title">
-          <h1 id={lineId(0)} data-poem={poem.slug}>
-            {line(0)}
-          </h1>
+          <h1 data-poem={poem.slug}>{line(0)}</h1>
           {/* Starred or not is only known in the browser; main.ts shows it. */}
           <button
             type="button"
@@ -63,9 +55,7 @@ export default function PoemPage(page: PageConfig & { slug?: string }) {
             <p>
               {stanza.map((i) => (
                 <>
-                  <span id={lineId(i)} class="poem-line">
-                    {line(i)}
-                  </span>
+                  <span class="poem-line">{line(i)}</span>
                   <br />
                 </>
               ))}
