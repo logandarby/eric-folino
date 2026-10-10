@@ -175,6 +175,12 @@ export interface PageConfig {
    * own page.tsx are just this; drafts fall back to it.
    */
   placeholder?: DialogContent;
+  /**
+   * A plain HTML document in the browser's own look: just its page.tsx
+   * in <body>, without the site's styles, scripts, sounds or router. Links
+   * to it need `data-no-swup`, so the browser loads it itself.
+   */
+  bare?: boolean;
 }
 
 export type Side = 'left' | 'right' | 'top' | 'bottom';

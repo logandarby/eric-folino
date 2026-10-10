@@ -5,7 +5,7 @@ import { screenVoice } from '../../site/voices.ts';
 
 /*
  * Enter: an old TV in an empty room, playing the band through static, that asks if you'd
- * like to come in. The nav's "Secret" leads here.
+ * like to come in. Not linked from anywhere for now.
  */
 
 /** The TV, with what it plays (see collage-video.ts). */

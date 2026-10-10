@@ -1,0 +1,50 @@
+/* In Cordata, at the 16px it's drawn for (and twice that for the title). */
+.mysteries {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
+  align-items: center;
+  min-height: 100dvh;
+  padding: 16px;
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  font-size: 16px;
+  text-align: center;
+}
+
+.mysteries__title {
+  margin: 0 0 16px;
+  font-size: 32px;
+  font-weight: 400;
+}
+
+.mysteries__body p {
+  margin: 0;
+}
+
+.mysteries__list {
+  display: grid;
+  gap: 24px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mysteries__list li {
+  display: grid;
+  gap: 4px;
+}
+
+.mysteries__link {
+  color: inherit;
+}
+
+.mysteries__link:hover,
+.mysteries__link:focus-visible {
+  text-decoration-style: wavy;
+}
+
+/* Where it goes: the other site's name, or "here". */
+.mysteries__where {
+  opacity: 0.6;
+}

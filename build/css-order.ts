@@ -60,7 +60,8 @@ export function cssOrder(): Plugin[] {
         order: 'post',
         handler(html, { filename }) {
           const sheets = tiers.get(filename);
-          if (!sheets) return;
+          // No sheets at all: a bare page (see PageConfig.bare).
+          if (!sheets?.size) return;
           const list = (files: string[]) =>
             files.map((f) => f.slice(root.length)).join(', ');
           const fail = (why: string): never => {

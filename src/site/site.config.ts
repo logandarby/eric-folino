@@ -32,7 +32,7 @@ export const siteConfig: SiteConfig = {
     { label: 'HOME', href: '/', hideWhenCurrent: true },
     { label: 'LISTEN', href: '/listen/' },
     { label: 'EPK', href: '/epk/' },
-    { label: 'SECRET', href: '/enter/' },
+    { label: 'SECRET', href: '/secret/' },
     { label: 'WEB OF POEMS', href: '/poems/' },
   ],
 

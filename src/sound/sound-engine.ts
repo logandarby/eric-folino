@@ -204,10 +204,11 @@ export class SoundEngine {
 
   /**
    * Plays a recorded sound (a page's own, like the listen page's tape
-   * deck) on the ui channel, at `volume` (1 is as recorded). Like `play()`, only when
-   * sound's on and unlocked, and not twice at once.
+   * deck) on the ui channel, at `volume` (1 is as recorded), fading out
+   * over its last `fadeOut` seconds. Like `play()`, only when sound's on
+   * and unlocked, and not twice at once.
    */
-  playSample(url: string, volume = 1): void {
+  playSample(url: string, volume = 1, { fadeOut = 0 } = {}): void {
     const graph = this.live();
     if (!graph || !this.throttle.ready(url, SAMPLE_GAP_MS)) return;
     this.throttle.mark(url);
@@ -224,6 +225,11 @@ export class SoundEngine {
         source.connect(out);
         source.start();
         const endsAt = ctx.currentTime + buffer.duration;
+        if (fadeOut > 0) {
+          const fadeFrom = Math.max(ctx.currentTime, endsAt - fadeOut);
+          out.gain.setValueAtTime(volume, fadeFrom);
+          out.gain.linearRampToValueAtTime(0, endsAt);
+        }
         this.voices.add(sampleVoice(source, out, endsAt), ctx.currentTime);
         this.scheduleSuspend(this.options.config.idleSuspendMs);
       });

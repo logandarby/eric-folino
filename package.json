@@ -20,6 +20,7 @@
     "eyes": "node scripts/slice-eyes.mjs",
     "tv": "node scripts/build-tv.mjs",
     "tv:collage": "node scripts/build-tv-collage.mjs",
+    "secret": "node scripts/build-secret.mjs",
     "poems": "node scripts/build-poems.mjs",
     "prepare": "husky"
   },
