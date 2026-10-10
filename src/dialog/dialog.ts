@@ -1,5 +1,6 @@
 import { h } from '../core/component.ts';
 import type { DialogAction, DialogContent } from '../site/types.ts';
+import { blockText } from './block-text.ts';
 import { TextEngine, type TextEngineOptions } from '../text/text-engine.ts';
 import type { Typewriter } from '../text/typewriter.ts';
 
@@ -30,7 +31,9 @@ export class DialogView {
   constructor(content: DialogContent, options: DialogViewOptions) {
     this.text = new TextEngine(options.text);
     const titleText = this.text.render(content.title);
-    const bodyTexts = content.body.map((block) => this.text.render(block.text));
+    const bodyTexts = content.body.map((block) =>
+      this.text.render(blockText(block))
+    );
 
     const titleId = `dialog-title-${++nextId}`;
     const title = h('h2', { class: 'dialog__title', id: titleId }, [

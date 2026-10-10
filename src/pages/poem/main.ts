@@ -45,7 +45,7 @@ pageScript(import.meta.url, ({ dialogs }) => {
       title: `→ ${literal(to)}`,
       instant: true,
       // A link to the title has no line to show but the title itself.
-      body: line ? [{ kind: 'narration', text: `“${literal(line)}”` }] : [],
+      body: line ? [{ kind: 'quote', text: literal(line) }] : [],
       actions: [{ label: FOLLOW_LABEL, href: link.href }],
     };
     link.addEventListener('click', (e) => {

@@ -11,8 +11,8 @@ export default definePage({
   placeholder: {
     title: 'LOST?',
     body: [
-      { kind: 'quote', text: '“There is nothing at this address.”' },
-      { kind: 'narration', text: '*Perhaps you should head HOME.' },
+      { kind: 'quote', text: 'There is nothing at this address.' },
+      { kind: 'narration', text: 'Perhaps you should head HOME.' },
     ],
   },
 });

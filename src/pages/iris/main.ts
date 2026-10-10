@@ -1,4 +1,5 @@
 import { pageScript } from '../../app/router.ts';
+import { mountBackLink } from '../../components/back-link/back-link.ts';
 import { $$ } from '../../core/component.ts';
 import { Disposer, type Cleanup } from '../../core/disposer.ts';
 import { prefersReducedMotion } from '../../core/motion.ts';
@@ -21,6 +22,15 @@ interface Eye {
 pageScript(import.meta.url, ({ dialogs }) => {
   const disposer = new Disposer();
   let stopped = false;
+  disposer.add(mountBackLink());
+
+  // The backdrop's text: one of them, at random, then shown.
+  const { texts } = page.backdrop;
+  const text = texts[Math.floor(Math.random() * texts.length)];
+  for (const el of $$('[data-iris-text]')) el.textContent = text;
+  document
+    .querySelector('[data-iris-backdrop]')
+    ?.setAttribute('data-ready', '');
 
   const eyes: Eye[] = $$('[data-eye]').map((el) => {
     const config = page.eyes[Number(el.dataset.eye)];

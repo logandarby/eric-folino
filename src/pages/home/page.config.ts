@@ -1,7 +1,7 @@
 import { definePage } from '../../site/define-page.ts';
 import type { ListenConfig } from '../../components/listen/listen.ts';
-import { hushVoice, sillyVoice, softVoice } from '../../site/voices.ts';
-import type { BlobConfig, MobileSocials } from '../../site/types.ts';
+import type { BlobConfig } from '../../site/blobs.ts';
+import type { MobileSocials } from '../../site/types.ts';
 
 /*
  * The home page: the bus stop scene with clickable blobs, and the screen
@@ -17,80 +17,69 @@ export default definePage<HomePage>({
 
   blobs: [
     {
-      svg: 'pink',
-      label: 'Pink blob',
+      blob: 'pink',
       width: { wide: 19.5, compact: 27 },
       position: { wide: { x: 14, y: 2 }, compact: { x: 6, y: 0 } },
       dialog: {
-        title: 'THE NONSENSICAL BLOB',
-        voice: softVoice,
         body: [
           {
             kind: 'quote',
-            text: '“I am not merely as an unknowable shape, but rather the vestibule of the unfeeling edges of reality.”',
+            text: "I have an experiment I'm trying to run but the government isn't funding it.{pause}{float} It's not even that dangerous this time!{/float}",
           },
           {
             kind: 'narration',
-            text: '*You feel as if this blob is your friend.',
+            text: 'You feel like it might be dangerous this time.',
           },
         ],
       },
     },
     {
-      svg: 'yellow',
-      label: 'Yellow blob',
+      blob: 'yellow',
       width: { wide: 11, compact: 13 },
       position: { wide: { x: 86.5, y: 7 }, compact: { x: 84, y: -4 } },
       dialog: {
-        title: 'THE ATAVISTIC CLOD',
-        voice: hushVoice,
         body: [
           {
             kind: 'quote',
-            text: '“Beneath the covers, I am unable to label myself not a human.”',
+            text: 'Beneath the covers, I am unable to label myself not a human.',
           },
           {
             kind: 'narration',
-            text: '*You recall a memory not quite yours.',
+            text: 'You recall a memory not quite yours.',
           },
         ],
       },
     },
     {
-      svg: 'blue',
-      label: 'Blue blob',
+      blob: 'blue',
       width: { wide: 7.8, compact: 9 },
       position: { wide: { x: 2.5, y: 37 }, compact: { x: 6, y: 52 } },
       dialog: {
-        title: 'THE PROGENITORIAL SMUDGE',
         body: [
           {
             kind: 'quote',
-            text: "“Have you seen a silly splotch {shake}anywhere?{/shake} I can't find them.”",
+            text: "Have you seen a silly splotch {shake}anywhere?{/shake} I can't find them.",
           },
           {
             kind: 'narration',
-            text: '*You look down sheepishly at the sidewalk.',
+            text: 'You look down sheepishly at the sidewalk.',
           },
         ],
       },
     },
     {
-      svg: 'green',
-      label: 'Green blob',
+      blob: 'green',
       width: { wide: 17.5, compact: 23 },
       position: { wide: { x: 73.5, y: 75 }, compact: { x: 68, y: 66 } },
       dialog: {
-        title: 'THE SILLY SPLOTCH',
-        voice: sillyVoice,
         body: [
           {
             kind: 'quote',
-            text: '“Hiiii! I am a little teeny tiny splotch. {wave}I love you!{/wave}”',
+            text: 'Hiiii! I am a little teeny tiny splotch. {wave}I love you!{/wave}',
           },
           {
             kind: 'narration',
-            text: '*You chuckle.',
+            text: 'You chuckle.',
           },
         ],
       },

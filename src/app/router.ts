@@ -64,6 +64,24 @@ export function pageScript(
   void show(entryUrl(document));
 }
 
+/**
+ * Whether the history entry before this one is one of the site's pages, so
+ * `history.back()` stays on the site. Each entry remembers it (`fromSite`
+ * in its state), so it holds after going back and forward too.
+ */
+export function cameFromSite(): boolean {
+  return historyState().fromSite === true;
+}
+
+function historyState(): Record<string, unknown> {
+  return (history.state as Record<string, unknown> | null) ?? {};
+}
+
+/** Notes on this history entry whether a site page came before it. */
+function markEntry(fromSite: boolean): void {
+  history.replaceState({ ...historyState(), fromSite }, '');
+}
+
 function startRouter(site: Site): void {
   const swup = new Swup({
     // Pages swap at once, with no transition.
@@ -84,6 +102,18 @@ function startRouter(site: Site): void {
       // Announces the new page and moves focus to it.
       new SwupA11yPlugin(),
     ],
+  });
+  // The first page: from the site if a page of it linked here. A reload
+  // keeps what its entry already says.
+  if (typeof historyState().fromSite !== 'boolean') {
+    markEntry(sameOrigin(document.referrer));
+  }
+  // A new page from a link here comes after one of the site's. Swup has
+  // made its entry by now; going back and forth, entries keep their own.
+  swup.hooks.on('content:replace', (visit) => {
+    if (!visit.history.popstate && visit.history.action === 'push') {
+      markEntry(true);
+    }
   });
   swup.hooks.on('visit:start', () => {
     void site.dialogs.close({ animate: false });
@@ -154,4 +184,14 @@ function entryUrl(doc: Document): string | null {
 function isPage(url: string): boolean {
   const { pathname } = new URL(url, location.href);
   return !/\.\w+$/.test(pathname) || pathname.endsWith('.html');
+}
+
+/** Whether `url` (a referrer, say) is on this site. */
+function sameOrigin(url: string): boolean {
+  try {
+    return new URL(url).origin === location.origin;
+  } catch {
+    // Empty, or not a URL.
+    return false;
+  }
 }

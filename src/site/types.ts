@@ -6,7 +6,11 @@
 export type LayoutName = 'wide' | 'compact';
 
 export interface DialogBlock {
-  /** `quote` and `narration` render in Courier Prime (narration is italic). */
+  /**
+   * `quote` and `narration` render in Courier Prime (narration is italic).
+   * Quotes get their quotation marks, and narration its leading asterisk,
+   * when shown (src/dialog/block-text.ts): don't write them.
+   */
   kind: 'quote' | 'narration' | 'text';
   /**
    * May contain effect tags, e.g. 'You feel {wave}dizzy{/wave}.' Dialog
@@ -123,18 +127,6 @@ export interface TextPlacement extends Placement {
   align?: 'start' | 'center' | 'end';
 }
 
-export interface BlobConfig {
-  /** File name (without extension) in src/assets/blobs/. Colour comes from the SVG. */
-  svg: string;
-  /** Accessible name for the blob button. */
-  label: string;
-  /** Width as a percentage of the stage width. */
-  width: Record<LayoutName, number>;
-  position: Record<LayoutName, Placement>;
-  /** Shown when the blob is clicked. */
-  dialog: DialogContent;
-}
-
 export interface HotspotConfig {
   /** Accessible name for the button. */
   label: string;
@@ -183,6 +175,12 @@ export interface PageConfig {
    * own page.tsx are just this; drafts fall back to it.
    */
   placeholder?: DialogContent;
+  /**
+   * A plain HTML document in the browser's own look: just its page.tsx
+   * in <body>, without the site's styles, scripts, sounds or router. Links
+   * to it need `data-no-swup`, so the browser loads it itself.
+   */
+  bare?: boolean;
 }
 
 export type Side = 'left' | 'right' | 'top' | 'bottom';

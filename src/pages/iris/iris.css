@@ -16,11 +16,19 @@ body > * {
   --eye-min-width: 140px;
 
   position: relative;
-  /* The eyes sit in the middle of the screen; taller than it, they scroll. */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  /* "Back" at the top, and the eyes in the middle of the rest of the
+     screen; taller than it, they scroll. */
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
+  align-items: center;
   min-height: 100dvh;
+  padding-top: 16px;
+}
+
+/* Top middle, clear of the corner buttons, and over the backdrop. */
+.iris__back {
+  position: relative;
 }
 
 .iris__eyes {
@@ -53,6 +61,14 @@ body > * {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+}
+
+/* With scripts, hidden until main.ts has picked its text, so the first
+   one doesn't flash up first. */
+@media (scripting: enabled) {
+  .iris__backdrop:not([data-ready]) {
+    visibility: hidden;
+  }
 }
 
 .iris__backdrop p {

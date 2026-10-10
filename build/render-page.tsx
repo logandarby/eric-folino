@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { StageLayout } from '../src/layouts/stage.tsx';
 import { Head, safeJson } from '../src/layouts/head.tsx';
+import { siteConfig } from '../src/site/site.config.ts';
 import type { PageConfig } from '../src/site/types.ts';
 import { resolveImages } from './images.ts';
 import { collectStylesheets } from './jsx/assets.ts';
@@ -17,7 +18,8 @@ import { raw, type Html } from './jsx/jsx-runtime.ts';
  *              it hands them to pageScript() (see src/app/router.ts)
  *
  * A page without page.tsx, or a draft when drafts are hidden, gets the
- * placeholder: the stage with its `placeholder` dialog.
+ * placeholder: the stage with its `placeholder` dialog. A `bare` page is
+ * just its page.tsx, in the browser's own look.
  *
  * Loaded through Vite's module pipeline by site-pages-plugin.ts (that's
  * what compiles the JSX), so it's fresh on every request in dev.
@@ -53,6 +55,8 @@ export async function renderPage({
     ? existsSync(resolve(root, `.${ownEntry}`)) && ownEntry
     : PLACEHOLDER_ENTRY;
 
+  if (full && page.bare) return renderBare(page, view(page));
+
   const { result: body, stylesheets } = collectStylesheets(root, folder, () =>
     full ? view(page) : <PlaceholderPage page={page} />
   );
@@ -77,6 +81,23 @@ export async function renderPage({
   );
   // Resizes any images the page used (see build/images.ts).
   return resolveImages(`<!doctype html>\n${html.value}`, { root });
+}
+
+/** A page with `bare` set: its markup, and only what <head> must have. */
+function renderBare(page: PageConfig, body: Html): string {
+  const html = (
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{page.title ?? siteConfig.siteName}</title>
+        <meta name="description" content={page.description} />
+        {page.noindex && <meta name="robots" content="noindex" />}
+      </head>
+      <body>{body}</body>
+    </html>
+  );
+  return `<!doctype html>\n${html.value}`;
 }
 
 /** The stage, plus the page's dialog as data for placeholder-page.ts. */

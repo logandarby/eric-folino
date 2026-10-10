@@ -29,9 +29,9 @@ export default definePage<AboutPage>({
     body: [
       {
         kind: 'quote',
-        text: '“This page is still being assembled by little critters somewhere in the dark.”',
+        text: 'This page is still being assembled by little critters somewhere in the dark.',
       },
-      { kind: 'narration', text: '*You hear a voice beckoning you back.' },
+      { kind: 'narration', text: 'You hear a voice beckoning you back.' },
     ],
   },
 

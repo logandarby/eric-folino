@@ -1,0 +1,28 @@
+/* In Cordata, at the 16px it's drawn for, on the page's own background so
+   it reads over whatever is behind it. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: var(--tap-target);
+  padding: 0 0.75em;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  text-decoration: none;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.back-link__icon {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
