@@ -4,7 +4,7 @@ import { definePage } from '../../site/define-page.ts';
 
 /*
  * Secret: a fridge on the moon, with a TV on it and polaroids stuck to it,
- * each leading to another page. The nav's "Secret" leads here. Kept out
+ * each leading to another page. The enter page's "yes" leads here. Kept out
  * of search engines. The art is made from assets-src/secret/ by
  * `npm run secret`.
  */
@@ -118,8 +118,8 @@ export default definePage<{
   blobs: [
     {
       blob: 'pink',
-      width: { wide: 55, compact: 27 },
-      position: { wide: { x: -70, y: 88 }, compact: { x: -24, y: 94 } },
+      width: { wide: 55, compact: 50 },
+      position: { wide: { x: -70, y: 88 }, compact: { x: -34, y: 90 } },
       dialog: {
         body: [
           {
@@ -131,8 +131,8 @@ export default definePage<{
     },
     {
       blob: 'yellow',
-      width: { wide: 30, compact: 15 },
-      position: { wide: { x: -125, y: 84 }, compact: { x: -22, y: 85 } },
+      width: { wide: 30, compact: 28 },
+      position: { wide: { x: -125, y: 84 }, compact: { x: -28, y: 70 } },
       dialog: {
         body: [
           {
@@ -150,8 +150,8 @@ export default definePage<{
     {
       // On top of the fridge, beside the TV.
       blob: 'blue',
-      width: { wide: 14, compact: 14 },
-      position: { wide: { x: 80, y: 6.5 }, compact: { x: 80, y: 6.5 } },
+      width: { wide: 14, compact: 24 },
+      position: { wide: { x: 80, y: 6.5 }, compact: { x: 80, y: -1 } },
       dialog: {
         body: [
           {
@@ -167,8 +167,8 @@ export default definePage<{
     },
     {
       blob: 'green',
-      width: { wide: 50, compact: 25 },
-      position: { wide: { x: 115, y: 86 }, compact: { x: 99, y: 92 } },
+      width: { wide: 50, compact: 46 },
+      position: { wide: { x: 115, y: 86 }, compact: { x: 90, y: 92 } },
       dialog: {
         body: [
           {
@@ -182,7 +182,7 @@ export default definePage<{
 
   caption: { size: 0.12 },
 
-  sounds: { paper: 1, fadeOut: 0.15 },
+  sounds: { paper: 1.3, fadeOut: 0.15 },
 
   /**
    * The scene's look: Dithermark's "Pueblo" palette, with each dither
