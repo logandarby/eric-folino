@@ -14,8 +14,8 @@
 /*
  * The bar across the top. Wide screens: as tall as the corner buttons and
  * their gap above and below (corner.css), clearing them on the left, with
- * the nav on the right. Phones: shorter, the menu button on the left and
- * the corner buttons on the right.
+ * the nav and the social links on the right. Phones: shorter, the menu
+ * button on the left and the corner buttons on the right.
  */
 .site-header {
   --header-gap: 20px;
@@ -34,8 +34,41 @@
   background: var(--color-bg);
 }
 
-.site-header__nav {
+.site-header__panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 1.25rem;
   font-size: 1.25rem;
+}
+
+/* The social links: a rule between them and the nav. (socials.css loads
+   after this.) */
+.site-header .site-header__socials {
+  padding-left: 1rem;
+  border-left: var(--border-width) solid var(--color-fg);
+}
+
+/* Smaller than a tap target with a mouse, to fit beside the nav. */
+:root:not([data-layout='compact']) .site-header__socials .socials__link {
+  min-width: 0;
+  min-height: 0;
+  padding: 0.3em;
+}
+
+/* Narrow wide screens: the social links wrap under the nav, so no rule,
+   and a little smaller so the two lines fit the bar. */
+@media (max-width: 880px) {
+  :root:not([data-layout='compact']) .site-header__panel {
+    gap: 0 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  :root:not([data-layout='compact']) .site-header__socials {
+    padding-left: 0;
+    border-left: 0;
+  }
 }
 
 /* In a row (nav.css stacks them, and loads after this). */
@@ -63,7 +96,8 @@
   display: none;
 }
 
-/* Phones: the menu. The nav drops down under the bar, one link a line. */
+/* Phones: the menu. It drops down under the bar, the nav one link a
+   line, then the social links in a row. */
 :root[data-layout='compact'] .site-header {
   --header-gap: 10px;
   justify-content: flex-start;
@@ -74,19 +108,29 @@
   display: grid;
 }
 
-:root[data-layout='compact'] .site-header__nav {
+:root[data-layout='compact'] .site-header__panel {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
   padding: 0.5rem var(--header-gap) 0.75rem;
   border-bottom: var(--border-width) solid var(--color-fg);
   background: var(--color-bg);
 }
 
-:root[data-layout='compact'] .site-header[data-open] .site-header__nav {
-  display: block;
+:root[data-layout='compact'] .site-header[data-open] .site-header__panel {
+  display: flex;
+}
+
+:root[data-layout='compact'] .site-header__socials {
+  align-self: stretch;
+  padding: 0.5rem 0 0;
+  border-left: 0;
+  border-top: var(--border-width) solid var(--color-fg);
 }
 
 :root[data-layout='compact'] .site-header__nav ul {

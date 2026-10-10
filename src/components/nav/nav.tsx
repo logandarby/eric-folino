@@ -12,12 +12,10 @@ import type { PageConfig } from '../../site/types.ts';
 export function Nav({
   page,
   class: cls,
-  id,
   style,
 }: {
   page: PageConfig;
   class?: string;
-  id?: string;
   style?: Style;
 }) {
   stylesheet(import.meta.url, './nav.css');
@@ -42,7 +40,6 @@ export function Nav({
   return (
     <nav
       class={['nav', cls].filter(Boolean).join(' ')}
-      id={id}
       style={style}
       aria-label="Main"
     >

@@ -3,13 +3,14 @@ import { stylesheet } from '../../../build/jsx/assets.ts';
 import type { PageConfig } from '../../site/types.ts';
 import { Icon } from '../icon/icon.tsx';
 import { Nav } from '../nav/nav.tsx';
+import { Socials } from '../socials/socials.tsx';
 
 /**
- * The site's header: the nav in a bar across the top of the page, the same
- * on every page that has it. Wide screens: the nav on the right, and the
- * corner buttons ("?" and sound) fixed top left, in the bar. Phones: the
- * nav folds into a menu button top left, with the corner buttons top
- * right. Give the corner buttons `header` so they go there (the layouts
+ * The site's header: the nav and the social links in a bar across the top
+ * of the page, the same on every page that has it. Wide screens: both on
+ * the right, and the corner buttons ("?" and sound) fixed top left, in the
+ * bar. Phones: they fold into a menu button top left, with the corner
+ * buttons top right. Give the corner buttons `header` so they go there (the layouts
  * do). It's part of the page root, so a dialog makes it inert with the
  * rest of the page. bindSiteHeader (site-header.ts) opens and closes the
  * menu, and --site-header-height is its height.
@@ -30,7 +31,10 @@ export function SiteHeader({ page }: { page: PageConfig }) {
         <Icon icon={faBars} class="site-header__open" />
         <Icon icon={faXmark} class="site-header__close" />
       </button>
-      <Nav page={page} class="site-header__nav" id="site-menu" />
+      <div class="site-header__panel" id="site-menu">
+        <Nav page={page} class="site-header__nav" />
+        <Socials class="site-header__socials" />
+      </div>
     </header>
   );
 }
