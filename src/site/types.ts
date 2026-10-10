@@ -254,7 +254,12 @@ export interface SiteConfig {
   title: string;
   titleTiltDeg: number;
   palette: string[];
-  nav: { label: string; href: string }[];
+  nav: {
+    label: string;
+    href: string;
+    /** Left out on its own page, rather than shown as the current one. */
+    hideWhenCurrent?: boolean;
+  }[];
   layout: { compactQuery: string };
   background: {
     portraitQuery: string;

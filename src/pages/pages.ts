@@ -2,6 +2,7 @@ import enter from './enter/page.config.ts';
 import epk from './epk/page.config.ts';
 import home from './home/page.config.ts';
 import iris from './iris/page.config.ts';
+import listen from './listen/page.config.ts';
 import notFound from './not-found/page.config.ts';
 import poemFavourites from './poem-favourites/page.config.ts';
 import poemGraph from './poem-graph/page.config.ts';
@@ -21,6 +22,7 @@ export const pages: PageConfig[] = [
   epk,
   iris,
   enter,
+  listen,
   poems,
   ...poemPages,
   poemGraph,

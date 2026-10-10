@@ -1,0 +1,62 @@
+/*
+ * A speech bubble (speech-bubble.tsx), its tail's tip at --bubble-x,
+ * --bubble-y in its positioned parent. Where the tip and the blob are in
+ * it (--tip-*, --body-*) come from its markup. --bubble-width and
+ * --bubble-font-size size it. It's in the dialogs'
+ * colours, set here as pages may change --color-bg and --color-fg.
+ */
+.speech-bubble {
+  --bubble-bg: #000;
+  --bubble-fg: #fff;
+  position: absolute;
+  left: var(--bubble-x, 50%);
+  top: var(--bubble-y, 50%);
+  width: var(--bubble-width, 17rem);
+  margin: 0;
+  aspect-ratio: var(--aspect);
+  translate: calc(-100% * var(--tip-x)) calc(-100% * var(--tip-y));
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.speech-bubble[data-hidden] {
+  opacity: 0;
+}
+
+.speech-bubble svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* The outline is twice the border, as the fill covers its inner half. */
+.speech-bubble__outline path {
+  fill: var(--bubble-bg);
+  stroke: var(--bubble-fg);
+  stroke-width: calc(2 * var(--border-width));
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.speech-bubble__fill path {
+  fill: var(--bubble-bg);
+}
+
+/* Over the blob, in from its edges. */
+.speech-bubble__text {
+  position: absolute;
+  left: calc((var(--body-x) + 0.14 * var(--body-w)) * 100%);
+  top: calc(var(--body-y) * 100%);
+  width: calc(0.72 * var(--body-w) * 100%);
+  height: calc(var(--body-h) * 100%);
+  display: grid;
+  place-items: center;
+  color: var(--bubble-fg);
+  font-family: var(--font-dialog);
+  font-weight: 400;
+  font-size: var(--bubble-font-size, 0.95rem);
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+}

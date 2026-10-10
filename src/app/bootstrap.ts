@@ -3,6 +3,7 @@ import { Disposer, type Cleanup } from '../core/disposer.ts';
 import { prefersReducedMotion } from '../core/motion.ts';
 import { UserPreferences } from '../core/preferences.ts';
 import { LightFlicker } from '../components/background/light-flicker.ts';
+import { bindSiteHeader } from '../components/site-header/site-header.ts';
 import { SoundControl } from '../components/sound-control/sound-control.ts';
 import { RainbowText } from '../components/title/rainbow.ts';
 import { elementAnchor } from '../dialog/anchor.ts';
@@ -43,6 +44,9 @@ export function startSite(): { site: Site; releaseSounds: Cleanup } {
     volume: 1,
   });
   const sound = new SoundEngine({ config: soundConfig, preferences });
+  // There was a volume slider; a level saved with it can't be changed
+  // any more, so it goes back to full (the device's volume is the knob).
+  if (sound.volume !== 1) sound.setVolume(1);
   const releaseSounds = bindSounds(sound, dialogs);
   return { site: { dialogs, sound }, releaseSounds };
 }
@@ -50,7 +54,7 @@ export function startSite(): { site: Site; releaseSounds: Cleanup } {
 /**
  * Brings each page's shared components to life, whichever its layout
  * rendered (each is optional): the title's colours, the light's flicker,
- * the sound button, the "?" and the text demo. Returns a function that
+ * the header's menu, the sound button, the "?" and the text demo. Returns a function that
  * stops them, for when the page goes.
  */
 export function mountLayout(
@@ -85,6 +89,9 @@ export function mountLayout(
       )
     );
   }
+
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  if (header) disposer.add(bindSiteHeader(header));
 
   const control = document.querySelector<HTMLElement>('[data-sound-control]');
   if (control) {

@@ -3,7 +3,6 @@
   /* Beside the "?". */
   --corner-slot: 1;
   z-index: var(--z-spotlit);
-  display: flex;
 }
 
 .sound-toggle svg {
@@ -14,80 +13,4 @@
 .sound-toggle[aria-pressed='true'] .sound-toggle__off,
 .sound-toggle[aria-pressed='false'] .sound-toggle__on {
   display: none;
-}
-
-/* The volume slider slides out of the speaker on hover or focus. Hidden
-   (not just clipped) when closed, so it's out of the tab order until the
-   speaker is focused. */
-.sound-volume {
-  display: flex;
-  align-items: center;
-  margin-left: calc(var(--border-width) * -1);
-  padding: 0 14px;
-  border: var(--border-width) solid var(--color-fg);
-  background: var(--color-bg);
-  visibility: hidden;
-  clip-path: inset(0 100% 0 0);
-  transition:
-    clip-path 0.18s ease-out,
-    visibility 0s 0.18s;
-}
-
-.sound-control:hover .sound-volume,
-.sound-control:focus-within .sound-volume {
-  visibility: visible;
-  /* Room for the slider's focus outline. */
-  clip-path: inset(-8px);
-  transition-delay: 0s;
-}
-
-.sound-toggle[aria-pressed='false'] + .sound-volume {
-  opacity: 0.5;
-}
-
-.sound-volume input {
-  width: 96px;
-  height: 24px;
-  margin: 0;
-  background: transparent;
-  cursor: pointer;
-  appearance: none;
-}
-
-.sound-volume input {
-  --outline-offset: 2px;
-}
-
-.sound-volume input::-webkit-slider-runnable-track {
-  height: var(--border-width);
-  background: var(--color-fg);
-}
-
-.sound-volume input::-moz-range-track {
-  height: var(--border-width);
-  background: var(--color-fg);
-}
-
-.sound-volume input::-webkit-slider-thumb {
-  width: 10px;
-  height: 18px;
-  margin-top: calc(var(--border-width) / 2 - 9px);
-  border: 0;
-  border-radius: 0;
-  background: var(--color-fg);
-  appearance: none;
-}
-
-.sound-volume input::-moz-range-thumb {
-  width: 10px;
-  height: 18px;
-  border: 0;
-  border-radius: 0;
-  background: var(--color-fg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sound-volume {
-    transition: none;
-  }
 }

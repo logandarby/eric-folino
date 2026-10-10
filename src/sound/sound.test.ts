@@ -27,6 +27,8 @@ function setup({ on = true, supported = true } = {}) {
     ctx,
     channel: () => ({}),
     setVolume: vi.fn<(v: number) => void>(),
+    // Decoding nothing, so no audio nodes are made.
+    sample: vi.fn(() => Promise.resolve(null)),
   };
   const oneShot = (name: string): OneShotPatch => ({
     channel: 'ui',
@@ -281,5 +283,39 @@ describe('SoundEngine', () => {
     const { engine } = setup({ supported: false });
     engine.unlock();
     expect(engine.supported).toBe(false);
+  });
+
+  it('plays recorded sounds only when unlocked, and not twice at once', () => {
+    const { engine, graph, advance } = setup();
+    engine.playSample('click.mp3');
+    expect(graph.sample).not.toHaveBeenCalled();
+    engine.unlock();
+    engine.playSample('click.mp3');
+    engine.playSample('click.mp3');
+    expect(graph.sample).toHaveBeenCalledTimes(1);
+    engine.playSample('eject.mp3');
+    advance(50);
+    engine.playSample('click.mp3');
+    expect(graph.sample).toHaveBeenCalledTimes(3);
+  });
+
+  it('plays no recorded sounds while sound is off', () => {
+    const { engine, graph } = setup({ on: false });
+    engine.unlock();
+    engine.playSample('click.mp3');
+    expect(graph.sample).not.toHaveBeenCalled();
+  });
+
+  it('decodes preloaded sounds once there is audio, before they play', () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(new Response(new ArrayBuffer(8))))
+    );
+    const { engine, graph } = setup();
+    engine.preload(['click.mp3', 'eject.mp3']);
+    expect(graph.sample).not.toHaveBeenCalled();
+    engine.prepare();
+    expect(graph.sample).toHaveBeenCalledTimes(2);
+    vi.unstubAllGlobals();
   });
 });

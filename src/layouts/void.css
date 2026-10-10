@@ -2,3 +2,8 @@
   position: relative;
   min-height: 100dvh;
 }
+
+/* Under the site header, the rest of the screen. */
+.site-header + .void {
+  min-height: calc(100dvh - var(--site-header-height));
+}

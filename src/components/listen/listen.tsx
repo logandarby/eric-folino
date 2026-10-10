@@ -1,13 +1,15 @@
 import { faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { stylesheet } from '../../../build/jsx/assets.ts';
 import { Icon } from '../icon/icon.tsx';
+import { SpeechBubble } from '../speech-bubble/speech-bubble.tsx';
 
 /**
  * The bus stop screen as a music player: a button over the screen, with a
- * play or pause sign on it, and the call to listen below it in the
- * Cordata font, which does the same. Playing, the screen shows the
- * collage video (ListenVideo). Place it in the PhotoLayer (background.tsx),
- * which says where the screen is; listen.ts makes it play.
+ * play or pause sign on it, and the call to listen in a speech bubble
+ * below it, until it plays (bind it with `bindSpeechBubble('listen-cta')`
+ * to make it boil). Playing, the screen shows the collage video
+ * (ListenVideo). Place it in the PhotoLayer (background.tsx), which says
+ * where the screen is; listen.ts makes it play.
  */
 export function Listen({ label, cta }: { label: string; cta: string }) {
   stylesheet(import.meta.url, './listen.css');
@@ -25,14 +27,9 @@ export function Listen({ label, cta }: { label: string; cta: string }) {
           <Icon icon={faPause} class="listen__icon listen__icon--pause" />
         </span>
       </button>
-      <button
-        type="button"
-        class="listen__cta"
-        data-listen-toggle
-        aria-pressed="false"
-      >
+      <SpeechBubble name="listen-cta" blob="pink" tail="up" class="listen__cta">
         {cta}
-      </button>
+      </SpeechBubble>
     </div>
   );
 }

@@ -151,7 +151,7 @@ How the engine works, and how to add an effect: [`src/text/README.md`](src/text/
 
 Buttons tick on hover and clunk when pressed, dialogs swoosh, their text "talks" in blips, and the enter page's TV hums. Everything is synthesized (no audio files) and tuned in `src/site/sound.config.ts`. Give a dialog a different voice with `voice: sillyVoice` (or `typewriterVoice`, `screenVoice`, `hushVoice`, or your own `{ pitch, wave }`, all in `src/site/voices.ts`); the default is `softVoice`.
 
-Sound is on by default (off for visitors who prefer reduced motion) but, as browsers require, starts on the visitor's first click or key press. The speaker button in the corner, or <kbd>M</kbd>, mutes it; hovering it shows a volume slider. Choices are remembered. Details: [`src/sound/README.md`](src/sound/README.md).
+Sound is on by default (off for visitors who prefer reduced motion) but, as browsers require, starts on the visitor's first click or key press. The speaker button in the corner, or <kbd>M</kbd>, mutes it. Choices are remembered. Details: [`src/sound/README.md`](src/sound/README.md).
 
 ## Credits
 

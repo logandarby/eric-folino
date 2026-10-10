@@ -1,7 +1,7 @@
 # Sound engine
 
-Game-style UI sounds, all synthesized with Web Audio: no audio files to
-download. Settings are in `src/site/sound.config.ts`, voices in `src/site/voices.ts`.
+Game-style UI sounds, synthesized with Web Audio: no audio files to
+download (pages can add recorded ones, see below). Settings are in `src/site/sound.config.ts`, voices in `src/site/voices.ts`.
 
 | Sound   | When                                                       | Made of                                                        |
 | ------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
@@ -70,8 +70,8 @@ changes made in another tab apply here too.
   works while a dialog is open, and <kbd>M</kbd> toggles sound from
   anywhere (announced to screen readers as "Sound on" / "Sound off"). The
   "?" dialog mentions both.
-- **Volume:** hovering or focusing the speaker slides out a slider. Moving
-  it while muted turns sound back on.
+- **Volume:** there's no slider: the device's volume does that, and the
+  speaker button only mutes.
 - **iPhones:** the audio session is set to `ambient`, so our sounds mix
   with the visitor's music instead of pausing it, and respect the silent
   switch (Safari 16.4+).
@@ -81,8 +81,15 @@ changes made in another tab apply here too.
   home page's music plays only when asked, and muting pauses it too.)
 - **Keyboard and touch:** only focus moved with Tab ticks (not focus
   moved by clicks or dialogs), and Enter / Space click like a press. Touch
-  has no hover, so taps only click. The volume slider is hard to reach on
-  touch screens (no hover); muting works everywhere.
+  has no hover, so taps only click.
+
+## Recorded sounds
+
+A page can play its own recorded sounds (the listen page's tape deck does)
+with `sound.playSample(url, volume)`, on the ui channel, so they follow the
+same mute, volume and rate limits. `sound.preload(urls)` fetches the files
+early; they're decoded once audio is ready, and one still loading when it's
+needed is dropped rather than played late.
 
 ## Adding a sound
 
@@ -94,7 +101,8 @@ changes made in another tab apply here too.
 
 ## Per-element and per-dialog tweaks
 
-- `data-sound="none"` on an element: no hover tick.
+- `data-sound="none"` on an element: no hover tick or press clunk, for
+  elements that make their own sounds.
 - `data-sound="hum"`: the element plays the hum loop while hovered or
   focused, or while a dialog pointing at it is open, instead of the tick.
 - `voice` on a dialog's content changes how it "talks". The config has

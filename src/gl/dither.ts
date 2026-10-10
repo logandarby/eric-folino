@@ -38,6 +38,26 @@ export const palettes = {
     '#b027c3',
     '#1f3117',
   ],
+  pueblo: [
+    '#060338',
+    '#fadafe',
+    '#bd6a2d',
+    '#e4fafc',
+    '#e2a867',
+    '#203e8a',
+    '#cd3232',
+    '#3f7c62',
+    '#7a3046',
+    '#eae0a8',
+    '#252645',
+    '#fbcfa4',
+    '#2d4130',
+    '#decfb5',
+    '#fce8ec',
+    '#d5f7e2',
+    '#595671',
+    '#95a08d',
+  ],
 } satisfies Record<string, string[]>;
 
 /**

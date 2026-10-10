@@ -26,7 +26,7 @@ const PRESS_MS = 240;
 export interface ListenConfig {
   /** Accessible name for the button over the screen. */
   label: string;
-  /** The call to listen, below the screen. */
+  /** The call to listen, in a speech bubble below the screen. */
   cta: string;
   song: {
     /** For the phone's lock screen and the like. */

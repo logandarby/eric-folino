@@ -27,8 +27,10 @@ export const siteConfig: SiteConfig = {
   /** Colours cycled through the title letters, in order. */
   palette: ['#F0B2F3', '#55F49D', '#F0E05A', '#64CBE0'],
 
+  /** On the home page, HOME is left out, so LISTEN comes first. */
   nav: [
-    { label: 'HOME', href: '/' },
+    { label: 'HOME', href: '/', hideWhenCurrent: true },
+    { label: 'LISTEN', href: '/listen/' },
     { label: 'EPK', href: '/epk/' },
     { label: 'SECRET', href: '/enter/' },
     { label: 'WEB OF POEMS', href: '/poems/' },
