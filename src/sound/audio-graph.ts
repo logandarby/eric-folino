@@ -17,12 +17,14 @@ type AudioSessionNavigator = Navigator & { audioSession?: { type: string } };
  *   sound → channel volume (ui / voice / ambient) → master → limiter → out
  *
  * The limiter (a gentle compressor) keeps stacked sounds from ever getting
- * harsh. Also holds a shared second of each noise colour for the patches.
+ * harsh. Also holds a shared second of each noise colour for the patches,
+ * and the recorded sounds pages play, decoded.
  */
 export class AudioGraph {
   private readonly channels: Record<Channel, GainNode>;
   private readonly master: GainNode;
   private readonly noiseBuffers = new Map<NoiseColour, AudioBuffer>();
+  private readonly samples = new Map<string, Promise<AudioBuffer>>();
 
   /**
    * Null if the browser has no Web Audio.
@@ -85,6 +87,26 @@ export class AudioGraph {
 
   channel(name: Channel): AudioNode {
     return this.channels[name];
+  }
+
+  /**
+   * A recorded sound, decoded once from `bytes` (its file). Null if it
+   * couldn't be fetched or decoded.
+   */
+  sample(
+    url: string,
+    bytes: () => Promise<ArrayBuffer>
+  ): Promise<AudioBuffer | null> {
+    let buffer = this.samples.get(url);
+    if (!buffer) {
+      buffer = bytes().then((data) => this.ctx.decodeAudioData(data));
+      this.samples.set(url, buffer);
+    }
+    return buffer.catch(() => {
+      // Try again next time.
+      this.samples.delete(url);
+      return null;
+    });
   }
 
   /** One second of noise, made on first use. */

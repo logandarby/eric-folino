@@ -1,5 +1,6 @@
 /*
- * A scrolling page: header, then a single readable column. Content styles
+ * A scrolling page, under the site header: the title, then a single
+ * readable column. Content styles
  * (.prose for Markdown, .section for headed blocks) are shared here so
  * every document page looks related.
  */
@@ -9,8 +10,7 @@
   /* Size of body text (bio, interviews, captions). */
   --body-size: 0.875rem;
   min-height: 100dvh;
-  padding: calc(env(safe-area-inset-top) + 96px) var(--document-gutter)
-    calc(env(safe-area-inset-bottom) + 96px);
+  padding: 56px var(--document-gutter) calc(env(safe-area-inset-bottom) + 96px);
 }
 
 .document__header {
@@ -25,15 +25,6 @@
 
 .document__title {
   font-size: clamp(2rem, 6vw, 4rem);
-}
-
-.document .nav {
-  font-size: 1.25rem;
-}
-
-.document .nav ul {
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 
 .document__main {

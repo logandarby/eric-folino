@@ -34,6 +34,14 @@ export interface SoundEngineOptions {
 
 /** Lets one-shots ring out before audio is suspended after muting. */
 const MUTE_GRACE_MS = 300;
+/** A recorded sound won't play again within this long (ms). */
+const SAMPLE_GAP_MS = 50;
+/**
+ * A recorded sound still loading this long (s) after it was asked for is
+ * dropped: it would come too late for what it goes with. Long enough for
+ * a first press to start audio and decode its sound in time.
+ */
+const SAMPLE_LATE_S = 0.3;
 
 /**
  * The site's sound system (see src/sound/README.md). Everything else only
@@ -59,6 +67,8 @@ export class SoundEngine {
   private readonly loops = new Set<Voice>();
   private readonly random: () => number;
   private graph: AudioGraph | null = null;
+  /** Recorded sounds' files, fetched by `preload`. */
+  private readonly files = new Map<string, Promise<ArrayBuffer>>();
   /** Whether a click or key press has let audio start. */
   private unlocked = false;
   private unsupported = false;
@@ -130,6 +140,7 @@ export class SoundEngine {
     if (!this.enabled || this.unsupported || this.graph) return;
     this.graph = this.createGraph(this.options.config, this.volume);
     if (!this.graph) this.unsupported = true;
+    else this.decode(this.graph);
   }
 
   /**
@@ -172,6 +183,61 @@ export class SoundEngine {
       graph.ctx.currentTime
     );
     this.scheduleSuspend(this.options.config.idleSuspendMs);
+  }
+
+  /**
+   * Gets recorded sounds ready ahead of time, so the first play isn't
+   * late (and dropped): their files are fetched now, and decoded as soon
+   * as there's audio (which can take a fifth of a second each).
+   */
+  preload(urls: string[]): void {
+    for (const url of urls) this.file(url);
+    if (this.graph) this.decode(this.graph);
+  }
+
+  /** Decodes every preloaded sound, in the background. */
+  private decode(graph: AudioGraph): void {
+    for (const url of this.files.keys()) {
+      void graph.sample(url, () => this.file(url));
+    }
+  }
+
+  /**
+   * Plays a recorded sound (a page's own, like the listen page's tape
+   * deck) on the ui channel, at `volume` (1 is as recorded). Like `play()`, only when
+   * sound's on and unlocked, and not twice at once.
+   */
+  playSample(url: string, volume = 1): void {
+    const graph = this.live();
+    if (!graph || !this.throttle.ready(url, SAMPLE_GAP_MS)) return;
+    this.throttle.mark(url);
+    const asked = graph.ctx.currentTime;
+    void graph
+      .sample(url, () => this.file(url))
+      .then((buffer) => {
+        const late = graph.ctx.currentTime - asked > SAMPLE_LATE_S;
+        if (!buffer || late || !this.live()) return;
+        const { ctx } = graph;
+        const out = new GainNode(ctx, { gain: volume });
+        out.connect(graph.channel('ui'));
+        const source = new AudioBufferSourceNode(ctx, { buffer });
+        source.connect(out);
+        source.start();
+        const endsAt = ctx.currentTime + buffer.duration;
+        this.voices.add(sampleVoice(source, out, endsAt), ctx.currentTime);
+        this.scheduleSuspend(this.options.config.idleSuspendMs);
+      });
+  }
+
+  private file(url: string): Promise<ArrayBuffer> {
+    let file = this.files.get(url);
+    if (!file) {
+      file = fetch(url).then((r) => r.arrayBuffer());
+      // Failed fetches can be tried again.
+      file.catch(() => this.files.delete(url));
+      this.files.set(url, file);
+    }
+    return file;
   }
 
   /** Starts a looping sound; call the returned function to fade it out. */
@@ -222,4 +288,26 @@ export class SoundEngine {
       if (!this.loops.size) this.suspend();
     }, ms);
   }
+}
+
+/** A playing recorded sound, as a Voice: stopping it fades it out quickly. */
+function sampleVoice(
+  source: AudioBufferSourceNode,
+  out: GainNode,
+  endsAt: number
+): Voice {
+  source.addEventListener('ended', () => out.disconnect());
+  let stopped = false;
+  return {
+    get endsAt() {
+      return stopped ? 0 : endsAt;
+    },
+    stop() {
+      if (stopped) return;
+      stopped = true;
+      const now = source.context.currentTime;
+      out.gain.setTargetAtTime(0, now, 0.005);
+      source.stop(now + 0.03);
+    },
+  };
 }

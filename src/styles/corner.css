@@ -58,3 +58,21 @@
   top: calc(env(safe-area-inset-top) + var(--corner-gap));
   bottom: auto;
 }
+
+/* In the site header (site-header.css): top left in the bar on desktop,
+   as usual, and over its menu. Phones: top right in the bar, the "?"
+   then the speaker, its volume sliding out to the left. */
+.corner--header:not(.sound-control) {
+  z-index: 4;
+}
+
+:root[data-layout='compact'] .corner--header {
+  --corner-gap: 10px;
+  top: calc(env(safe-area-inset-top) + var(--corner-gap));
+  bottom: auto;
+  left: auto;
+  right: calc(
+    env(safe-area-inset-right) + var(--corner-gap) + (1 - var(--corner-slot)) *
+      (var(--tap-target) + 10px)
+  );
+}

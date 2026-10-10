@@ -4,8 +4,8 @@ import { soundConfig } from '../../site/sound.config.ts';
 import { Icon } from '../icon/icon.tsx';
 
 /**
- * The speaker button in the corner (beside the "?"), with
- * a volume slider that slides out on hover or focus. Render it outside the
+ * The speaker button in the corner (beside the "?"), which mutes and
+ * unmutes. Render it outside the
  * page root, so it still works while a dialog has the page inert. Starts
  * pressed to match the config default; sound-control.ts corrects it from
  * the visitor's saved choice.
@@ -13,11 +13,14 @@ import { Icon } from '../icon/icon.tsx';
 export function SoundControl({
   scrolls = false,
   bottom = false,
+  header = false,
 }: {
   /** Scroll away with the page instead of staying put (for long pages). */
   scrolls?: boolean;
   /** In the bottom corner on desktop too, not just on mobile. */
   bottom?: boolean;
+  /** In the site header (site-header.tsx): top right on mobile. */
+  header?: boolean;
 }) {
   stylesheet(import.meta.url, './sound-control.css');
   return (
@@ -26,6 +29,7 @@ export function SoundControl({
         'corner sound-control',
         scrolls && 'corner--scrolls',
         bottom && 'corner--bottom',
+        header && 'corner--header',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -44,17 +48,6 @@ export function SoundControl({
         <Icon icon={faVolumeHigh} class="sound-toggle__on" />
         <Icon icon={faVolumeXmark} class="sound-toggle__off" />
       </button>
-      <label class="sound-volume">
-        <span class="sr-only">Volume</span>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="5"
-          value="100"
-          data-sound-volume
-        />
-      </label>
       <span class="sr-only" role="status" data-sound-status></span>
     </div>
   );

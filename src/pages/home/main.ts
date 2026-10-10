@@ -1,5 +1,6 @@
 import { pageScript } from '../../app/router.ts';
 import { Blob } from '../../components/blob/blob.ts';
+import { bindSpeechBubble } from '../../components/speech-bubble/speech-bubble.ts';
 import { bindListen } from '../../components/listen/listen.ts';
 import { $$ } from '../../core/component.ts';
 import { Disposer } from '../../core/disposer.ts';
@@ -34,6 +35,8 @@ pageScript(import.meta.url, ({ dialogs, sound }) => {
         })
     );
   }
+
+  disposer.add(bindSpeechBubble('listen-cta'));
 
   const listen = document.querySelector<HTMLElement>('[data-listen]');
   if (listen) {

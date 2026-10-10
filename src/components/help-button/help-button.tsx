@@ -10,11 +10,14 @@ import { siteConfig } from '../../site/site.config.ts';
 export function HelpButton({
   scrolls = false,
   bottom = false,
+  header = false,
 }: {
   /** Scroll away with the page instead of staying put (for long pages). */
   scrolls?: boolean;
   /** In the bottom corner on desktop too, not just on mobile. */
   bottom?: boolean;
+  /** In the site header (site-header.tsx): top right on mobile. */
+  header?: boolean;
 }) {
   stylesheet(import.meta.url, './help-button.css');
   return (
@@ -24,6 +27,7 @@ export function HelpButton({
         'corner corner-button help',
         scrolls && 'corner--scrolls',
         bottom && 'corner--bottom',
+        header && 'corner--header',
       ]
         .filter(Boolean)
         .join(' ')}

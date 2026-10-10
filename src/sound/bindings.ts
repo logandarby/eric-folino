@@ -20,7 +20,8 @@ const SPOKEN = /[\p{L}\p{N}]/u;
  *   hum), held while hovered or focused, or while a dialog pointing at
  *   the element is open.
  *
- * `data-sound="none"` silences an element's hover sound.
+ * `data-sound="none"` silences an element's hover and press sounds, for
+ * elements that make their own (the listen page's tapes and deck).
  *
  * Bound once for the whole visit, across pages. Returns a function that
  * stops any loop still held, for when the page with its element goes.
@@ -173,11 +174,15 @@ function bindHover(sound: SoundEngine): {
 }
 
 function bindPress(sound: SoundEngine): void {
+  const pressable = (target: EventTarget | null) => {
+    const el = interactive(target);
+    return el !== null && el.dataset.sound !== 'none';
+  };
   document.addEventListener('pointerdown', (e) => {
-    if (e.button === 0 && interactive(e.target)) sound.play('press');
+    if (e.button === 0 && pressable(e.target)) sound.play('press');
   });
   // Keyboard activation (Enter / Space) fires a click with no pointer.
   document.addEventListener('click', (e) => {
-    if (e.detail === 0 && interactive(e.target)) sound.play('press');
+    if (e.detail === 0 && pressable(e.target)) sound.play('press');
   });
 }

@@ -1,7 +1,8 @@
 /*
  * Over the screen in the photo: placed in the PhotoLayer (background.css),
- * whose --spot-* say where the screen is. "Listen?" hangs below it, sized
- * by the screen's width (cqw), so it keeps its proportion at every size.
+ * whose --spot-* say where the screen is. The call to listen hangs below
+ * it, sized by the screen's width (cqw), so it keeps its proportion at
+ * every size.
  */
 .listen {
   --outline-offset: 4px;
@@ -31,8 +32,7 @@
   pointer-events: none;
 }
 
-.listen__screen,
-.listen__cta {
+.listen__screen {
   position: absolute;
   padding: 0;
   border: 0;
@@ -54,19 +54,24 @@
   transition: outline-offset 0.15s;
 }
 
-/* "Listen?", centred below the screen. */
+/* The call to listen, its bubble's tail at the screen's bottom middle.
+   Sized by the screen's width (cqw), as the photo it's in is scaled to
+   the window. Gone while the song plays or pauses. */
 .listen__cta {
-  left: 50%;
-  top: 100%;
-  translate: -50% 0;
-  margin-top: 8cqw;
-  padding: 0.15em 0.3em;
-  font-family: var(--font-pixel);
-  font-size: max(20px, 30cqw);
-  font-weight: 400;
-  line-height: 1;
-  white-space: nowrap;
-  text-shadow: 0.06em 0.06em 0 rgb(20 24 40 / 0.6);
+  --bubble-x: 50%;
+  --bubble-y: calc(100% + 4cqw);
+  --bubble-width: 140cqw;
+  --bubble-font-size: 15.5cqw;
+  transition: opacity 0.6s;
+}
+
+/* Phones: a little right of the middle, clear of the corner buttons. */
+:root[data-layout='compact'] .listen__cta {
+  --bubble-x: 62%;
+}
+
+.listen:not([data-state='idle']) .listen__cta {
+  opacity: 0;
 }
 
 /* The play or pause sign, in the middle of the screen. */
@@ -112,25 +117,24 @@
   }
 }
 
-/* Hovering either (or tabbing to it) answers on both: the screen's
-   outline steps out and the sign grows. */
-.listen:has(.listen__screen:focus-visible, .listen__cta:focus-visible) {
+/* Hovering the screen (or tabbing to it): its outline steps out and the
+   sign grows. */
+.listen:has(.listen__screen:focus-visible) {
   --outline-offset: 8px;
 }
 
-.listen:has(.listen__screen:focus-visible, .listen__cta:focus-visible)
-  .listen__sign {
+.listen:has(.listen__screen:focus-visible) .listen__sign {
   opacity: 1;
   scale: 1.15;
   transition-duration: 0s, 0.15s;
 }
 
 @media (hover: hover) {
-  .listen:has(.listen__screen:hover, .listen__cta:hover) {
+  .listen:has(.listen__screen:hover) {
     --outline-offset: 8px;
   }
 
-  .listen:has(.listen__screen:hover, .listen__cta:hover) .listen__sign {
+  .listen:has(.listen__screen:hover) .listen__sign {
     opacity: 1;
     scale: 1.15;
     transition-duration: 0s, 0.15s;
