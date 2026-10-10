@@ -5,7 +5,7 @@ import { screenVoice } from '../../site/voices.ts';
 
 /*
  * Enter: an old TV in an empty room, playing the band through static, that asks if you'd
- * like to come in. Not linked from anywhere for now.
+ * like to come in. The nav's "Secret" leads here, and "yes" to the secret page.
  */
 
 /** The TV, with what it plays (see collage-video.ts). */
@@ -49,7 +49,7 @@ export default definePage<{ tv: TvConfig }>({
           text: '{fast}The TV tells you what to feel. You feel frantic.{/fast}',
         },
       ],
-      actions: [{ label: 'yes', href: '/iris' }],
+      actions: [{ label: 'yes', href: '/secret/' }],
     },
     body: { x: 1538, y: 888, width: 726, height: 724 },
     cta: { text: 'enter?', size: 0.13 },
