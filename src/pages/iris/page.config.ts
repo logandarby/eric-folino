@@ -79,11 +79,7 @@ export default definePage<{
   eyes: [
     {
       label: 'The first eye',
-      dialog: eyeDialog(
-        'EYE I',
-        'It looks.',
-        ''
-      ),
+      dialog: eyeDialog('EYE I', 'It looks.', ''),
       column: 'left',
       width: '90%',
       x: '0%',
@@ -92,11 +88,7 @@ export default definePage<{
     },
     {
       label: 'The second eye',
-      dialog: eyeDialog(
-        'EYE II',
-        'It looks.',
-        ''
-      ),
+      dialog: eyeDialog('EYE II', 'It looks.', ''),
       column: 'right',
       width: '80%',
       x: '14%',
@@ -105,11 +97,7 @@ export default definePage<{
     },
     {
       label: 'The third eye',
-      dialog: eyeDialog(
-        'EYE III',
-        'It looks.',
-        ''
-      ),
+      dialog: eyeDialog('EYE III', 'It looks.', ''),
       column: 'left',
       width: '82%',
       x: '10%',
@@ -118,11 +106,7 @@ export default definePage<{
     },
     {
       label: 'The fourth eye',
-      dialog: eyeDialog(
-        'EYE IV',
-        'It looks.',
-        ''
-      ),
+      dialog: eyeDialog('EYE IV', 'It looks.', ''),
       column: 'right',
       width: '94%',
       x: '2%',
