@@ -1,0 +1,88 @@
+/* The same background as /enter and /listen: cream with a tinge of
+   purple, under a tiled Bayer dither (a 16px tile, shown at 18px). */
+body {
+  --color-bg: #f2ebed;
+  --color-fg: #2a2230;
+  background: url('../../assets/textures/bayerdark.png') 0 0 / 18px 18px repeat
+    var(--color-bg);
+  image-rendering: pixelated;
+}
+
+/* Only the tile is pixelated. */
+body > * {
+  image-rendering: auto;
+}
+
+.window {
+  /* The space above and below the desk: the padding, and the back link's
+     row and gap. */
+  --gutters: calc(32px + var(--tap-target) + 8px);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
+  align-items: center;
+  row-gap: 8px;
+  min-height: 100dvh;
+  padding: 16px;
+}
+
+/* Phones: room at the bottom for the corner buttons (corner.css). */
+:root[data-layout='compact'] .window {
+  --gutters: calc(env(safe-area-inset-bottom) + 2 * var(--tap-target) + 56px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--tap-target) + 32px);
+}
+
+/* The desk, as big as fits on the screen. */
+.window__scene {
+  position: relative;
+  width: min(100%, (100dvh - var(--gutters)) * var(--ar));
+  aspect-ratio: var(--ar);
+}
+
+/* Behind the panes: the box from the page config, filled. */
+.window__video {
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  top: calc(var(--y) * 100%);
+  width: calc(var(--w) * 100%);
+  height: calc(var(--h) * 100%);
+  object-fit: cover;
+}
+
+.window__desk {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/*
+ * The picture, dithered (main.ts), over the picture and video, which
+ * carry on under it (the video is what it draws). Scaled up without
+ * smoothing, so the dither's pixels stay crisp.
+ */
+.window__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* The blobs (blob.tsx), placed on the picture by the page config. Its
+   own --x/--y/--w are the video's box, so each blob sets its own. */
+.window .blob {
+  --x: var(--x-wide);
+  --y: var(--y-wide);
+  --w: var(--w-wide);
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+}
+
+:root[data-layout='compact'] .window .blob {
+  --x: var(--x-compact);
+  --y: var(--y-compact);
+  --w: var(--w-compact);
+}

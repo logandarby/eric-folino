@@ -7,6 +7,7 @@ import notFound from './not-found/page.config.ts';
 import poemFavourites from './poem-favourites/page.config.ts';
 import poemGraph from './poem-graph/page.config.ts';
 import poems, { poemPages } from './poems/page.config.ts';
+import windowPage from './window/page.config.ts';
 import type { PageConfig } from '../site/types.ts';
 
 /**
@@ -23,6 +24,7 @@ export const pages: PageConfig[] = [
   iris,
   enter,
   listen,
+  windowPage,
   poems,
   ...poemPages,
   poemGraph,

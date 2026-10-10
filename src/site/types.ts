@@ -6,7 +6,11 @@
 export type LayoutName = 'wide' | 'compact';
 
 export interface DialogBlock {
-  /** `quote` and `narration` render in Courier Prime (narration is italic). */
+  /**
+   * `quote` and `narration` render in Courier Prime (narration is italic).
+   * Quotes get their quotation marks, and narration its leading asterisk,
+   * when shown (src/dialog/block-text.ts): don't write them.
+   */
   kind: 'quote' | 'narration' | 'text';
   /**
    * May contain effect tags, e.g. 'You feel {wave}dizzy{/wave}.' Dialog
@@ -121,18 +125,6 @@ export interface TextPlacement extends Placement {
   fontSize: number;
   /** Whether `x` is the element's left edge (default), centre or right edge. */
   align?: 'start' | 'center' | 'end';
-}
-
-export interface BlobConfig {
-  /** File name (without extension) in src/assets/blobs/. Colour comes from the SVG. */
-  svg: string;
-  /** Accessible name for the blob button. */
-  label: string;
-  /** Width as a percentage of the stage width. */
-  width: Record<LayoutName, number>;
-  position: Record<LayoutName, Placement>;
-  /** Shown when the blob is clicked. */
-  dialog: DialogContent;
 }
 
 export interface HotspotConfig {

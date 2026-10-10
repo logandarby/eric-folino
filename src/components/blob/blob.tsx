@@ -2,14 +2,14 @@ import { readFileSync } from 'node:fs';
 import { stylesheet } from '../../../build/jsx/assets.ts';
 import { perLayout } from '../../layouts/placement.ts';
 import { siteConfig } from '../../site/site.config.ts';
-import type { BlobConfig } from '../../site/types.ts';
+import { blobs, type BlobConfig } from '../../site/blobs.ts';
 import { blobShape, roundedPathData } from '../../svg/blob-shape.ts';
 
 const BLOB_DIR = new URL('../../assets/blobs/', import.meta.url);
 
 /**
  * A clickable blob on the stage. Its outline comes from
- * src/assets/blobs/<svg>.svg, pre-rounded so it looks right before any
+ * its character's src/assets/blobs/<svg>.svg (src/site/blobs.ts), pre-rounded so it looks right before any
  * script runs; blob.ts then makes it boil.
  */
 export function BlobButton({
@@ -20,12 +20,15 @@ export function BlobButton({
   index: number;
 }) {
   stylesheet(import.meta.url, './blob.css');
-  const svg = readFileSync(new URL(`${blob.svg}.svg`, BLOB_DIR), 'utf8');
+  const character = blobs[blob.blob];
+  const svg = readFileSync(new URL(`${character.svg}.svg`, BLOB_DIR), 'utf8');
   const viewBox = /viewBox="([^"]+)"/.exec(svg)?.[1];
   const d = /<path[^>]*\sd="([^"]+)"/.exec(svg)?.[1];
   const fill = /<path[^>]*\sfill="([^"]+)"/.exec(svg)?.[1] ?? 'currentColor';
   if (!viewBox || !d) {
-    throw new Error(`${blob.svg}.svg needs a viewBox and a single <path d>`);
+    throw new Error(
+      `${character.svg}.svg needs a viewBox and a single <path d>`
+    );
   }
   const { blobCornerRadius, blobMinPointSpacing } = siteConfig.animation;
   const style = {
@@ -47,7 +50,7 @@ export function BlobButton({
       style={style}
       data-blob={index}
       data-dialog-avoid="soft"
-      aria-label={blob.label}
+      aria-label={character.label}
       aria-haspopup="dialog"
     >
       <svg

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { stylesheet } from '../../../build/jsx/assets.ts';
+import { BackLink } from '../../components/back-link/back-link.tsx';
 import { VoidLayout } from '../../layouts/void.tsx';
 import page, { type EyeConfig } from './page.config.ts';
 
@@ -18,16 +19,21 @@ export default function IrisPage() {
     readFileSync(new URL('eyes.json', EYES_DIR), 'utf8')
   ) as { width: number; height: number }[];
   const eyes = page.eyes.map((eye, i) => ({ eye, i, size: sizes[i] }));
+  // main.ts swaps in one picked at random.
+  const [text] = page.backdrop.texts;
 
   return (
     <VoidLayout>
       <div class="iris">
-        <h1 class="sr-only">{page.backdrop.text}</h1>
-        <div class="iris__backdrop" aria-hidden="true">
+        <h1 class="sr-only" data-iris-text>
+          {text}
+        </h1>
+        <div class="iris__backdrop" aria-hidden="true" data-iris-backdrop>
           {Array.from({ length: page.backdrop.lines }, () => (
-            <p>{page.backdrop.text}</p>
+            <p data-iris-text>{text}</p>
           ))}
         </div>
+        <BackLink class="iris__back" />
         <div class="iris__eyes">
           {(['left', 'right'] as const).map((column) => (
             <div class="iris__column">

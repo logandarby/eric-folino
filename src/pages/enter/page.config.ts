@@ -46,7 +46,7 @@ export default definePage<{ tv: TvConfig }>({
         },
         {
           kind: 'narration',
-          text: '{fast}*The TV tells you what to feel. You feel frantic.{/fast}',
+          text: '{fast}The TV tells you what to feel. You feel frantic.{/fast}',
         },
       ],
       actions: [{ label: 'yes', href: '/iris' }],

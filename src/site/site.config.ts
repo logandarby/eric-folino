@@ -151,15 +151,15 @@ export const siteConfig: SiteConfig = {
       body: [
         {
           kind: 'quote',
-          text: '“Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.”',
+          text: 'Not everything here is what it seems.{pause} Some things are {wave}listening{/wave}.',
         },
         {
           kind: 'narration',
-          text: '*You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
+          text: 'You sense that if you click around, you might uncover a few {scramble:loop}secrets{/scramble}.',
         },
         {
           kind: 'narration',
-          text: '*If the noises bother you, the speaker beside this button silences them. So does pressing M.',
+          text: 'If the noises bother you, the speaker beside this button silences them. So does pressing M.',
         },
       ],
     },
@@ -229,7 +229,7 @@ export const siteConfig: SiteConfig = {
         { kind: 'text', text: '{{pause} Wait for it…{pause:900} there.' },
         {
           kind: 'narration',
-          text: '*{rainbow}{wave}Effects{/wave} {shake}can{/shake} {float}stack{/float}{/rainbow}.',
+          text: '{rainbow}{wave}Effects{/wave} {shake}can{/shake} {float}stack{/float}{/rainbow}.',
         },
       ],
     },
