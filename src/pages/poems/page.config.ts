@@ -14,6 +14,7 @@ export default definePage({
   title: 'Web of Poems',
   description: 'Poems, linked to each other by what they mean.',
   noindex: true,
+  irisWipe: 'light',
 });
 
 /** A page per poem, all rendered by src/pages/poem/page.tsx. */
@@ -25,6 +26,7 @@ export const poemPages = graph.poems.map((poem) =>
     title: poem.lines[0],
     description: `${poem.lines[0]}, a poem.`,
     noindex: true,
+    irisWipe: 'light',
     slug: poem.slug,
   })
 );

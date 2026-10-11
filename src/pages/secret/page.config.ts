@@ -4,7 +4,7 @@ import { definePage } from '../../site/define-page.ts';
 
 /*
  * Secret: a fridge on the moon, with a TV on it and polaroids stuck to it,
- * each leading to another page. The enter page's "yes" leads here. Kept out
+ * each leading to another page. The nav's "Secret" leads here. Kept out
  * of search engines. The art is made from assets-src/secret/ by
  * `npm run secret`.
  */
@@ -82,7 +82,7 @@ export default definePage<{
 
   polaroids: [
     {
-      href: '/window/',
+      href: '/enter/',
       caption: 'THE WINDOW',
       photo: 'window.webp',
       x: 50,

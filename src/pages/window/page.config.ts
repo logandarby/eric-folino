@@ -4,8 +4,9 @@ import type { BlobConfig } from '../../site/blobs.ts';
 
 /*
  * Window: a desk and chair by a window, cut out of their room, with Mars
- * going by outside. A polaroid on the secret page's fridge leads here,
- * and the window leads on to the eyes (/iris/). Kept out of search
+ * going by outside. The enter page's "yes" leads here (by way of the
+ * secret page's window polaroid), the window on to the eyes (/iris/),
+ * and its back link to the secret page. Kept out of search
  * engines.
  */
 

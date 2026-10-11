@@ -11,4 +11,5 @@ export default definePage({
   title: 'Favourites',
   description: 'The poems you starred.',
   noindex: true,
+  irisWipe: 'light',
 });

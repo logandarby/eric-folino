@@ -6,7 +6,8 @@ export type MysteriesShader = 'warp' | 'corridor';
 
 /*
  * Mysteries: links to strange things, here and elsewhere. A polaroid on
- * the secret page's fridge leads here. Kept out of search engines.
+ * the secret page's fridge leads here, and its back link back there.
+ * Kept out of search engines.
  */
 
 /** A strange thing. */

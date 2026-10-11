@@ -5,7 +5,7 @@ import { hushVoice } from '../../site/voices.ts';
 
 /*
  * Iris: four eyes on black that watch the pointer, over a wall of text.
- * The window page's window leads here. Kept out of search engines.
+ * The window page's window leads here, and its back link back there. Kept out of search engines.
  */
 
 export interface EyeConfig extends HotspotConfig {
@@ -49,7 +49,6 @@ export default definePage<{
   title: 'More eyes',
   description: 'More eyes are good.',
   noindex: true,
-  irisWipe: 'light',
 
   /**
    * The text behind the eyes: one of `texts`, picked at random each time

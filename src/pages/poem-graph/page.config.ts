@@ -11,4 +11,5 @@ export default definePage({
   title: 'The Web',
   description: 'The poems, and the words that link them.',
   noindex: true,
+  irisWipe: 'light',
 });

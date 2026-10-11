@@ -28,8 +28,8 @@ export default function PoemsPage() {
           >
             begin
           </a>
-          <a class="button poems-button" href="/">
-            home
+          <a class="button poems-button" href="/secret/" data-iris-wipe>
+            back to secrets
           </a>
         </p>
         <p>
