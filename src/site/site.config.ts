@@ -32,8 +32,7 @@ export const siteConfig: SiteConfig = {
     { label: 'HOME', href: '/', hideWhenCurrent: true },
     { label: 'LISTEN', href: '/listen/' },
     { label: 'EPK', href: '/epk/' },
-    { label: 'SECRET', href: '/enter/' },
-    { label: 'WEB OF POEMS', href: '/poems/' },
+    { label: 'SECRET', href: '/enter/', irisWipe: true },
   ],
 
   layout: {
@@ -137,6 +136,22 @@ export const siteConfig: SiteConfig = {
     dialogCloseMs: 160,
     /** Multiplier on dialog animation durations in the compact layout. */
     compactSpeedFactor: 0.8,
+    /**
+     * The iris wipe between pages (src/app/iris-wipe.ts), for links marked
+     * `data-iris-wipe`: the black closes in to a circle `paddingPx` round
+     * the link, holds, snaps shut (or, if the link's gone, as in a shut
+     * menu, closes on the middle in one go, `closeMs` + `snapMs`), stays black a moment, and opens from the
+     * middle of the next page. The next page loads meanwhile; if it's
+     * slower, it stays black till it's there.
+     */
+    irisWipe: {
+      closeMs: 220,
+      holdMs: 180,
+      snapMs: 120,
+      blackMs: 40,
+      openMs: 300,
+      paddingPx: 16,
+    },
   },
 
   /**

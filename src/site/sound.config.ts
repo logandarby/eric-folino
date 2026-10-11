@@ -2,8 +2,10 @@ import type { SoundConfig } from './types.ts';
 import { softVoice } from './voices.ts';
 
 /**
- * Game-style UI sounds, all synthesized (no audio files). Kept quiet on
- * purpose; see src/sound/README.md for what each one is made of.
+ * Game-style UI sounds, all synthesized (no audio files); see
+ * src/sound/README.md for what each one is made of. The press, swooshes
+ * and blips are set to sit about as loud as the recorded paper and
+ * cassette sounds (src/assets/audio/); the hover tick stays quiet.
  */
 export const soundConfig: SoundConfig = {
   enabledByDefault: true,
@@ -12,11 +14,11 @@ export const soundConfig: SoundConfig = {
   maxVoices: 8,
   idleSuspendMs: 30_000,
   hover: { volume: 0.1, minGapMs: 50, sameTargetGapMs: 150 },
-  press: { volume: 0.3, minGapMs: 80 },
-  open: { volume: 0.5, minGapMs: 120, durationMs: 300 },
-  close: { volume: 0.35, minGapMs: 120, durationMs: 200 },
+  press: { volume: 1, minGapMs: 80 },
+  open: { volume: 1.2, minGapMs: 120, durationMs: 300 },
+  close: { volume: 1, minGapMs: 120, durationMs: 200 },
   blip: {
-    volume: 0.5,
+    volume: 0.75,
     minGapMs: 45,
     voice: softVoice,
     pitchJitter: 0.08,

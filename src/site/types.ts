@@ -24,6 +24,8 @@ export interface DialogAction {
   label: string;
   /** Where it goes. Without one, it just closes the dialog. */
   href?: string;
+  /** Leaves with the iris wipe (src/app/iris-wipe.ts). Only with `href`. */
+  irisWipe?: boolean;
 }
 
 export interface DialogContent {
@@ -69,7 +71,7 @@ export interface DialogVoice {
 }
 
 interface SoundSettings {
-  /** 0–1, before the channel and master volumes. */
+  /** 1 is full; above that is louder. Before the channel and master volumes. */
   volume: number;
   /** Plays at most once per this many ms; extra plays are dropped. */
   minGapMs: number;
@@ -181,6 +183,12 @@ export interface PageConfig {
    * to it need `data-no-swup`, so the browser loads it itself.
    */
   bare?: boolean;
+  /**
+   * The iris wipe leaving this page (src/app/iris-wipe.ts): 'light' for
+   * the light pages' cream instead of black, for pages too dark for
+   * black to show.
+   */
+  irisWipe?: 'light';
 }
 
 export type Side = 'left' | 'right' | 'top' | 'bottom';
@@ -257,6 +265,8 @@ export interface SiteConfig {
     href: string;
     /** Left out on its own page, rather than shown as the current one. */
     hideWhenCurrent?: boolean;
+    /** Leaves with the iris wipe (src/app/iris-wipe.ts). */
+    irisWipe?: boolean;
   }[];
   layout: { compactQuery: string };
   background: {
@@ -281,6 +291,14 @@ export interface SiteConfig {
     dialogOpenMs: number;
     dialogCloseMs: number;
     compactSpeedFactor: number;
+    irisWipe: {
+      closeMs: number;
+      holdMs: number;
+      snapMs: number;
+      blackMs: number;
+      openMs: number;
+      paddingPx: number;
+    };
   };
   dialog: {
     maxWidth: number;

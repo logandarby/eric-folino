@@ -1,0 +1,22 @@
+/* The iris wipe (src/app/iris-wipe.ts): black over everything, but for a
+   hard-edged circle at --iris-x, --iris-y of radius --iris-r. It takes
+   every click while it's up, through the hole too. */
+.iris-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-iris-wipe);
+  background: #000;
+  --iris-mask: radial-gradient(
+    circle at var(--iris-x, 50%) var(--iris-y, 50%),
+    transparent var(--iris-r, 0px),
+    #000 calc(var(--iris-r, 0px) + 1px)
+  );
+  -webkit-mask-image: var(--iris-mask);
+  mask-image: var(--iris-mask);
+}
+
+/* Leaving a page too dark for black to show (its config's irisWipe):
+   the light pages' cream (as on /listen), plain. */
+.iris-wipe--light {
+  background: #f2ebed;
+}

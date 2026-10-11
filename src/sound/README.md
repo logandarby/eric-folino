@@ -6,9 +6,9 @@ download (pages can add recorded ones, see below). Settings are in `src/site/sou
 | Sound   | When                                                       | Made of                                                        |
 | ------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
 | `hover` | a button or link is hovered or tabbed to                   | a faint, low-ish sine tick, pitch dipping                      |
-| `press` | a button or link is pressed                                | a soft click: a tiny sine pop under a few ms of filtered noise |
-| `open`  | a dialog opens                                             | noise through a band-pass filter sweeping up                   |
-| `close` | a dialog closes                                            | the same, sweeping down, quieter                               |
+| `press` | a button or link is pressed; the iris wipe snaps shut      | a soft click: a tiny sine pop under a few ms of filtered noise |
+| `open`  | a dialog or the iris wipe opens                            | noise through a band-pass filter sweeping up                   |
+| `close` | a dialog closes; the iris wipe closes in                   | the same, sweeping down, quieter                               |
 | `blip`  | each letter typed in a dialog                              | a very short tone in the dialog's voice, pitch jittered        |
 | `hum`   | while the enter page's TV is hovered or its dialog is open | detuned 60 Hz sawtooth buzz, low-passed, plus fluttering fizz  |
 

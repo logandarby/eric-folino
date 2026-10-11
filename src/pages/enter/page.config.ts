@@ -49,7 +49,7 @@ export default definePage<{ tv: TvConfig }>({
           text: '{fast}The TV tells you what to feel. You feel frantic.{/fast}',
         },
       ],
-      actions: [{ label: 'yes', href: '/secret/' }],
+      actions: [{ label: 'yes', href: '/secret/', irisWipe: true }],
     },
     body: { x: 1538, y: 888, width: 726, height: 724 },
     cta: { text: 'enter?', size: 0.13 },

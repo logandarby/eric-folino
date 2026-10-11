@@ -4,7 +4,8 @@ import type { BlobConfig } from '../../site/blobs.ts';
 
 /*
  * Window: a desk and chair by a window, cut out of their room, with Mars
- * going by outside. Not linked from anywhere yet, and kept out of search
+ * going by outside. A polaroid on the secret page's fridge leads here,
+ * and the window leads on to the eyes (/iris/). Kept out of search
  * engines.
  */
 
@@ -25,6 +26,12 @@ export default definePage<{
     /** Where the video plays, behind the panes (and the frame's edges). */
     window: Share;
   };
+  /**
+   * The window as a link, invisible but outlined on hover (or keyboard
+   * focus), like the home page's bus stop screen. `box` is around its
+   * frame, as shares of the desk picture.
+   */
+  link: { href: string; label: string; box: Share };
   dither: { palette: string[]; pixelSize: number };
   blobs: BlobConfig[];
 }>({
@@ -39,6 +46,12 @@ export default definePage<{
     height: 1500,
     alt: 'A wooden desk and chair by a window, looking out on Mars',
     window: { x: 0.475, y: 0.045, width: 0.44, height: 0.505 },
+  },
+
+  link: {
+    href: '/iris/',
+    label: 'Look out the window',
+    box: { x: 0.4, y: 0, width: 0.59, height: 0.57 },
   },
 
   /**

@@ -97,9 +97,11 @@ export class DialogView {
     return this.el.querySelector<HTMLElement>('.dialog__action');
   }
 
-  private action({ label, href }: DialogAction): HTMLElement {
+  private action({ label, href, irisWipe }: DialogAction): HTMLElement {
     if (href !== undefined) {
-      return h('a', { class: 'button dialog__action', href }, [label]);
+      const link = h('a', { class: 'button dialog__action', href }, [label]);
+      if (irisWipe) link.dataset.irisWipe = '';
+      return link;
     }
     const button = h(
       'button',

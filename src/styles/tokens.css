@@ -22,4 +22,6 @@
   --z-spotlit: 120;
   --z-dialog: 130;
   --z-tooltip: 140;
+  /* The iris wipe between pages (iris-wipe.css), over it all. */
+  --z-iris-wipe: 150;
 }

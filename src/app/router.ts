@@ -1,6 +1,6 @@
 import SwupA11yPlugin from '@swup/a11y-plugin';
 import SwupScrollPlugin from '@swup/scroll-plugin';
-import Swup from 'swup';
+import Swup, { type Visit } from 'swup';
 import type { Cleanup } from '../core/disposer.ts';
 import { hideTooltip } from '../dialog/tooltip.ts';
 import {
@@ -10,13 +10,17 @@ import {
   type Site,
 } from './bootstrap.ts';
 import { updateHead } from './head.ts';
+import { irisWipeLink } from './iris-wipe.ts';
 
 /*
  * Going from page to page without leaving the document, so what lasts the
  * whole visit does: above all the sound, which browsers only let start
  * after a click or key press on the page itself. Swup fetches the next
  * page and swaps the body's #swup, and keeps the history, scrolling and
- * focus as a normal visit would; head.ts brings over its stylesheets. Without scripts, or if anything fails, links are links.
+ * focus as a normal visit would; head.ts brings over its stylesheets.
+ * Pages swap at once, but for links marked for the iris wipe
+ * (iris-wipe.ts), which swap in the dark. Without scripts, or if anything
+ * fails, links are links.
  *
  * Each page's main.ts hands its setup to `pageScript()` instead of running
  * it, and returns what undoes it: listeners on the window or document,
@@ -42,6 +46,8 @@ let started: ReturnType<typeof startSite> | null = null;
 let unmount: Cleanup | null = null;
 /** Counts pages shown, so a script that loads late can tell it's too late. */
 let shown = 0;
+/** The page showing now being set up. */
+let showing: Promise<void> = Promise.resolve();
 
 /**
  * Says what a page's script does: `mount` sets it up and returns what
@@ -61,7 +67,7 @@ export function pageScript(
   if (started) return;
   started = startSite();
   startRouter(started.site);
-  void show(entryUrl(document));
+  showing = show(entryUrl(document));
 }
 
 /**
@@ -84,7 +90,8 @@ function markEntry(fromSite: boolean): void {
 
 function startRouter(site: Site): void {
   const swup = new Swup({
-    // Pages swap at once, with no transition.
+    // Pages swap at once, with no transition of swup's (the iris wipe is
+    // the router's own).
     animationSelector: false,
     ignoreVisit: (url, { el, event } = {}) =>
       // A link whose own click handler took it over (a dialog first).
@@ -115,8 +122,27 @@ function startRouter(site: Site): void {
       markEntry(true);
     }
   });
-  swup.hooks.on('visit:start', () => {
+  /** Visits going out with the iris wipe, and the link it closes in on. */
+  const wiped = new WeakMap<Visit, Element>();
+  swup.hooks.on('visit:start', (visit) => {
+    const link = irisWipeLink(visit.trigger.el, visit.history.popstate);
+    // The dialog stays till dark, for the wipe to close in on its link.
+    if (link) wiped.set(visit, link);
+    else void site.dialogs.close({ animate: false });
+  });
+  // The next page is loading by now.
+  swup.hooks.before('visit:transition', async (visit) => {
+    const link = wiped.get(visit);
+    if (!link) return;
+    await site.irisWipe.close(link);
     void site.dialogs.close({ animate: false });
+  });
+  // Opens once the page has been set up and drawn, so it isn't seen
+  // half done. After any visit: one that took over from a wiped one
+  // swaps in the dark too.
+  swup.hooks.on('visit:end', () => {
+    if (!site.irisWipe.active) return;
+    void showing.then(nextFrames).then(() => site.irisWipe.open());
   });
   swup.hooks.before('content:replace', async (visit) => {
     // The swap waits for the next page's stylesheets.
@@ -124,7 +150,7 @@ function startRouter(site: Site): void {
     hide();
   });
   swup.hooks.on('content:replace', (visit) => {
-    void show(visit.to.document ? entryUrl(visit.to.document) : null);
+    showing = show(visit.to.document ? entryUrl(visit.to.document) : null);
   });
 }
 
@@ -154,6 +180,13 @@ async function show(url: string | null): Promise<void> {
   unmount = () => {
     for (const cleanup of cleanups.reverse()) cleanup?.();
   };
+}
+
+/** Waits for two frames: the page's first drawn, the second shown. */
+function nextFrames(): Promise<void> {
+  return new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  );
 }
 
 /** Undoes the page that's going, before its content does. */

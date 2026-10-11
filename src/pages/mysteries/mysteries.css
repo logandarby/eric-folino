@@ -12,6 +12,19 @@
   text-align: center;
 }
 
+/* The moving picture behind it all (main.ts), the screen's size, still as
+   the page scrolls. Scaled up without smoothing, so the dither's pixels
+   stay crisp. */
+.mysteries__background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
 .mysteries__title {
   margin: 0 0 16px;
   font-size: 32px;

@@ -13,12 +13,15 @@ import { soundConfig } from '../site/sound.config.ts';
 import type { DialogContent } from '../site/types.ts';
 import { bindSounds } from '../sound/bindings.ts';
 import { SoundEngine, type SoundPreferences } from '../sound/sound-engine.ts';
+import { IrisWipe } from './iris-wipe.ts';
 import { installTextDemo } from './text-demo.ts';
 
 /** What lasts the whole visit, from page to page (see router.ts). */
 export interface Site {
   dialogs: DialogManager;
   sound: SoundEngine;
+  /** The wipe between pages, for the router (see iris-wipe.ts). */
+  irisWipe: IrisWipe;
 }
 
 export interface PageOptions {
@@ -47,8 +50,9 @@ export function startSite(): { site: Site; releaseSounds: Cleanup } {
   // There was a volume slider; a level saved with it can't be changed
   // any more, so it goes back to full (the device's volume is the knob).
   if (sound.volume !== 1) sound.setVolume(1);
-  const releaseSounds = bindSounds(sound, dialogs);
-  return { site: { dialogs, sound }, releaseSounds };
+  const irisWipe = new IrisWipe();
+  const releaseSounds = bindSounds(sound, dialogs, irisWipe);
+  return { site: { dialogs, sound, irisWipe }, releaseSounds };
 }
 
 /**
