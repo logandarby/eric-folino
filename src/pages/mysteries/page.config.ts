@@ -1,4 +1,5 @@
 import { definePage } from '../../site/define-page.ts';
+import type { LayoutName } from '../../site/types.ts';
 
 /** A background shader: warp.frag or corridor.frag. */
 export type MysteriesShader = 'warp' | 'corridor';
@@ -28,6 +29,13 @@ export default definePage<{
     speed: number;
     palette: string[];
     pixelSize: number;
+    /**
+     * Darker behind the text block, so the text reads: an oval round it,
+     * `opacity` (0–1) in the middle, fading out to `spread` CSS pixels
+     * past its edges. On phones the block fills most of the screen, so
+     * less of both.
+     */
+    shade: Record<LayoutName, { opacity: number; spread: number }>;
   };
 }>({
   id: 'mysteries',
@@ -70,5 +78,9 @@ export default definePage<{
     // Pueblo's darkest colours, and black.
     palette: ['#000000', '#060338', '#252645', '#203e8a', '#7a3046', '#2d4130'],
     pixelSize: 3,
+    shade: {
+      wide: { opacity: 0.65, spread: 160 },
+      compact: { opacity: 0.45, spread: 60 },
+    },
   },
 });
