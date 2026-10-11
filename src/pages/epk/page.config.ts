@@ -24,6 +24,7 @@ export default definePage<AboutPage>({
   path: '/epk/',
   title: 'EPK',
   description: 'About Eric Folino.',
+  irisWipe: 'light',
   placeholder: {
     title: 'EPK',
     body: [

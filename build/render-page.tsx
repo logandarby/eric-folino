@@ -62,7 +62,7 @@ export async function renderPage({
   );
 
   const html = (
-    <html lang="en" data-page={page.id}>
+    <html lang="en" data-page={page.id} data-wipe={page.irisWipe}>
       <head>
         <Head page={page} />
         {/* data-tier is for the build (see build/css-order.ts). */}

@@ -30,6 +30,7 @@ export function Nav({
           href={current ? undefined : item.href}
           aria-current={current ? 'page' : undefined}
           data-nav={target?.id ?? ''}
+          data-iris-wipe={item.irisWipe && !current ? true : undefined}
           data-dialog-avoid
         >
           {item.label}

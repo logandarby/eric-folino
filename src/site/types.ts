@@ -183,6 +183,12 @@ export interface PageConfig {
    * to it need `data-no-swup`, so the browser loads it itself.
    */
   bare?: boolean;
+  /**
+   * The iris wipe leaving this page (src/app/iris-wipe.ts): 'light' for
+   * the light pages' cream instead of black, for pages too dark for
+   * black to show.
+   */
+  irisWipe?: 'light';
 }
 
 export type Side = 'left' | 'right' | 'top' | 'bottom';
@@ -259,6 +265,8 @@ export interface SiteConfig {
     href: string;
     /** Left out on its own page, rather than shown as the current one. */
     hideWhenCurrent?: boolean;
+    /** Leaves with the iris wipe (src/app/iris-wipe.ts). */
+    irisWipe?: boolean;
   }[];
   layout: { compactQuery: string };
   background: {

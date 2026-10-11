@@ -10,7 +10,8 @@ const ART_URL = '/src/pages/window/art';
 /**
  * The desk by its window, in the middle of the screen, with the video
  * playing behind the window's panes. main.ts covers it with a dithered
- * shader drawing the same; without WebGL, this is the picture.
+ * shader drawing the same; without WebGL, this is the picture. The
+ * window is a link to the eyes.
  */
 export default function WindowPage() {
   stylesheet(import.meta.url, './window.css');
@@ -51,6 +52,19 @@ export default function WindowPage() {
             height={desk.height}
             decoding="async"
             data-window-desk
+          />
+          {/* After the desk, so it's over the dithered picture main.ts puts there. */}
+          <a
+            class="window__link"
+            href={page.link.href}
+            aria-label={page.link.label}
+            data-iris-wipe
+            style={{
+              '--link-x': String(page.link.box.x),
+              '--link-y': String(page.link.box.y),
+              '--link-w': String(page.link.box.width),
+              '--link-h': String(page.link.box.height),
+            }}
           />
           {page.blobs.map((blob, index) => (
             <BlobButton blob={blob} index={index} />

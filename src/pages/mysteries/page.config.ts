@@ -1,5 +1,8 @@
 import { definePage } from '../../site/define-page.ts';
 
+/** A background shader: warp.frag or corridor.frag. */
+export type MysteriesShader = 'warp' | 'corridor';
+
 /*
  * Mysteries: links to strange things, here and elsewhere. A polaroid on
  * the secret page's fridge leads here. Kept out of search engines.
@@ -19,12 +22,20 @@ export default definePage<{
   /** Under the title. */
   text: string;
   mysteries: Mystery[];
+  background: {
+    shader: MysteriesShader;
+    /** How fast it moves: 1 as written in the shader. */
+    speed: number;
+    palette: string[];
+    pixelSize: number;
+  };
 }>({
   id: 'mysteries',
   path: '/mysteries/',
   title: 'Mysteries?',
   description: 'Mysteries.',
   noindex: true,
+  irisWipe: 'light',
 
   text: 'Strange things.',
 
@@ -46,4 +57,18 @@ export default definePage<{
       href: 'https://logandarby.github.io/re-verbasizer/',
     },
   ],
+
+  /**
+   * The moving picture behind it all, dithered to `palette` with each
+   * dither pixel `pixelSize` CSS pixels across. Kept dark, so the text
+   * reads over it. To compare them, `?bg=warp` or `?bg=corridor` on the
+   * address picks one for that visit.
+   */
+  background: {
+    shader: 'warp',
+    speed: 1,
+    // Pueblo's darkest colours, and black.
+    palette: ['#000000', '#060338', '#252645', '#203e8a', '#7a3046', '#2d4130'],
+    pixelSize: 3,
+  },
 });

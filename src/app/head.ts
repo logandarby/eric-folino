@@ -2,7 +2,7 @@
 const STYLESHEET_TIMEOUT_MS = 3000;
 
 /** The <html> attributes that differ from page to page. */
-const ATTRIBUTES = ['lang', 'data-page'];
+const ATTRIBUTES = ['lang', 'data-page', 'data-wipe'];
 
 /**
  * Brings over what the next page's <head> sets, for the router: its

@@ -70,6 +70,24 @@ body > * {
   pointer-events: none;
 }
 
+/* The window, a link: invisible, but outlined on hover, as buttons are
+   (base.css), around its frame (the page config's box). */
+.window__link {
+  position: absolute;
+  left: calc(var(--link-x) * 100%);
+  top: calc(var(--link-y) * 100%);
+  width: calc(var(--link-w) * 100%);
+  height: calc(var(--link-h) * 100%);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  .window__link:hover {
+    outline: var(--border-width) dashed var(--color-fg);
+    outline-offset: var(--outline-offset, 4px);
+  }
+}
+
 /* The blobs (blob.tsx), placed on the picture by the page config. Its
    own --x/--y/--w are the video's box, so each blob sets its own. */
 .window .blob {

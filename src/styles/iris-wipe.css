@@ -14,3 +14,9 @@
   -webkit-mask-image: var(--iris-mask);
   mask-image: var(--iris-mask);
 }
+
+/* Leaving a page too dark for black to show (its config's irisWipe):
+   the light pages' cream (as on /listen), plain. */
+.iris-wipe--light {
+  background: #f2ebed;
+}

@@ -52,7 +52,8 @@ export interface IrisWipeEvents extends Record<string, unknown> {
 
 /**
  * The black, with its hole: a fixed element over everything, masked by a
- * hard-edged circle (iris-wipe.css). Only there while wiping. `events`
+ * hard-edged circle (iris-wipe.css). Cream instead, leaving a page whose
+ * config says `irisWipe: 'light'`. Only there while wiping. `events`
  * announces each step (sounds hook in there).
  */
 export class IrisWipe {
@@ -75,17 +76,32 @@ export class IrisWipe {
   async close(link: Element): Promise<void> {
     const id = ++this.run;
     const t = siteConfig.animation.irisWipe;
-    const box = link.getBoundingClientRect();
-    const x = box.left + box.width / 2;
-    const y = box.top + box.height / 2;
-    // Round the whole link, tilted or not.
-    const around = Math.hypot(box.width, box.height) / 2 + t.paddingPx;
-    const from = this.el ? this.radius : farthestCorner(x, y);
-    this.place(x, y);
-    this.events.emit('close', undefined);
-    if (!(await this.tween(id, from, around, t.closeMs, easeOut))) return;
-    if (!(await this.wait(id, t.holdMs))) return;
-    if (!(await this.tween(id, around, 0, t.snapMs, easeIn))) return;
+    const from = (x: number, y: number) =>
+      this.el ? this.radius : farthestCorner(x, y);
+
+    // The link's gone from the screen (in a menu that shut as it was
+    // clicked): straight shut on the middle, with no hold.
+    if (!shown(link)) {
+      const x = innerWidth / 2;
+      const y = innerHeight / 2;
+      const r = from(x, y);
+      this.place(x, y);
+      this.events.emit('close', undefined);
+      const ms = t.closeMs + t.snapMs;
+      if (!(await this.tween(id, r, 0, ms, easeInOut))) return;
+    } else {
+      const box = link.getBoundingClientRect();
+      const x = box.left + box.width / 2;
+      const y = box.top + box.height / 2;
+      // Round the whole link, tilted or not.
+      const around = Math.hypot(box.width, box.height) / 2 + t.paddingPx;
+      const r = from(x, y);
+      this.place(x, y);
+      this.events.emit('close', undefined);
+      if (!(await this.tween(id, r, around, t.closeMs, easeOut))) return;
+      if (!(await this.wait(id, t.holdMs))) return;
+      if (!(await this.tween(id, around, 0, t.snapMs, easeIn))) return;
+    }
     this.events.emit('shut', undefined);
     await this.wait(id, t.blackMs);
   }
@@ -119,6 +135,10 @@ export class IrisWipe {
     if (!this.el) {
       this.el = document.createElement('div');
       this.el.className = 'iris-wipe';
+      // In the page it leaves from's colour, kept till it's gone.
+      if (document.documentElement.dataset.wipe === 'light') {
+        this.el.classList.add('iris-wipe--light');
+      }
       this.el.setAttribute('aria-hidden', 'true');
       document.body.append(this.el);
     }
@@ -161,6 +181,16 @@ export class IrisWipe {
   }
 }
 
+/** Whether `el` is drawn: not hidden, nor in something that is. */
+function shown(el: Element): boolean {
+  const box = el.getBoundingClientRect();
+  return (
+    box.width > 0 &&
+    box.height > 0 &&
+    (el.checkVisibility?.({ visibilityProperty: true }) ?? true)
+  );
+}
+
 /** How far (x, y) is from the screen's farthest corner: a circle that big covers it. */
 function farthestCorner(x: number, y: number): number {
   return Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
@@ -168,3 +198,5 @@ function farthestCorner(x: number, y: number): number {
 
 const easeIn = (p: number) => p * p * p;
 const easeOut = (p: number) => 1 - (1 - p) ** 3;
+const easeInOut = (p: number) =>
+  p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2;
