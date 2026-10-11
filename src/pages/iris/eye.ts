@@ -13,6 +13,17 @@ export interface DitherOptions {
 }
 
 /**
+ * Where an eye's iris is in its layer (eyes/eyes.json, made by
+ * `npm run eyes`): its centre, as shares of the layer's width and
+ * height, and its radius, as a share of the width.
+ */
+export interface Iris {
+  x: number;
+  y: number;
+  radius: number;
+}
+
+/**
  * An eye drawn by eye.frag on a canvas over the eye's stacked layers,
  * which stay as the picture without WebGL. It's dithered at a low
  * resolution, which CSS scales up, and only draws when told where to look
@@ -22,7 +33,8 @@ export class EyeShader {
   /** Null without WebGL, or if the eye's image didn't load. */
   static async create(
     el: HTMLElement,
-    dither: DitherOptions
+    dither: DitherOptions,
+    iris: Iris
   ): Promise<EyeShader | null> {
     const image = el.querySelector('img');
     if (!image) return null;
@@ -44,6 +56,9 @@ export class EyeShader {
     });
     if (!shader) return null;
     shader.set('u_edge', 0.5 / height);
+    shader.set('u_iris', iris.x, iris.y, iris.radius);
+    shader.set('u_aspect', width / height);
+    shader.set('u_dilate', 0);
     el.append(canvas);
     el.dataset.gl = '';
     return new EyeShader(shader);
@@ -51,9 +66,13 @@ export class EyeShader {
 
   private constructor(private readonly shader: ShaderCanvas) {}
 
-  /** Moves the iris by a share of the eye's width and height. */
-  look(x: number, y: number): void {
+  /**
+   * Moves the iris by a share of the eye's width and height, with its
+   * pupil `dilate` open (0 as drawn, 1 wide).
+   */
+  look(x: number, y: number, dilate: number): void {
     this.shader.set('u_look', x, y);
+    this.shader.set('u_dilate', dilate);
     this.shader.render();
   }
 

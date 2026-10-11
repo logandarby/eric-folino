@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { stylesheet } from '../../../build/jsx/assets.ts';
 import { raw } from '../../../build/jsx/jsx-runtime.ts';
+import { BackLink } from '../../components/back-link/back-link.tsx';
 import { Hotspot } from '../../components/hotspot/hotspot.tsx';
 import { VoidLayout } from '../../layouts/void.tsx';
 import { siteConfig } from '../../site/site.config.ts';
@@ -87,6 +88,7 @@ export default function EnterPage() {
         )}
       </style>
       <div class="enter" style={{ '--cta-size': tv.cta.size }}>
+        <BackLink class="enter__back" href="/secret/" irisWipe />
         <div class="tv" data-tv>
           <div class="tv__screen" data-tv-screen></div>
           <picture class="tv__photo">

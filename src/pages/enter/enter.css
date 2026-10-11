@@ -31,6 +31,15 @@ body > * {
   container-type: size;
 }
 
+/* Back to the secret page: top middle, over the photo. */
+.enter__back {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 1;
+  translate: -50% 0;
+}
+
 /*
  * The photo's box, which everything on it is placed in (the page's
  * template sets --ar and the --screen-*, --spot-* places for each crop).

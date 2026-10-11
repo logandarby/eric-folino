@@ -21,7 +21,7 @@ export default function WindowPage() {
     <VoidLayout>
       <div class="window">
         <h1 class="sr-only">{page.title}</h1>
-        <BackLink irisWipe />
+        <BackLink href="/secret/" irisWipe />
         <div
           class="window__scene"
           data-window-scene
@@ -58,7 +58,6 @@ export default function WindowPage() {
             class="window__link"
             href={page.link.href}
             aria-label={page.link.label}
-            data-iris-wipe
             style={{
               '--link-x': String(page.link.box.x),
               '--link-y': String(page.link.box.y),

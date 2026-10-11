@@ -33,7 +33,7 @@ export default function IrisPage() {
             <p data-iris-text>{text}</p>
           ))}
         </div>
-        <BackLink class="iris__back" irisWipe />
+        <BackLink class="iris__back" href="/window/" />
         <div class="iris__eyes">
           {(['left', 'right'] as const).map((column) => (
             <div class="iris__column">

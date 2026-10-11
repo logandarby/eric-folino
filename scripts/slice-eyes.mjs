@@ -1,6 +1,7 @@
 // Cuts the four eyes for the iris page out of the layered sources in
 // assets-src/eyes/. Run with `npm run eyes` whenever those images change.
-// Output is committed, like the background's.
+// Output is committed, like the background's. eyes.json gets each eye's
+// size, and where its iris is.
 //
 // Each eye becomes one image holding its three layers stacked top to
 // bottom (base, iris, skin), so the page loads one file per eye and the
@@ -64,9 +65,42 @@ const sizes = await Promise.all(
       )
       .webp(WEBP)
       .toFile(fileURLToPath(new URL(`eye-${i + 1}.webp`, OUT_DIR)));
-    return { width: rect.width, height: rect.height };
+    return {
+      width: rect.width,
+      height: rect.height,
+      iris: await measure(layers[LAYERS.indexOf('iris')], rect),
+    };
   })
 );
+
+/**
+ * Where the iris is in its layer, for the page's shader to dilate it: its
+ * centre (weighted by opacity), as shares of the layer's width and
+ * height, and its radius (as a disc of its area), as a share of the
+ * width.
+ */
+async function measure(layer, { width, height }) {
+  const { data } = await sharp(layer)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let total = 0;
+  let sumX = 0;
+  let sumY = 0;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const alpha = data[(y * width + x) * 4 + 3] / 255;
+      total += alpha;
+      sumX += alpha * x;
+      sumY += alpha * y;
+    }
+  }
+  const round = (n) => Math.round(n * 1e4) / 1e4;
+  return {
+    x: round(total ? sumX / total / width : 0.5),
+    y: round(total ? sumY / total / height : 0.5),
+    radius: round(Math.sqrt(total / Math.PI) / width),
+  };
+}
 
 /**
  * Shrinks the picture in a transparent layer about its centre (weighted
