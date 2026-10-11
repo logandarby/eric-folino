@@ -1,4 +1,5 @@
 import type { Cleanup } from '../core/disposer.ts';
+import type { IrisWipe } from '../app/iris-wipe.ts';
 import type { DialogManager } from '../dialog/manager.ts';
 import type { SoundEngine } from './sound-engine.ts';
 
@@ -16,6 +17,8 @@ const SPOKEN = /[\p{L}\p{N}]/u;
  * - a hover tick for buttons and links (pointer hover or keyboard focus);
  * - a clunk when one is pressed;
  * - a swoosh as dialogs open and close, and voice blips as they type;
+ * - for the iris wipe between pages, the closing swoosh as it closes in,
+ *   a clunk as it snaps shut, and the opening swoosh as it opens;
  * - a looping sound for elements with `data-sound="<loop>"` (the TV's
  *   hum), held while hovered or focused, or while a dialog pointing at
  *   the element is open.
@@ -28,7 +31,8 @@ const SPOKEN = /[\p{L}\p{N}]/u;
  */
 export function bindSounds(
   sound: SoundEngine,
-  dialogs: DialogManager
+  dialogs: DialogManager,
+  irisWipe: IrisWipe
 ): Cleanup {
   // Browsers only allow audio to start from these events.
   for (const type of ['pointerdown', 'pointerup', 'keydown'] as const) {
@@ -57,10 +61,15 @@ export function bindSounds(
     });
   });
   dialogs.events.on('close', () => {
-    sound.play('close');
+    // One the wipe takes away in the dark is its sound's, not its own.
+    if (!irisWipe.active) sound.play('close');
     if (looping) hover.leave(looping, 'dialog');
     looping = null;
   });
+
+  irisWipe.events.on('close', () => sound.play('close'));
+  irisWipe.events.on('shut', () => sound.play('press'));
+  irisWipe.events.on('open', () => sound.play('open'));
 
   return () => {
     hover.release();

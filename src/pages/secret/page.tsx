@@ -53,7 +53,7 @@ export default function SecretPage() {
             data-dither
           />
         </div>
-        <BackLink home />
+        <BackLink home irisWipe />
         <div
           class="secret__stack"
           style={{
@@ -97,7 +97,11 @@ export default function SecretPage() {
                     '--tilt': `${polaroid.tilt}deg`,
                   }}
                 >
-                  <a class="secret__polaroid" href={polaroid.href}>
+                  <a
+                    class="secret__polaroid"
+                    href={polaroid.href}
+                    data-iris-wipe
+                  >
                     <img
                       class="secret__shadow"
                       src={`${ART_URL}/shadow.webp`}

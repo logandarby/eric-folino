@@ -20,7 +20,7 @@ export default function WindowPage() {
     <VoidLayout>
       <div class="window">
         <h1 class="sr-only">{page.title}</h1>
-        <BackLink />
+        <BackLink irisWipe />
         <div
           class="window__scene"
           data-window-scene

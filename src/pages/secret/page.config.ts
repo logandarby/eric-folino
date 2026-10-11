@@ -91,6 +91,15 @@ export default definePage<{
       tilt: 4,
     },
     {
+      href: '/poems/',
+      caption: 'THE WEB OF POEMS',
+      photo: 'web-of-poems.webp',
+      x: 4,
+      y: 14,
+      width: 46,
+      tilt: -3,
+    },
+    {
       href: '/iris/',
       caption: 'THE EYES',
       photo: 'iris.webp',

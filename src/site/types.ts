@@ -24,6 +24,8 @@ export interface DialogAction {
   label: string;
   /** Where it goes. Without one, it just closes the dialog. */
   href?: string;
+  /** Leaves with the iris wipe (src/app/iris-wipe.ts). Only with `href`. */
+  irisWipe?: boolean;
 }
 
 export interface DialogContent {
@@ -69,7 +71,7 @@ export interface DialogVoice {
 }
 
 interface SoundSettings {
-  /** 0–1, before the channel and master volumes. */
+  /** 1 is full; above that is louder. Before the channel and master volumes. */
   volume: number;
   /** Plays at most once per this many ms; extra plays are dropped. */
   minGapMs: number;
@@ -281,6 +283,14 @@ export interface SiteConfig {
     dialogOpenMs: number;
     dialogCloseMs: number;
     compactSpeedFactor: number;
+    irisWipe: {
+      closeMs: number;
+      holdMs: number;
+      snapMs: number;
+      blackMs: number;
+      openMs: number;
+      paddingPx: number;
+    };
   };
   dialog: {
     maxWidth: number;

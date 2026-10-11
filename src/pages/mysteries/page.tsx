@@ -9,7 +9,7 @@ export default function MysteriesPage() {
   return (
     <VoidLayout>
       <div class="mysteries">
-        <BackLink />
+        <BackLink irisWipe />
         <div class="mysteries__body">
           <h1 class="mysteries__title">{page.title}</h1>
           <p>{page.text}</p>

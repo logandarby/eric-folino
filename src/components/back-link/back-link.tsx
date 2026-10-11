@@ -5,15 +5,18 @@ import { Icon } from '../icon/icon.tsx';
 /**
  * "Back", for pages with no nav (VoidLayout). It goes home, unless the
  * last page was one of the site's: then back-link.ts takes it there.
- * With `home`, it's "Home" instead, and always goes home. Where it sits
- * is up to the page.
+ * With `home`, it's "Home" instead, and always goes home. With
+ * `irisWipe`, it leaves with the iris wipe (src/app/iris-wipe.ts). Where
+ * it sits is up to the page.
  */
 export function BackLink({
   class: cls,
   home = false,
+  irisWipe = false,
 }: {
   class?: string;
   home?: boolean;
+  irisWipe?: boolean;
 }) {
   stylesheet(import.meta.url, './back-link.css');
   return (
@@ -21,6 +24,7 @@ export function BackLink({
       class={cls ? `back-link ${cls}` : 'back-link'}
       href="/"
       data-back-link={!home}
+      data-iris-wipe={irisWipe}
     >
       <Icon icon={home ? faHouse : faArrowLeft} class="back-link__icon" />
       {home ? 'Home' : 'Back'}

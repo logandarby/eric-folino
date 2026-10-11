@@ -1,3 +1,4 @@
+import { irisWipeBack } from '../../app/iris-wipe.ts';
 import { cameFromSite } from '../../app/router.ts';
 import type { Cleanup } from '../../core/disposer.ts';
 
@@ -11,6 +12,7 @@ export function mountBackLink(): Cleanup {
   const onClick = (e: MouseEvent) => {
     if (!cameFromSite()) return;
     e.preventDefault();
+    irisWipeBack(link);
     history.back();
   };
   link.addEventListener('click', onClick);
