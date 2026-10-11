@@ -26,9 +26,9 @@ export function DocumentLayout({
           <Title class="document__title" />
         </div>
         <main class="document__main">{children}</main>
-        <HelpButton scrolls header />
+        <HelpButton header />
       </div>
-      <SoundControl scrolls header />
+      <SoundControl header />
     </>
   );
 }

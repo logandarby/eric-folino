@@ -1,16 +1,31 @@
 // Domain-warped noise: noise whose coordinates are pushed around by more
 // noise, twice over, so it churns like oil, or something under skin.
-// Dimmer in the middle, behind the text. `dither()` comes from
+// Dimmer in the middle, behind the text. `shade()` comes from shade.glsl, `dither()` from
 // src/gl/dither.ts, and each pixel here is one of the dither's (CSS
 // scales the canvas up).
+
+// Full precision where the phone has it: at medium, the noise's hash
+// loses the decimals it's made of, and comes out blank.
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform float u_time;
 uniform vec2 u_resolution;
 uniform float u_speed;
 
+/**
+ * A random 0–1 for a point: Dave Hoskins's "hash without sine"
+ * (https://www.shadertoy.com/view/4djSRW). The usual
+ * fract(sin(x) * 43758.5453) comes out flat on some phones, whose sin()
+ * is rough for big x.
+ */
 float hash(vec2 p) {
-  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
 }
 
 /** Value noise, 0–1, smooth between whole-number points. */
@@ -57,6 +72,9 @@ void main() {
   // Dimmer behind the text, in the middle.
   float d = length(uv * vec2(0.8, 1.0));
   color *= mix(0.35, 1.0, smoothstep(0.15, 0.7, d));
+
+  // Darker behind the text (shade.glsl).
+  color *= 1.0 - shade();
 
   gl_FragColor = vec4(dither(color, gl_FragCoord.xy), 1.0);
 }

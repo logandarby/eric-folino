@@ -31,6 +31,13 @@
   font-weight: 400;
 }
 
+/* The text. The moving picture's darker in an oval round it, padding
+   and all (shade.glsl). */
+.mysteries__body {
+  max-width: 100%;
+  padding: 24px;
+}
+
 .mysteries__body p {
   margin: 0;
 }

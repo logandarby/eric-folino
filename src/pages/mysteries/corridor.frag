@@ -1,9 +1,16 @@
 // An endless square corridor, falling away into the middle of the screen:
 // its walls checkered, twisting slowly the further in they are, and dark
 // at the far end, behind the text. Each point's depth is 1 over how far
-// it is from the middle. `dither()` comes from src/gl/dither.ts, and each
+// it is from the middle. `shade()` comes from shade.glsl, `dither()` from src/gl/dither.ts, and each
 // pixel here is one of the dither's (CSS scales the canvas up).
+
+// Full precision where the phone has it: at medium, the depth near the
+// far end loses its decimals.
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform float u_time;
 uniform vec2 u_resolution;
@@ -36,6 +43,9 @@ void main() {
 
   // Fog: nothing at the far end.
   color *= smoothstep(0.04, 0.6, r);
+
+  // Darker behind the text (shade.glsl).
+  color *= 1.0 - shade();
 
   gl_FragColor = vec4(dither(color, gl_FragCoord.xy), 1.0);
 }

@@ -218,8 +218,20 @@ html:has(.photo-preview[open]) {
   place-items: center;
 }
 
+/* Phones: at the top, just below the buttons, rather than in the middle
+   of the space. */
+:root[data-layout='compact'] .photo-preview__photo {
+  align-items: start;
+}
+
 .photo-preview__photo picture {
   display: contents;
+}
+
+/* With the picture's box gone, its sources would take grid rows of their
+   own, pushing the photo down out of the one cell. */
+.photo-preview__photo source {
+  display: none;
 }
 
 .photo-preview__photo img {
