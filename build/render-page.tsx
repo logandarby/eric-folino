@@ -5,7 +5,7 @@ import { Head, safeJson } from '../src/layouts/head.tsx';
 import { siteConfig } from '../src/site/site.config.ts';
 import type { PageConfig } from '../src/site/types.ts';
 import { resolveImages } from './images.ts';
-import { collectStylesheets } from './jsx/assets.ts';
+import { collectStylesheets, type Stylesheet } from './jsx/assets.ts';
 import { raw, type Html } from './jsx/jsx-runtime.ts';
 
 /*
@@ -55,7 +55,12 @@ export async function renderPage({
     ? existsSync(resolve(root, `.${ownEntry}`)) && ownEntry
     : PLACEHOLDER_ENTRY;
 
-  if (full && page.bare) return renderBare(page, view(page));
+  if (full && page.bare) {
+    return renderBare(
+      page,
+      collectStylesheets(root, folder, () => view(page))
+    );
+  }
 
   const { result: body, stylesheets } = collectStylesheets(root, folder, () =>
     full ? view(page) : <PlaceholderPage page={page} />
@@ -83,8 +88,14 @@ export async function renderPage({
   return resolveImages(`<!doctype html>\n${html.value}`, { root });
 }
 
-/** A page with `bare` set: its markup, and only what <head> must have. */
-function renderBare(page: PageConfig, body: Html): string {
+/**
+ * A page with `bare` set: its markup, only what <head> must have, and any
+ * stylesheets it asked for (but not the site's shared ones).
+ */
+function renderBare(
+  page: PageConfig,
+  { result: body, stylesheets }: { result: Html; stylesheets: Stylesheet[] }
+): string {
   const html = (
     <html lang="en">
       <head>
@@ -93,6 +104,9 @@ function renderBare(page: PageConfig, body: Html): string {
         <title>{page.title ?? siteConfig.siteName}</title>
         <meta name="description" content={page.description} />
         {page.noindex && <meta name="robots" content="noindex" />}
+        {stylesheets.map(({ href, tier }) => (
+          <link rel="stylesheet" href={href} data-tier={tier} />
+        ))}
       </head>
       <body>{body}</body>
     </html>

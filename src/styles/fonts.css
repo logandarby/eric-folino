@@ -9,3 +9,47 @@
   src: url('../assets/fonts/Px437_Cordata_PPC-400.woff2') format('woff2');
   font-display: block;
 }
+
+/*
+ * Libron, by Nico Verbruggen (github.com/nicoverbruggen/libron), licensed
+ * SIL OFL 1.1. A serif for long reading: the self-reference essay's.
+ */
+@font-face {
+  font-family: 'Libron';
+  src: url('../assets/fonts/Libron-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Libron';
+  src: url('../assets/fonts/Libron-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Libron';
+  src: url('../assets/fonts/Libron-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Libron';
+  src: url('../assets/fonts/Libron-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/*
+ * Eric: our own cryptic font, in progress (its source is
+ * new_design_docs/eric6.ttf). One case (a and A are the same letter)
+ * and basic punctuation so far. The ineffability page shows it off.
+ */
+@font-face {
+  font-family: 'Eric';
+  src: url('../assets/fonts/eric.woff2') format('woff2');
+  font-display: block;
+}

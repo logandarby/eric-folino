@@ -6,6 +6,7 @@ import { ditherGlsl } from '../../gl/dither.ts';
 import { ShaderCanvas } from '../../gl/shader-canvas.ts';
 import page from './page.config.ts';
 import sceneShader from './scene.frag?raw';
+import { blobDialogs } from '../../site/blob-dialogs.ts';
 
 /** Frames drawn a second: the video's own rate is about this. */
 const MAX_FPS = 30;
@@ -18,7 +19,7 @@ pageScript(import.meta.url, ({ dialogs }) => {
   let stopped = false;
 
   disposer.add(mountBackLink());
-  disposer.add(bindBlobs(dialogs, page.blobs));
+  disposer.add(bindBlobs(dialogs, page.blobs, blobDialogs.window));
 
   const scene = document.querySelector<HTMLElement>('[data-window-scene]');
   const video = document.querySelector<HTMLVideoElement>('[data-window-video]');

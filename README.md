@@ -34,8 +34,9 @@ The pre-commit hook formats and lints staged files, then runs the type-check, te
 | Iris           | `/iris/`           | Four eyes that follow the pointer, over a line of text picked at random on each load. The window page's window leads here, and Back back there. Noindex                                                                                                        |
 | Window         | `/window/`         | A desk and chair by a window, cut out of their room, with Mars going by outside, all dithered, and the blobs around it. The enter page's "yes" leads here, the window to the iris page, and Back to the secret page. Noindex                                   |
 | Secret         | `/secret/`         | A fridge on the moon, with polaroids leading to the enter (and on to the window), poems and mysteries pages, a TV on top, the blobs around it and the moon panning behind, all dithered where they sit (but the blobs). The nav's "Secret" leads here. Noindex |
-| Mysteries      | `/mysteries/`      | Links to strange things, listed in its config: other sites (in a new tab) and the self-reference essay. The fridge's "Mysteries?" polaroid leads here, and Back to the secret page. Noindex                                                                    |
-| Self-Reference | `/self-reference/` | "The Self-Referencing Question-Answer (Mimethesis)", an essay, to be written. A bare page (see below). Noindex                                                                                                                                                 |
+| Mysteries      | `/mysteries/`      | Links to strange things, listed in its config: other sites (in a new tab), the self-reference essay and the ineffability page. The fridge's "Mysteries?" polaroid leads here, and Back to the secret page. Noindex                                             |
+| Self-Reference | `/self-reference/` | "The Self-Referencing Question-Answer (Mimethesis)", an essay, to be written, set in Libron. A bare page (see below). Noindex                                                                                                                                  |
+| Ineffability   | `/ineffability/`   | A block of text in Eric, our own cryptic font (`new_design_docs/eric6.ttf`, one case, so a and A are the same, plus basic punctuation), on the light pages' cream. The mysteries page leads here, and Back (written in Eric) back there. Noindex               |
 | Poems          | `/poems/`          | The web of poems: a welcome, and "begin" goes to a random poem. Each poem links to others by what it means. The fridge's "The Web of Poems" polaroid leads here. Not indexed by search engines                                                                 |
 | 404            | any other          | A placeholder dialog pointing back home                                                                                                                                                                                                                        |
 
@@ -47,7 +48,7 @@ The pre-commit hook formats and lints staged files, then runs the type-check, te
 - `socials.ts`: links to Eric's profiles, shown above the title on the home page and in the EPK.
 - `sound.config.ts`: sound tuning. `voices.ts`: the dialog voices.
 
-**Each page's settings and text** are in `src/pages/<page>/page.config.ts`, like the home page's blobs and their dialogs, or the EPK's contact address.
+**Each page's settings and text** are in `src/pages/<page>/page.config.ts`, like where the home page's blobs sit, or the EPK's contact address.
 
 **The EPK's content** lives in `src/pages/epk/`:
 
@@ -70,7 +71,8 @@ Sections with nothing in them are left out, and the line of links at the top of 
 - **Instant dialogs**: `instant: true` on a dialog shows its text all at once, uncovered by the window as it opens. Use it for UI and menus; dialogs where something speaks type their text out.
 - **The "?" button's dialog**: `help` in `src/site/site.config.ts`. Every layout puts the "?" in the corner beside the sound button; a page can say something else with `pageScript(import.meta.url, mount, { help: … })` in its `main.ts`.
 - **`src/styles/base.css`**: the dashed outline that marks anything usable. Every button gets it on hover, and anything focusable gets it on keyboard focus, so new pages have it for free; set `--outline-offset` on an element to move it.
-- **`src/site/blobs.ts`**: the blobs, characters that turn up across the site: each one's name (its dialogs' title), screen-reader label, shape and voice. Pages place them and write what they say in their own `page.config.ts`.
+- **`src/site/blobs.ts`**: the blobs, characters that turn up across the site: each one's name (its dialogs' title), screen-reader label, shape and voice. Pages place them in their own `page.config.ts`.
+- **`src/site/blob-dialogs.ts`**: everything the blobs say, on every page, in the order a visitor meets them. New blob dialog goes here.
 - **`src/assets/blobs/*.svg`**: blob shapes (one `<path>` each; the colour comes from its `fill`).
 - **`assets-src/web-background.png`**: the full-size background. Run `npm run images` after changing it.
 - **`assets-src/strange-tv.png`**: the enter page's TV photo, with a transparent hole where the screen plays. Run `npm run tv` after changing it; it finds the hole and makes a whole-photo crop and a tall phone crop. Where the TV is (for its button), the "enter?" text, the picture's brightness, how the static fades and the CRT look are in `src/pages/enter/page.config.ts`; the background colour and tile are at the top of `enter.css`.
@@ -92,7 +94,7 @@ Each page is a folder in `src/pages/`:
 
 A page without `page.tsx` (like the 404) is a **placeholder**: the bus stop with a dialog from its `placeholder` setting.
 
-**Bare pages.** A page with `bare: true` is just its page.tsx in a plain HTML document, in the browser's own look: none of the site's styles, scripts, sounds or page transitions. Links to one need `data-no-swup`, so the browser loads it itself.
+**Bare pages.** A page with `bare: true` is just its page.tsx in a plain HTML document, in the browser's own look: none of the site's styles, scripts, sounds or page transitions. It can still link stylesheets of its own with `stylesheet()` (and `src/styles/fonts.css` for the site's fonts). Links to one need `data-no-swup`, so the browser loads it itself.
 
 **Drafts.** A page with `draft: true` is built in full only on the dev server and with `SHOW_DRAFTS=1`. Everywhere else, including the live site, it shows its placeholder instead, and its files (like the press downloads) are left out. To publish a draft, remove `draft` from its config.
 
@@ -165,6 +167,7 @@ Sound is on by default (off for visitors who prefer reduced motion) but, as brow
 ## Credits
 
 - **Px437 Cordata PPC-400** (the enter page's "enter?") is from [The Ultimate Oldschool PC Font Pack](https://int10h.org/oldschool-pc-fonts/) by VileR, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- **Libron** (the self-reference essay) is by [Nico Verbruggen](https://github.com/nicoverbruggen/libron), licensed under the [SIL Open Font License 1.1](https://openfontlicense.org/).
 - The enter page's CRT look is adapted from daenavan's [crt-threejs](https://daenavan.github.io/crt-threejs/).
 
 ## How it fits together

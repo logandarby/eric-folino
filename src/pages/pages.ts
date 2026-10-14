@@ -1,6 +1,7 @@
 import enter from './enter/page.config.ts';
 import epk from './epk/page.config.ts';
 import home from './home/page.config.ts';
+import ineffability from './ineffability/page.config.ts';
 import iris from './iris/page.config.ts';
 import listen from './listen/page.config.ts';
 import mysteries from './mysteries/page.config.ts';
@@ -31,6 +32,7 @@ export const pages: PageConfig[] = [
   secret,
   mysteries,
   selfReference,
+  ineffability,
   poems,
   ...poemPages,
   poemGraph,

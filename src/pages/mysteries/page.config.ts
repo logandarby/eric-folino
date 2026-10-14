@@ -41,29 +41,25 @@ export default definePage<{
 }>({
   id: 'mysteries',
   path: '/mysteries/',
-  title: 'Mysteries?',
+  title: 'Mysteries',
   description: 'Mysteries.',
   noindex: true,
   irisWipe: 'light',
 
-  text: 'Strange things.',
+  text: '',
 
   mysteries: [
     {
-      label: 'Ritual and the Consciousness Monoculture',
-      href: 'https://ribbonfarm.com/2015/01/08/ritual-and-the-consciousness-monoculture/',
-    },
-    {
-      label: 'Pluto and the Beheading of St. John the Baptist',
-      href: 'https://ioannisgoldmouth.substack.com/p/pluto-and-the-beheading-of-st-john',
+      label: 'Ineffability',
+      href: '/ineffability/',
     },
     {
       label: 'The Self-Referencing Question-Answer (Mimethesis)',
       href: '/self-reference/',
     },
     {
-      label: 'The Re-Verbasizer',
-      href: 'https://logandarby.github.io/re-verbasizer/',
+      label: 'Ritual and the Consciousness Monoculture',
+      href: 'https://ribbonfarm.com/2015/01/08/ritual-and-the-consciousness-monoculture/',
     },
   ],
 

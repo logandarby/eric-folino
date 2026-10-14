@@ -2,8 +2,8 @@ import { definePage } from '../../site/define-page.ts';
 
 /*
  * Self-Reference: an essay on the self-referencing question-answer (the
- * mimethesis), as a plain page in the browser's own look. The mysteries
- * page links here. Kept out of search engines.
+ * mimethesis), as a plain page in the browser's own look, set in Libron.
+ * The mysteries page links here. Kept out of search engines.
  */
 
 export default definePage<{

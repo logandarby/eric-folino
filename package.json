@@ -22,6 +22,7 @@
     "tv:collage": "node scripts/build-tv-collage.mjs",
     "secret": "node scripts/build-secret.mjs",
     "poems": "node scripts/build-poems.mjs",
+    "ink": "node scripts/ink-tarot.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

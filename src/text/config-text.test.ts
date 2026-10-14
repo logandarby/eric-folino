@@ -3,15 +3,21 @@ import enter from '../pages/enter/page.config.ts';
 import home from '../pages/home/page.config.ts';
 import iris from '../pages/iris/page.config.ts';
 import { pages } from '../pages/pages.ts';
+import secret from '../pages/secret/page.config.ts';
 import windowPage from '../pages/window/page.config.ts';
-import { blobDialog } from '../site/blobs.ts';
+import { blobDialogs, type BlobScene } from '../site/blob-dialogs.ts';
+import { blobDialog, type BlobName } from '../site/blobs.ts';
 import { siteConfig } from '../site/site.config.ts';
 import type { DialogContent } from '../site/types.ts';
 import { compile } from './markup/timeline.ts';
 
 describe('dialog text in the configs', () => {
   const dialogs: DialogContent[] = [
-    ...[...home.blobs, ...windowPage.blobs].map(blobDialog),
+    ...Object.values(blobDialogs).flatMap((scene: BlobScene) =>
+      Object.entries(scene).map(([name, line]) =>
+        blobDialog(name as BlobName, line)
+      )
+    ),
     ...iris.eyes.map((eye) => eye.dialog),
     enter.tv.dialog,
     siteConfig.help.dialog,
@@ -33,5 +39,18 @@ describe('dialog text in the configs', () => {
   it.each(marked)("doesn't write its own quote marks or asterisk: %o", (b) => {
     if (b.kind === 'quote') expect(b.text).not.toMatch(/^["“]|["”]$/);
     if (b.kind === 'narration') expect(b.text).not.toMatch(/^(\{[^}]*\})*\*/);
+  });
+});
+
+describe('blob dialogs', () => {
+  const placed = [
+    ['home', home.blobs],
+    ['secret', secret.blobs],
+    ['window', windowPage.blobs],
+  ] as const;
+
+  it.each(placed)('every blob on %s has something to say', (scene, blobs) => {
+    const lines: BlobScene = blobDialogs[scene];
+    for (const { blob } of blobs) expect(lines[blob], blob).toBeDefined();
   });
 });
