@@ -19,6 +19,7 @@ body > * {
 .ineffability {
   display: grid;
   grid-template-rows: auto 1fr;
+  font-weight: normal;
   justify-items: center;
   align-items: center;
   min-height: 100dvh;
@@ -29,6 +30,7 @@ body > * {
 }
 
 .ineffability__body {
+  --px: 1px;
   padding-top: 40px;
   display: grid;
   justify-items: center;
@@ -39,6 +41,8 @@ body > * {
 /* Back, written in Eric. */
 .ineffability__back {
   font-family: 'Eric', var(--font-pixel);
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* The cipher text, on a block of the light pages' ink. Sized in Eric's
@@ -72,6 +76,7 @@ body > * {
    are one of Eric's pixels, unblurred, so they stay as crisp as the
    letters. */
 .ineffability__inset {
+  font-weight: bold;
   color: #18121c;
   text-shadow:
     0 calc(-1 * var(--px)) 0 #0e0a11,
