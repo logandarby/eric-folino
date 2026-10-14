@@ -17,11 +17,11 @@ export default definePage<{
   noindex: true,
 
   cipher: [
-    "\"Ineffability is the quality of something that surpasses the capacity of language to express it.\"",
-    "The present is ineffable.",
-    "Only through anachronistic images of the past can we understand the present.",
+    '"Ineffability is the quality of something that surpasses the capacity of language to express it."',
+    'The present is ineffable.',
+    'Only through anachronistic images of the past can we understand the present.',
     "Only through what we've known can we grasp the unknown.",
-    "But remember...",
-    "Images decieve."
+    'But remember...',
+    'Images decieve.',
   ],
 });
