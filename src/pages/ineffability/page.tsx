@@ -15,9 +15,15 @@ export default function IneffabilityPage() {
         <BackLink class="ineffability__back" href="/mysteries/" />
         <div class="ineffability__body">
           <div class="ineffability__cipher" data-cipher>
-            {/* Light and inset by turns (ineffability.css). */}
+            {/* Light, or inset where the config says (ineffability.css). */}
             {page.cipher.map((text, i) => (
-              <p class={i % 2 ? 'ineffability__inset' : 'ineffability__light'}>
+              <p
+                class={
+                  page.inset.includes(i + 1)
+                    ? 'ineffability__inset'
+                    : 'ineffability__light'
+                }
+              >
                 {text}
               </p>
             ))}

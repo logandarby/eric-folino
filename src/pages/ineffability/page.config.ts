@@ -9,6 +9,8 @@ import { definePage } from '../../site/define-page.ts';
 export default definePage<{
   /** The block of cipher text in the middle, a paragraph each. */
   cipher: string[];
+  /** Which of its paragraphs (counting from 1) are inset; the rest are light. */
+  inset: number[];
 }>({
   id: 'ineffability',
   path: '/ineffability/',
@@ -17,11 +19,12 @@ export default definePage<{
   noindex: true,
 
   cipher: [
-    '"Ineffability is the quality of something that surpasses the capacity of language to express it."',
+    'Ineffability is the quality of something that surpasses the capacity of language to express it.',
     'The present is ineffable.',
+    'Only through what we have known can we grasp the unknown.',
     'Only through anachronistic images of the past can we understand the present.',
-    "Only through what we've known can we grasp the unknown.",
     'But remember...',
-    'Images decieve.',
+    'Images deceive.',
   ],
+  inset: [2, 6],
 });

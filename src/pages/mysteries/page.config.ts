@@ -55,7 +55,7 @@ export default definePage<{
     },
     {
       label: 'The Self-Referencing Question-Answer (Mimethesis)',
-      href: '/self-reference/',
+      href: '/what-is-the-URL-path-of-this-webpage/',
     },
     {
       label: 'Ritual and the Consciousness Monoculture',

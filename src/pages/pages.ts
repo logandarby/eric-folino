@@ -10,7 +10,7 @@ import poemFavourites from './poem-favourites/page.config.ts';
 import poemGraph from './poem-graph/page.config.ts';
 import poems, { poemPages } from './poems/page.config.ts';
 import secret from './secret/page.config.ts';
-import selfReference from './self-reference/page.config.ts';
+import selfReference from './what-is-the-URL-path-of-this-webpage/page.config.ts';
 import windowPage from './window/page.config.ts';
 import type { PageConfig } from '../site/types.ts';
 
