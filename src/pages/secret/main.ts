@@ -11,6 +11,7 @@ import { bindBlobs } from '../../components/blob/blobs.ts';
 import { Disposer } from '../../core/disposer.ts';
 import { ditherImages } from '../../gl/dithered-images.ts';
 import page from './page.config.ts';
+import { blobDialogs } from '../../site/blob-dialogs.ts';
 
 /** A polaroid picked up: one of these, never the same twice running. */
 const PAPER_URLS = [
@@ -20,7 +21,7 @@ const PAPER_URLS = [
 
 pageScript(import.meta.url, ({ dialogs, sound }) => {
   const disposer = new Disposer();
-  disposer.add(bindBlobs(dialogs, page.blobs));
+  disposer.add(bindBlobs(dialogs, page.blobs, blobDialogs.secret));
   const root = document.querySelector<HTMLElement>('[data-secret]');
   if (!root) return () => disposer.dispose();
   disposer.add(ditherImages(root, page.dither));

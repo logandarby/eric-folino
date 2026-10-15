@@ -111,7 +111,8 @@ export default definePage<{
   ],
 
   /**
-   * The blobs (src/site/blobs.ts), around the fridge. Their width and
+   * The blobs (src/site/blobs.ts), around the fridge; what they say here
+   * is in src/site/blob-dialogs.ts. Their width and
    * position are shares (%) of the fridge with the TV on it: below 0 or
    * over 100 is beside it, on the moon. Phones have less room either side.
    */
@@ -120,63 +121,22 @@ export default definePage<{
       blob: 'pink',
       width: { wide: 55, compact: 50 },
       position: { wide: { x: -70, y: 88 }, compact: { x: -34, y: 90 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "Don't tell Health Canada I'm here.",
-          },
-        ],
-      },
     },
     {
       blob: 'yellow',
       width: { wide: 30, compact: 28 },
       position: { wide: { x: -125, y: 84 }, compact: { x: -28, y: 70 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "I wonder what poetry the Taoists would've written here.",
-          },
-
-          {
-            kind: 'narration',
-            text: 'You are somewhat interested.',
-          },
-        ],
-      },
     },
     {
       // On top of the fridge, beside the TV.
       blob: 'blue',
       width: { wide: 14, compact: 24 },
       position: { wide: { x: 80, y: 6.5 }, compact: { x: 80, y: -1 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "I can't believe I'm up here. Can someone get me down?",
-          },
-          {
-            kind: 'narration',
-            text: "You definitely can't.",
-          },
-        ],
-      },
     },
     {
       blob: 'green',
       width: { wide: 50, compact: 46 },
       position: { wide: { x: 115, y: 86 }, compact: { x: 90, y: 92 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: 'Is there any food here? {wave}Ohohoo!{/wave}',
-          },
-        ],
-      },
     },
   ],
 

@@ -4,7 +4,8 @@ import { hushVoice, sillyVoice, softVoice } from './voices.ts';
 /*
  * The blobs: characters that turn up across the site, each the same blob
  * wherever it is. Their names, shapes and voices are kept here; each page
- * places them and writes what they say there (BlobConfig).
+ * places them (BlobConfig), and what they say on every page is in
+ * src/site/blob-dialogs.ts.
  */
 
 export interface BlobCharacter {
@@ -53,19 +54,20 @@ export interface BlobConfig {
   /** Width as a percentage of what it's placed on (the stage, say). */
   width: Record<LayoutName, number>;
   position: Record<LayoutName, Placement>;
-  /**
-   * What they say when clicked. It's titled with their name and in their
-   * voice, unless it gives its own.
-   */
-  dialog: Omit<DialogContent, 'title'> & { title?: string };
 }
 
+/**
+ * What a blob says when clicked (src/site/blob-dialogs.ts). It's titled
+ * with their name and in their voice, unless it gives its own.
+ */
+export type BlobLine = Omit<DialogContent, 'title'> & { title?: string };
+
 /** A blob's dialog, with their name and voice filled in. */
-export function blobDialog(config: BlobConfig): DialogContent {
-  const character: BlobCharacter = blobs[config.blob];
+export function blobDialog(blob: BlobName, line: BlobLine): DialogContent {
+  const character: BlobCharacter = blobs[blob];
   return {
     title: character.name,
     ...(character.voice && { voice: character.voice }),
-    ...config.dialog,
+    ...line,
   };
 }

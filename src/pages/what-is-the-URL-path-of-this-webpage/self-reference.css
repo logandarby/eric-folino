@@ -1,0 +1,339 @@
+:root {
+  color-scheme: light;
+}
+
+/* The same background as /listen: cream with a tinge of purple, and ink
+   to match, under a tiled Bayer dither (a 16px tile, shown at 18px). */
+body {
+  --color-bg: #f2ebed;
+  --color-fg: #2a2230;
+  --sheet: #fcf9fa;
+  background: url('../../assets/textures/bayerdark.png') 0 0 / 18px 18px repeat
+    var(--color-bg);
+  image-rendering: pixelated;
+}
+
+/* Only the tile is pixelated. */
+body > * {
+  image-rendering: auto;
+}
+
+/* Back at the top, and the sheet down the middle below it. A column,
+   not a grid, so Back can stick all the way down (a grid would hold it
+   to its own row). */
+.self-reference {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 16px 16px 96px;
+  color: var(--color-fg);
+}
+
+/* Back stays at the top as the essay scrolls under it. */
+.self-reference__back {
+  position: sticky;
+  z-index: 1;
+  top: 16px;
+}
+
+/*
+ * The sheet the essay sits on: wide enough for a long line of Libron,
+ * edged in ink with a hard shadow, like the deck's keys.
+ */
+.self-reference__sheet {
+  width: min(100%, 52rem);
+  padding: clamp(24px, 7vw, 72px);
+  border: 2px solid var(--color-fg);
+  background: var(--sheet);
+  box-shadow: 6px 6px 0 var(--color-fg);
+  font-family: 'Libron', Georgia, serif;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 40rem) {
+  .self-reference__sheet {
+    font-size: 1rem;
+    box-shadow: 4px 4px 0 var(--color-fg);
+  }
+}
+
+.self-reference__sheet > :first-child {
+  margin-top: 0;
+}
+
+/* The essay ends on its last question, with room below it to sit in. */
+.self-reference__essay > :last-child {
+  margin-bottom: 0;
+  padding-bottom: 6em;
+}
+
+.self-reference__sheet :is(h1, h2, h3) {
+  font-weight: 700;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.self-reference__sheet h1 {
+  margin-bottom: 0.25em;
+  font-size: 2.25em;
+}
+
+.self-reference__sheet h2 {
+  margin: 2.25em 0 0.75em;
+  font-size: 1.5em;
+}
+
+.self-reference__sheet h3 {
+  margin: 1.75em 0 0.5em;
+  font-size: 1.2em;
+}
+
+.self-reference__sheet strong {
+  font-weight: 700;
+}
+
+.self-reference__sheet hr {
+  margin: 2em 0;
+  border: 0;
+  border-top: 2px solid var(--color-fg);
+}
+
+.self-reference__sheet ul {
+  padding-left: 1.25em;
+}
+
+.self-reference__sheet li + li {
+  margin-top: 0.35em;
+}
+
+/* The questions themselves, set off from the prose. */
+.self-reference__sheet blockquote {
+  margin: 1.25em 0;
+  padding: 0.1em 0 0.1em 1.1em;
+  border-left: 3px solid var(--color-fg);
+}
+
+.self-reference__sheet blockquote p {
+  margin: 0.5em 0;
+}
+
+.self-reference__sheet blockquote blockquote {
+  margin: 0.75em 0;
+  font-style: italic;
+}
+
+.self-reference__sheet a[href] {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.self-reference__sheet a[href]:hover {
+  background: var(--color-fg);
+  color: var(--sheet);
+  text-decoration: none;
+}
+
+/* The essay's anchors: the captions its examples are linked by
+   ("Mimethesis 1"), under their quotes, and the bare ones that only mark
+   a place. A caption lands far enough down to show its quote above it. */
+.self-reference__sheet a[id] {
+  scroll-margin-top: 1.5em;
+}
+
+.self-reference__sheet a[id]:not(:empty) {
+  scroll-margin-top: 10em;
+}
+
+.self-reference__sheet a[id]:not([href]) {
+  font-size: 0.8em;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+}
+
+/* A caption sits close under its quote. */
+.self-reference__sheet blockquote:has(+ p > a[id]:not([href]):only-child) {
+  margin-bottom: 0.4em;
+}
+
+.self-reference__sheet p:has(> a[id]:not([href]):only-child) {
+  margin-top: 0;
+}
+
+.self-reference__sheet p:has(> a[id]:not([href]):only-child:empty) {
+  margin: 0;
+}
+
+/* The example a link just went to. */
+.self-reference__sheet a[id]:target {
+  background: var(--color-fg);
+  color: var(--sheet);
+  padding: 0 0.3em;
+}
+
+/* The quote a link points to, over the link while it's hovered or
+   focused (main.ts): in the essay's Libron, wide enough for the long
+   ones. */
+.tooltip {
+  max-width: min(28rem, 100vw - 16px);
+  padding: 8px 12px;
+  font-family: 'Libron', Georgia, serif;
+  line-height: 1.4;
+}
+
+/* The copy button beside "What do you get if you copy and paste me?":
+   the EPK's copy button, at its size and in its font, but outlined like
+   the site's other buttons and in the sheet's light colours. Inverted on
+   hover and once it's copied. */
+.self-reference__sheet .copy-button {
+  margin-left: 0.4em;
+  vertical-align: middle;
+}
+
+.self-reference__sheet .copy-button__button {
+  padding: 0.2em 0.6em;
+  border: 2px solid var(--color-fg);
+  background: var(--sheet);
+}
+
+.self-reference__sheet .copy-button__button:hover,
+.self-reference__sheet .copy-button__button:focus-visible,
+.self-reference__sheet .copy-button__button[data-state='done'] {
+  background: var(--color-fg);
+  color: var(--sheet);
+}
+
+/*
+ * The comments: a joke. The box to write one is disabled and taped over
+ * with two crossed strips of hazard tape, which overhang it and are cut
+ * off by the sheet's edges.
+ */
+.comments {
+  overflow: hidden;
+}
+
+.comments h2 {
+  margin-top: 0;
+}
+
+.comments__box {
+  position: relative;
+  margin: 1.5em 0 2.5em;
+}
+
+.comments__form {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  opacity: 0.55;
+}
+
+.comments__form textarea {
+  width: 100%;
+  padding: 0.6em 0.75em;
+  border: 2px solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font: inherit;
+  resize: none;
+}
+
+.comments__form button {
+  padding: 0.4em 1.25em;
+  border: 2px solid var(--color-fg);
+  background: var(--color-fg);
+  color: var(--sheet);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+}
+
+.comments__form :disabled {
+  cursor: not-allowed;
+}
+
+.comments__tape {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Yellow and black, striped along its edges, the words on the yellow. */
+.comments__strip {
+  --hazard: #f2c230;
+  position: absolute;
+  top: 50%;
+  left: -20%;
+  width: 140%;
+  padding: 7px 0;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-fg) 0 12px,
+    var(--hazard) 12px 24px
+  );
+  box-shadow: 0 3px 6px rgb(42 34 48 / 0.3);
+  text-align: center;
+  white-space: nowrap;
+  rotate: -7deg;
+  translate: 0 -50%;
+}
+
+.comments__strip:last-child {
+  rotate: 5deg;
+}
+
+.comments__strip span {
+  display: block;
+  padding: 2px 0;
+  background: var(--hazard);
+  color: var(--color-fg);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+}
+
+.comments__list,
+.comments__replies {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comments__list {
+  display: grid;
+  gap: 1.5em;
+}
+
+/* Replies, one level only, indented under a rule. */
+.comments__replies {
+  display: grid;
+  gap: 1em;
+  margin-top: 1em;
+  margin-left: 0.5em;
+  padding-left: 1.25em;
+  border-left: 2px solid var(--color-fg);
+}
+
+.comments__comment p {
+  margin: 0;
+}
+
+.comments__byline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.75em;
+}
+
+.comments__author {
+  font-weight: 700;
+}
+
+.comments__date {
+  font-size: 0.85em;
+  opacity: 0.7;
+}

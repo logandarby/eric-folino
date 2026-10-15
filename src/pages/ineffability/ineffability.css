@@ -1,0 +1,89 @@
+/* The same background as /enter, /listen and /window: cream with a tinge
+   of purple, under a tiled Bayer dither (a 16px tile, shown at 18px). */
+body {
+  --color-bg: #f2ebed;
+  --color-fg: #2a2230;
+  background: url('../../assets/textures/bayerdark.png') 0 0 / 18px 18px repeat
+    var(--color-bg);
+  image-rendering: pixelated;
+}
+
+/* Only the tile is pixelated. */
+body > * {
+  image-rendering: auto;
+}
+
+/* Back at the top, and the rest in the middle of the screen below it,
+   in Cordata at the 16px it's drawn for (and twice that for the title).
+   Eric is drawn for 16px too, so it's set at a multiple of that. A
+   column, not a grid, so Back can stick to the top of the screen all the
+   way down (a grid would hold it to its own row). */
+.ineffability {
+  display: flex;
+  flex-direction: column;
+  font-weight: normal;
+  align-items: center;
+  min-height: 100dvh;
+  padding: 16px 16px 96px;
+  color: var(--color-fg);
+  font-family: var(--font-pixel);
+  text-align: center;
+}
+
+.ineffability__body {
+  --px: 1px;
+  margin-block: auto;
+  padding-top: 40px;
+  display: grid;
+  justify-items: center;
+  gap: 32px;
+  width: min(100%, 44rem);
+}
+
+/* Back, written in Eric. It stays at the top as the page scrolls. */
+.ineffability__back {
+  position: sticky;
+  z-index: 1;
+  top: 16px;
+  font-family: 'Eric', var(--font-pixel);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* The cipher text, on a block of the light pages' ink. Sized in Eric's
+   own pixels (--px: 2 CSS pixels, or as near as lands on whole screen
+   pixels, set by main.ts), so it's always drawn crisp: 16 of them to the
+   font size, and the line height and padding whole numbers of them too.
+   Left aligned, as centring a line can start it halfway into a pixel. */
+.ineffability__cipher {
+  display: grid;
+  gap: calc(16 * var(--px));
+  width: 100%;
+  padding: calc(16 * var(--px));
+  background: var(--color-fg);
+  font-family: 'Eric', monospace;
+  font-size: 32px;
+  line-height: 40px;
+  text-align: left;
+}
+
+.ineffability__cipher p {
+  margin: 0;
+}
+
+/* The two looks the paragraphs take turns in. Light: plain cream. */
+.ineffability__light {
+  color: var(--color-bg);
+}
+
+/* Inset: cut into the block, each letter a groove darker than it, its
+   top edge in shadow and its bottom edge catching the light. The edges
+   are one of Eric's pixels, unblurred, so they stay as crisp as the
+   letters. */
+.ineffability__inset {
+  font-weight: bold;
+  color: #18121c;
+  text-shadow:
+    0 calc(-1 * var(--px)) 0 #0e0a11,
+    0 var(--px) 0 #5a4a69;
+}

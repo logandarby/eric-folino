@@ -62,78 +62,31 @@ export default definePage<{
   dither: { palette: palettes.pueblo, pixelSize: 1 },
 
   /**
-   * The blobs (src/site/blobs.ts), saying something else here. Their
-   * width and position are shares (%) of the desk picture, the same on
-   * every screen, since the picture scales as a whole.
+   * The blobs (src/site/blobs.ts); what they say here is in
+   * src/site/blob-dialogs.ts. Their width and position are shares (%) of
+   * the desk picture, the same on every screen, since the picture scales
+   * as a whole.
    */
   blobs: [
     {
       blob: 'pink',
       width: { wide: 30, compact: 30 },
       position: { wide: { x: 4, y: 12 }, compact: { x: 4, y: 12 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: 'I cut the moon in the amount and atmosphere to mix the PSI container belt, but right now the experiment outflow supports a non-negligable hypothesis. What do you think?',
-          },
-          {
-            kind: 'narration',
-            text: "You don't have anything to add.",
-          },
-        ],
-      },
     },
     {
       blob: 'yellow',
       width: { wide: 14, compact: 14 },
       position: { wide: { x: 8, y: 40 }, compact: { x: 8, y: 40 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "Looking out here, I can't seem to remember my name. Can you?",
-          },
-          {
-            kind: 'narration',
-            text: 'You think... {pause}Yeah you do, {pause}duh.',
-          },
-        ],
-      },
     },
     {
       blob: 'blue',
       width: { wide: 9, compact: 9 },
       position: { wide: { x: 58, y: 55 }, compact: { x: 58, y: 55 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "I {shake}still{/shake} can't find them! Can you check under the desk?",
-          },
-          {
-            kind: 'narration',
-            text: "You really don't want to, but alas.",
-          },
-        ],
-      },
     },
     {
       blob: 'green',
       width: { wide: 22, compact: 22 },
       position: { wide: { x: 74, y: 84 }, compact: { x: 74, y: 84 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: '{wave}Ohohohoo!{/wave} It smells under here.',
-          },
-          {
-            kind: 'narration',
-            text: 'You sniff.{pause} Yep.',
-          },
-        ],
-      },
     },
   ],
 });

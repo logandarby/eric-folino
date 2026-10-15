@@ -5,10 +5,11 @@ import { bindListen } from '../../components/listen/listen.ts';
 import { Disposer } from '../../core/disposer.ts';
 import songUrl from '../../assets/audio/standby.mp3';
 import page from './page.config.ts';
+import { blobDialogs } from '../../site/blob-dialogs.ts';
 
 pageScript(import.meta.url, ({ dialogs, sound }) => {
   const disposer = new Disposer();
-  disposer.add(bindBlobs(dialogs, page.blobs));
+  disposer.add(bindBlobs(dialogs, page.blobs, blobDialogs.home));
 
   disposer.add(bindSpeechBubble('listen-cta'));
 

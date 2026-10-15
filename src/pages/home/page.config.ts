@@ -15,74 +15,27 @@ export default definePage<HomePage>({
   description:
     'Eric Folino - Musician & Artist. Discover his latest music and updates.',
 
+  /** The blobs (src/site/blobs.ts); what they say is in src/site/blob-dialogs.ts. */
   blobs: [
     {
       blob: 'pink',
       width: { wide: 19.5, compact: 27 },
       position: { wide: { x: 14, y: 2 }, compact: { x: 6, y: 0 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "I have an experiment I'm trying to run but the government isn't funding it.{pause}{float} It's not even that dangerous this time!{/float}",
-          },
-          {
-            kind: 'narration',
-            text: 'You feel like it might be dangerous this time.',
-          },
-        ],
-      },
     },
     {
       blob: 'yellow',
       width: { wide: 11, compact: 13 },
       position: { wide: { x: 86.5, y: 7 }, compact: { x: 84, y: -4 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: 'Beneath the covers, I am unable to label myself not a human.',
-          },
-          {
-            kind: 'narration',
-            text: 'You recall a memory not quite yours.',
-          },
-        ],
-      },
     },
     {
       blob: 'blue',
       width: { wide: 7.8, compact: 9 },
       position: { wide: { x: 2.5, y: 37 }, compact: { x: 6, y: 52 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: "Have you seen a silly splotch {shake}anywhere?{/shake} I can't find them.",
-          },
-          {
-            kind: 'narration',
-            text: 'You look down sheepishly at the sidewalk.',
-          },
-        ],
-      },
     },
     {
       blob: 'green',
       width: { wide: 17.5, compact: 23 },
       position: { wide: { x: 73.5, y: 75 }, compact: { x: 68, y: 66 } },
-      dialog: {
-        body: [
-          {
-            kind: 'quote',
-            text: 'Hiiii! I am a little teeny tiny splotch. {wave}I love you!{/wave}',
-          },
-          {
-            kind: 'narration',
-            text: 'You chuckle.',
-          },
-        ],
-      },
     },
   ],
 
