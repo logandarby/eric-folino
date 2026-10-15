@@ -137,7 +137,7 @@ This would certainly only work on a digital medium. For a more specific example,
 
 ### Agentic
 
-A question could exist as asked by some sort of agent. For example, you might imagine two people in a conversation. Mimetheses leveraging this are similar to contextual mimetheses, but can lean on the informalities of conversation to work, and so they can get extra silly. For each of these, imagine two people talking to each other, repeating the same thing back.
+A question could exist as asked by some sort of agent. For example, you might imagine two people in a conversation. Mimetheses leveraging this are similar to contextual mimetheses, but can lean on the informalities of conversation to work, and so they can get extra silly. The next few are courtesy of my Uncle Donald. For each of these, imagine two people talking to each other, repeating the same thing back.
 
 - Can you repeat what I'm saying back to me?
 - We're all ready now? (The other person says it back in confirmation)
@@ -234,7 +234,7 @@ It does not work, because the question has not answered itself yet, so the sente
 
 With that being said, depending on how you answer my following question, it might be a mimethesis:
 
-> What did I correctly predict you would ask in response to me?
+> What mimethesis did I correctly predict you would ask in response to me?
 
 ### Existential
 
