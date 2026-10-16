@@ -36,33 +36,6 @@ export default function SelfReferencePage() {
           aria-labelledby="comments-title"
         >
           <h2 id="comments-title">Comments ({String(count)})</h2>
-          <div class="comments__box">
-            <form class="comments__form" aria-describedby="comments-closed">
-              <label class="sr-only" for="comments-text">
-                Your comment
-              </label>
-              <textarea
-                id="comments-text"
-                rows={4}
-                placeholder={comments.placeholder}
-                disabled
-              ></textarea>
-              <button type="submit" data-sound="none" disabled>
-                Post
-              </button>
-            </form>
-            <p class="sr-only" id="comments-closed">
-              Commenting is closed.
-            </p>
-            {/* Across the box, one strip each way. */}
-            <div class="comments__tape" aria-hidden="true">
-              {comments.tape.map((words) => (
-                <div class="comments__strip">
-                  <span>{Array(6).fill(words).join(' ▲ ')}</span>
-                </div>
-              ))}
-            </div>
-          </div>
           <ol class="comments__list">
             {comments.list.map((comment) => (
               <li>

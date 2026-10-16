@@ -92,7 +92,7 @@ const FIRE_SPEED = 900;
 /** How long a speck is. */
 const SPECK = 10;
 /** What a locked poem's dialog says in place of its title. */
-const LOCKED_TITLE = '???';
+const LOCKED_TITLE = '🔒︎ [locked]';
 /** The dialog's button that goes to the poem. */
 const FOLLOW_LABEL = 'read';
 /** Shows the table of links, on the dev server only. */

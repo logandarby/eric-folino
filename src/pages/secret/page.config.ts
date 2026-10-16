@@ -81,15 +81,15 @@ export default definePage<{
   moon: { alt: 'The surface of the moon', seconds: 100, brightness: 0.45 },
 
   polaroids: [
-    {
-      href: '/enter/',
-      caption: 'THE WINDOW',
-      photo: 'window.webp',
-      x: 50,
-      y: 3,
-      width: 46,
-      tilt: 4,
-    },
+    // {
+    //   href: '/enter/',
+    //   caption: 'THE WINDOW',
+    //   photo: 'window.webp',
+    //   x: 50,
+    //   y: 3,
+    //   width: 46,
+    //   tilt: 4,
+    // },
     {
       href: '/poems/',
       caption: 'THE WEB OF POEMS',
@@ -101,7 +101,7 @@ export default definePage<{
     },
     {
       href: '/mysteries/',
-      caption: 'MYSTERIES?',
+      caption: 'ESOTERICA',
       photo: 'mysteries.webp',
       x: 46,
       y: 58,

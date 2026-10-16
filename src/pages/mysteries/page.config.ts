@@ -41,8 +41,8 @@ export default definePage<{
 }>({
   id: 'mysteries',
   path: '/mysteries/',
-  title: 'Mysteries',
-  description: 'Mysteries.',
+  title: 'Esoterica',
+  description: 'Esoterica.',
   noindex: true,
   irisWipe: 'light',
 

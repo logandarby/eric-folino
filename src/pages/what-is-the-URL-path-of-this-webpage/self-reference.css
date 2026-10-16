@@ -39,14 +39,13 @@ body > * {
 
 /*
  * The sheet the essay sits on: wide enough for a long line of Libron,
- * edged in ink with a hard shadow, like the deck's keys.
+ * edged in ink.
  */
 .self-reference__sheet {
   width: min(100%, 52rem);
   padding: clamp(24px, 7vw, 72px);
   border: 2px solid var(--color-fg);
   background: var(--sheet);
-  box-shadow: 6px 6px 0 var(--color-fg);
   font-family: 'Libron', Georgia, serif;
   font-size: 1.0625rem;
   font-weight: 400;
@@ -57,7 +56,6 @@ body > * {
 @media (max-width: 40rem) {
   .self-reference__sheet {
     font-size: 1rem;
-    box-shadow: 4px 4px 0 var(--color-fg);
   }
 }
 
